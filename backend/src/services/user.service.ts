@@ -235,6 +235,42 @@ export class UserService {
     );
   }
 
+  static async resendVerificationEmail(email: string): Promise<string> {
+    const user = await prisma.familyMember.findUnique({
+      where: {
+        email,
+        deletedAt: null,
+      },
+    });
+
+    const verificationToken = crypto.randomUUID();
+
+    // If user exists and is not already verified, generate new token
+    if (user && !user.emailVerified) {
+      // Remove any existing verification tokens for this user
+      for (const [token, tokenData] of this.emailVerificationTokens.entries()) {
+        if (tokenData.userId === user.id) {
+          this.emailVerificationTokens.delete(token);
+        }
+      }
+
+      // Store new verification token
+      this.emailVerificationTokens.set(verificationToken, {
+        userId: user.id,
+        email: user.email,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+      });
+
+      await this.logAuditEvent(user.familyId, user.id, 'update', 'FamilyMember', user.id,
+        {},
+        { action: 'verification_email_resent' }
+      );
+    }
+
+    // Always return a token (even if user doesn't exist or is already verified) to prevent enumeration
+    return verificationToken;
+  }
+
   static async setupMfa(userId: string): Promise<MfaSetupResult> {
     const user = await prisma.familyMember.findUnique({
       where: { id: userId },
