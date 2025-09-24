@@ -484,7 +484,7 @@ tests/
 - [ ] T366 [P] Budget performance chart in frontend/src/components/budget/performance-chart.tsx
 - [ ] T367 [P] Budget projections chart in frontend/src/components/budget/projections-chart.tsx
 - [ ] T368 [P] Budget template selector in frontend/src/components/budget/template-selector.tsx
-- [ ] T369 [P] Percentage validation component in frontend/src/components/budget/percentage-validator.tsx
+- [x] T369 [P] Percentage validation component in frontend/src/components/budget/percentage-validator.tsx
 
 ### Phase 6.8: Calendar and Reports
 - [ ] T370 Calendar page in frontend/src/app/calendar/page.tsx
