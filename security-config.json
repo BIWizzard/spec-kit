@@ -1,0 +1,381 @@
+{
+  "security": {
+    "environment": {
+      "development": {
+        "strictMode": false,
+        "allowInsecure": true,
+        "debugMode": true,
+        "csrfProtection": false,
+        "rateLimit": {
+          "enabled": false
+        }
+      },
+      "staging": {
+        "strictMode": true,
+        "allowInsecure": false,
+        "debugMode": true,
+        "csrfProtection": true,
+        "rateLimit": {
+          "enabled": true,
+          "relaxed": true
+        }
+      },
+      "production": {
+        "strictMode": true,
+        "allowInsecure": false,
+        "debugMode": false,
+        "csrfProtection": true,
+        "rateLimit": {
+          "enabled": true,
+          "strict": true
+        }
+      }
+    },
+    "headers": {
+      "contentSecurityPolicy": {
+        "enabled": true,
+        "directives": {
+          "default-src": ["'self'"],
+          "script-src": [
+            "'self'",
+            "'unsafe-inline'",
+            "https://vercel.live",
+            "https://js.sentry-cdn.com",
+            "https://browser.sentry-cdn.com",
+            "https://va.vercel-scripts.com"
+          ],
+          "style-src": [
+            "'self'",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com"
+          ],
+          "img-src": [
+            "'self'",
+            "data:",
+            "https:",
+            "blob:"
+          ],
+          "font-src": [
+            "'self'",
+            "https://fonts.gstatic.com"
+          ],
+          "connect-src": [
+            "'self'",
+            "https://api.plaid.com",
+            "https://production.plaid.com",
+            "https://sentry.io",
+            "https://vercel.com",
+            "https://vitals.vercel-analytics.com",
+            "wss:"
+          ],
+          "frame-src": [
+            "'none'"
+          ],
+          "object-src": [
+            "'none'"
+          ],
+          "base-uri": [
+            "'self'"
+          ],
+          "form-action": [
+            "'self'"
+          ],
+          "upgrade-insecure-requests": true
+        },
+        "reportUri": "/api/security/csp-report",
+        "reportOnly": false
+      },
+      "hsts": {
+        "enabled": true,
+        "maxAge": 31536000,
+        "includeSubDomains": true,
+        "preload": true
+      },
+      "xFrameOptions": {
+        "enabled": true,
+        "value": "DENY"
+      },
+      "xContentTypeOptions": {
+        "enabled": true,
+        "value": "nosniff"
+      },
+      "referrerPolicy": {
+        "enabled": true,
+        "value": "strict-origin-when-cross-origin"
+      },
+      "permissionsPolicy": {
+        "enabled": true,
+        "directives": {
+          "camera": "none",
+          "microphone": "none",
+          "geolocation": "none",
+          "interest-cohort": "none",
+          "payment": "self",
+          "usb": "none",
+          "autoplay": "none",
+          "encrypted-media": "none",
+          "fullscreen": "none",
+          "picture-in-picture": "none",
+          "screen-wake-lock": "none",
+          "web-share": "none"
+        }
+      },
+      "xXSSProtection": {
+        "enabled": true,
+        "value": "1; mode=block"
+      },
+      "expectCT": {
+        "enabled": true,
+        "maxAge": 86400,
+        "reportUri": "/api/security/ct-report"
+      }
+    },
+    "authentication": {
+      "session": {
+        "secure": true,
+        "httpOnly": true,
+        "sameSite": "strict",
+        "maxAge": 86400000,
+        "rolling": true,
+        "name": "session"
+      },
+      "jwt": {
+        "algorithm": "HS256",
+        "expiresIn": "15m",
+        "refreshExpiresIn": "7d",
+        "issuer": "family-finance-app",
+        "audience": "family-finance-users",
+        "clockTolerance": 30
+      },
+      "password": {
+        "minLength": 8,
+        "requireUppercase": true,
+        "requireLowercase": true,
+        "requireNumbers": true,
+        "requireSpecial": true,
+        "maxAttempts": 5,
+        "lockoutDuration": 900000,
+        "bcryptRounds": 12
+      },
+      "mfa": {
+        "required": false,
+        "gracePeriod": 2592000000,
+        "backupCodes": 10,
+        "windowSize": 1
+      },
+      "oauth": {
+        "providers": ["google", "github"],
+        "pkce": true,
+        "state": true,
+        "nonce": true
+      }
+    },
+    "rateLimit": {
+      "global": {
+        "windowMs": 900000,
+        "maxRequests": 1000,
+        "skipSuccessfulRequests": false,
+        "skipFailedRequests": false
+      },
+      "auth": {
+        "windowMs": 900000,
+        "maxRequests": 5,
+        "skipSuccessfulRequests": true
+      },
+      "api": {
+        "windowMs": 60000,
+        "maxRequests": 100,
+        "skipSuccessfulRequests": false
+      },
+      "upload": {
+        "windowMs": 3600000,
+        "maxRequests": 10,
+        "maxSize": 10485760
+      }
+    },
+    "inputValidation": {
+      "sanitization": {
+        "enabled": true,
+        "allowedTags": [],
+        "allowedAttributes": {},
+        "stripComments": true,
+        "stripCDATA": true
+      },
+      "xss": {
+        "enabled": true,
+        "mode": "strict"
+      },
+      "sqlInjection": {
+        "enabled": true,
+        "parameterized": true,
+        "escaping": true
+      },
+      "fileUpload": {
+        "maxSize": 10485760,
+        "allowedTypes": [
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+          "application/pdf",
+          "text/csv",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ],
+        "scanForMalware": true,
+        "quarantineTimeout": 300000
+      }
+    },
+    "encryption": {
+      "atRest": {
+        "enabled": true,
+        "algorithm": "AES-256-GCM",
+        "keyRotation": 2592000000
+      },
+      "inTransit": {
+        "enabled": true,
+        "minTlsVersion": "1.2",
+        "cipherSuites": [
+          "ECDHE-ECDSA-AES256-GCM-SHA384",
+          "ECDHE-RSA-AES256-GCM-SHA384",
+          "ECDHE-ECDSA-CHACHA20-POLY1305",
+          "ECDHE-RSA-CHACHA20-POLY1305",
+          "ECDHE-ECDSA-AES128-GCM-SHA256",
+          "ECDHE-RSA-AES128-GCM-SHA256"
+        ]
+      },
+      "secrets": {
+        "provider": "env",
+        "rotation": true,
+        "rotationInterval": 2592000000,
+        "vaultPath": "/secret/family-finance"
+      }
+    },
+    "monitoring": {
+      "securityEvents": {
+        "enabled": true,
+        "logLevel": "warn",
+        "alertThresholds": {
+          "authFailures": 10,
+          "rateLimitHits": 50,
+          "suspiciousActivity": 5
+        }
+      },
+      "intrusionDetection": {
+        "enabled": true,
+        "patterns": [
+          "sql injection",
+          "xss attack",
+          "path traversal",
+          "command injection",
+          "brute force"
+        ],
+        "blockDuration": 3600000
+      },
+      "audit": {
+        "enabled": true,
+        "events": [
+          "login",
+          "logout",
+          "password_change",
+          "mfa_setup",
+          "data_export",
+          "admin_action",
+          "sensitive_access"
+        ],
+        "retention": 2592000000
+      }
+    },
+    "compliance": {
+      "gdpr": {
+        "enabled": true,
+        "consentRequired": true,
+        "dataPortability": true,
+        "rightToErasure": true,
+        "privacyByDesign": true
+      },
+      "pci": {
+        "enabled": false,
+        "tokenization": true,
+        "encryption": true,
+        "keyManagement": true
+      },
+      "soc2": {
+        "enabled": true,
+        "accessControls": true,
+        "changeManagement": true,
+        "systemMonitoring": true,
+        "dataClassification": true
+      }
+    },
+    "backup": {
+      "encryption": {
+        "enabled": true,
+        "algorithm": "AES-256-GCM"
+      },
+      "accessControl": {
+        "enabled": true,
+        "rbac": true,
+        "mfa": true
+      },
+      "retention": {
+        "daily": 30,
+        "weekly": 12,
+        "monthly": 12,
+        "yearly": 7
+      }
+    },
+    "network": {
+      "firewall": {
+        "enabled": true,
+        "defaultDeny": true,
+        "allowedPorts": [80, 443, 22],
+        "ddosProtection": true
+      },
+      "cdn": {
+        "enabled": true,
+        "caching": true,
+        "compression": true,
+        "waf": true
+      },
+      "cors": {
+        "enabled": true,
+        "origins": ["https://familyfinance.app"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allowedHeaders": [
+          "Origin",
+          "X-Requested-With",
+          "Content-Type",
+          "Accept",
+          "Authorization"
+        ],
+        "exposedHeaders": [],
+        "credentials": true,
+        "maxAge": 86400
+      }
+    },
+    "deployment": {
+      "secretsManagement": {
+        "provider": "vercel",
+        "encryption": true,
+        "rotation": true,
+        "audit": true
+      },
+      "environmentIsolation": {
+        "enabled": true,
+        "separateSecrets": true,
+        "separateResources": true
+      },
+      "rollback": {
+        "enabled": true,
+        "automatic": true,
+        "healthCheck": true,
+        "rollbackTriggers": [
+          "high_error_rate",
+          "security_incident",
+          "performance_degradation"
+        ]
+      }
+    }
+  }
+}
