@@ -427,7 +427,7 @@ tests/
 - [x] T317 Dashboard page in frontend/src/app/dashboard/page.tsx
 - [x] T318 [P] Dashboard metrics cards in frontend/src/components/dashboard/metrics-cards.tsx
 - [x] T319 [P] Cash flow chart component in frontend/src/components/dashboard/cash-flow-chart.tsx
-- [ ] T320 [P] Recent activity component in frontend/src/components/dashboard/recent-activity.tsx
+- [x] T320 [P] Recent activity component in frontend/src/components/dashboard/recent-activity.tsx
 - [ ] T321 [P] Upcoming events component in frontend/src/components/dashboard/upcoming-events.tsx
 - [ ] T322 [P] Financial insights component in frontend/src/components/dashboard/insights.tsx
 - [ ] T323 [P] Alert notifications component in frontend/src/components/dashboard/alerts.tsx
