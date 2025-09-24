@@ -1,0 +1,1067 @@
+openapi: 3.0.3
+info:
+  title: Family Finance - Bank Integration API
+  description: Bank account and transaction sync endpoints for family finance application
+  version: 1.0.0
+  contact:
+    name: Family Finance API Team
+    email: api@familyfinance.com
+
+servers:
+  - url: https://api.familyfinance.com/v1
+    description: Production server
+  - url: https://staging-api.familyfinance.com/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /bank-accounts:
+    get:
+      summary: List bank accounts
+      description: Get list of connected bank accounts for the family
+      tags:
+        - Bank Accounts
+      parameters:
+        - name: includeDisconnected
+          in: query
+          description: Include disconnected accounts
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Bank accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountListResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Connect bank account
+      description: Connect a new bank account using Plaid Link token
+      tags:
+        - Bank Accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectBankAccountRequest'
+      responses:
+        '201':
+          description: Bank account connected successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountResponse'
+        '400':
+          description: Invalid request data or Plaid error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /bank-accounts/{accountId}:
+    get:
+      summary: Get bank account details
+      description: Get specific bank account with recent transactions
+      tags:
+        - Bank Accounts
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bank account retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountDetailResponse'
+        '404':
+          description: Bank account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update bank account
+      description: Update bank account settings and preferences
+      tags:
+        - Bank Accounts
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBankAccountRequest'
+      responses:
+        '200':
+          description: Bank account updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Bank account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Disconnect bank account
+      description: Disconnect bank account and stop syncing (soft delete)
+      tags:
+        - Bank Accounts
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Bank account disconnected successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Bank account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /bank-accounts/{accountId}/sync:
+    post:
+      summary: Sync bank account transactions
+      description: Manually trigger transaction sync for specific account
+      tags:
+        - Transaction Sync
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sync initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Bank account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Sync rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /bank-accounts/sync-all:
+    post:
+      summary: Sync all bank accounts
+      description: Manually trigger transaction sync for all connected accounts
+      tags:
+        - Transaction Sync
+      responses:
+        '200':
+          description: Sync initiated for all accounts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkSyncResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Sync rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /bank-accounts/{accountId}/reconnect:
+    post:
+      summary: Reconnect bank account
+      description: Reconnect bank account with new Plaid Link token after connection error
+      tags:
+        - Bank Accounts
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconnectBankAccountRequest'
+      responses:
+        '200':
+          description: Bank account reconnected successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountResponse'
+        '400':
+          description: Invalid request data or Plaid error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Bank account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /transactions:
+    get:
+      summary: List transactions
+      description: Get paginated list of transactions across all or specific bank accounts
+      tags:
+        - Transactions
+      parameters:
+        - name: limit
+          in: query
+          description: Number of transactions to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 50
+        - name: offset
+          in: query
+          description: Number of transactions to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: accountId
+          in: query
+          description: Filter by specific bank account
+          schema:
+            type: string
+            format: uuid
+        - name: spendingCategoryId
+          in: query
+          description: Filter by spending category
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          description: Filter transactions from date
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: Filter transactions to date
+          schema:
+            type: string
+            format: date
+        - name: minAmount
+          in: query
+          description: Minimum transaction amount
+          schema:
+            type: number
+            format: decimal
+            multipleOf: 0.01
+        - name: maxAmount
+          in: query
+          description: Maximum transaction amount
+          schema:
+            type: number
+            format: decimal
+            multipleOf: 0.01
+        - name: pending
+          in: query
+          description: Filter by pending status
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          description: Search in description and merchant name
+          schema:
+            type: string
+            maxLength: 255
+        - name: sortBy
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [date, amount, description, merchant]
+            default: date
+        - name: sortOrder
+          in: query
+          description: Sort direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionListResponse'
+
+  /transactions/{transactionId}:
+    get:
+      summary: Get transaction details
+      description: Get specific transaction details
+      tags:
+        - Transactions
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Transaction retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update transaction
+      description: Update transaction categorization and notes
+      tags:
+        - Transactions
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTransactionRequest'
+      responses:
+        '200':
+          description: Transaction updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /transactions/categorize-batch:
+    put:
+      summary: Categorize multiple transactions
+      description: Update spending category for multiple transactions at once
+      tags:
+        - Transactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchCategorizeRequest'
+      responses:
+        '200':
+          description: Transactions categorized successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchCategorizeResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /transactions/uncategorized:
+    get:
+      summary: Get uncategorized transactions
+      description: Get transactions that need manual categorization
+      tags:
+        - Transactions
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+        - name: confidenceThreshold
+          in: query
+          description: Maximum confidence threshold to consider uncategorized
+          schema:
+            type: number
+            format: decimal
+            minimum: 0
+            maximum: 1
+            default: 0.8
+      responses:
+        '200':
+          description: Uncategorized transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UncategorizedTransactionsResponse'
+
+  /transactions/match-payments:
+    post:
+      summary: Match transactions to payments
+      description: Attempt to match imported transactions with scheduled payments
+      tags:
+        - Transaction Matching
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchPaymentsRequest'
+      responses:
+        '200':
+          description: Transaction matching completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchPaymentsResponse'
+
+  /plaid/link-token:
+    post:
+      summary: Create Plaid Link token
+      description: Generate Plaid Link token for bank account connection
+      tags:
+        - Plaid Integration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLinkTokenRequest'
+      responses:
+        '201':
+          description: Link token created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkTokenResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /plaid/webhook:
+    post:
+      summary: Handle Plaid webhook
+      description: Process webhook notifications from Plaid (internal endpoint)
+      tags:
+        - Plaid Integration
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaidWebhookRequest'
+      responses:
+        '200':
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Invalid webhook payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    BankAccountListResponse:
+      type: object
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankAccountSummary'
+        summary:
+          type: object
+          properties:
+            totalAccounts:
+              type: integer
+            activeAccounts:
+              type: integer
+            totalBalance:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            lastSyncAt:
+              type: string
+              format: date-time
+              nullable: true
+
+    BankAccountSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        institutionName:
+          type: string
+        accountName:
+          type: string
+        accountType:
+          type: string
+          enum: [checking, savings, credit, loan]
+        accountNumber:
+          type: string
+          description: Last 4 digits only
+        currentBalance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        availableBalance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          nullable: true
+        lastSyncAt:
+          type: string
+          format: date-time
+          nullable: true
+        syncStatus:
+          type: string
+          enum: [active, error, disconnected]
+        transactionCount:
+          type: integer
+          description: Total number of transactions
+        createdAt:
+          type: string
+          format: date-time
+
+    BankAccountResponse:
+      allOf:
+        - $ref: '#/components/schemas/BankAccountSummary'
+        - type: object
+          properties:
+            plaidAccountId:
+              type: string
+            updatedAt:
+              type: string
+              format: date-time
+
+    BankAccountDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/BankAccountResponse'
+        - type: object
+          properties:
+            recentTransactions:
+              type: array
+              items:
+                $ref: '#/components/schemas/TransactionSummary'
+            syncHistory:
+              type: array
+              items:
+                $ref: '#/components/schemas/SyncHistoryEntry'
+
+    ConnectBankAccountRequest:
+      type: object
+      required:
+        - publicToken
+      properties:
+        publicToken:
+          type: string
+          description: Plaid public token from Link flow
+        accountIds:
+          type: array
+          items:
+            type: string
+          description: Specific Plaid account IDs to connect (optional)
+
+    UpdateBankAccountRequest:
+      type: object
+      properties:
+        accountName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Custom name for the account
+
+    ReconnectBankAccountRequest:
+      type: object
+      required:
+        - publicToken
+      properties:
+        publicToken:
+          type: string
+          description: New Plaid public token from update mode Link flow
+
+    SyncResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        syncId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [initiated, in_progress, completed, failed]
+        estimatedCompletionTime:
+          type: string
+          format: date-time
+
+    BulkSyncResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        accountSyncs:
+          type: array
+          items:
+            type: object
+            properties:
+              accountId:
+                type: string
+                format: uuid
+              accountName:
+                type: string
+              syncId:
+                type: string
+                format: uuid
+              status:
+                type: string
+                enum: [initiated, skipped, failed]
+
+    TransactionListResponse:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionSummary'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        summary:
+          type: object
+          properties:
+            totalAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            incomeAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            expenseAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+
+    TransactionSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        plaidTransactionId:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+        merchantName:
+          type: string
+          nullable: true
+        pending:
+          type: boolean
+        spendingCategory:
+          $ref: '#/components/schemas/SpendingCategorySummary'
+        categoryConfidence:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 1
+        userCategorized:
+          type: boolean
+        bankAccount:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            institutionName:
+              type: string
+            accountName:
+              type: string
+
+    TransactionResponse:
+      allOf:
+        - $ref: '#/components/schemas/TransactionSummary'
+        - type: object
+          properties:
+            notes:
+              type: string
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    UpdateTransactionRequest:
+      type: object
+      properties:
+        spendingCategoryId:
+          type: string
+          format: uuid
+          nullable: true
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+
+    BatchCategorizeRequest:
+      type: object
+      required:
+        - transactionIds
+        - spendingCategoryId
+      properties:
+        transactionIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 100
+        spendingCategoryId:
+          type: string
+          format: uuid
+
+    BatchCategorizeResponse:
+      type: object
+      properties:
+        updated:
+          type: array
+          items:
+            type: string
+            format: uuid
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              transactionId:
+                type: string
+                format: uuid
+              error:
+                type: string
+        summary:
+          type: object
+          properties:
+            totalRequested:
+              type: integer
+            totalUpdated:
+              type: integer
+            totalErrors:
+              type: integer
+
+    UncategorizedTransactionsResponse:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionSummary'
+        total:
+          type: integer
+        suggestedCategories:
+          type: array
+          items:
+            type: object
+            properties:
+              transactionId:
+                type: string
+                format: uuid
+              suggestedCategory:
+                $ref: '#/components/schemas/SpendingCategorySummary'
+              confidence:
+                type: number
+                format: decimal
+                minimum: 0
+                maximum: 1
+
+    MatchPaymentsRequest:
+      type: object
+      properties:
+        fromDate:
+          type: string
+          format: date
+          description: Start date for matching window
+        toDate:
+          type: string
+          format: date
+          description: End date for matching window
+        accountIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Specific accounts to match (optional)
+
+    MatchPaymentsResponse:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            type: object
+            properties:
+              transactionId:
+                type: string
+                format: uuid
+              paymentId:
+                type: string
+                format: uuid
+              confidence:
+                type: number
+                format: decimal
+                minimum: 0
+                maximum: 1
+              matchType:
+                type: string
+                enum: [exact_amount, close_amount, merchant_match, date_range]
+        summary:
+          type: object
+          properties:
+            totalTransactions:
+              type: integer
+            totalMatches:
+              type: integer
+            highConfidenceMatches:
+              type: integer
+
+    CreateLinkTokenRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          description: Family member ID for Plaid Link
+        mode:
+          type: string
+          enum: [connect, update]
+          default: connect
+        accountId:
+          type: string
+          format: uuid
+          description: Required for update mode
+
+    LinkTokenResponse:
+      type: object
+      properties:
+        linkToken:
+          type: string
+        expiration:
+          type: string
+          format: date-time
+
+    PlaidWebhookRequest:
+      type: object
+      required:
+        - webhook_type
+        - webhook_code
+        - item_id
+      properties:
+        webhook_type:
+          type: string
+        webhook_code:
+          type: string
+        item_id:
+          type: string
+        error:
+          type: object
+          nullable: true
+        new_transactions:
+          type: integer
+          nullable: true
+        removed_transactions:
+          type: array
+          items:
+            type: string
+          nullable: true
+
+    SpendingCategorySummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+        icon:
+          type: string
+
+    SyncHistoryEntry:
+      type: object
+      properties:
+        syncId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [initiated, in_progress, completed, failed]
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+        transactionsSynced:
+          type: integer
+          nullable: true
+        error:
+          type: string
+          nullable: true
+
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        hasMore:
+          type: boolean
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

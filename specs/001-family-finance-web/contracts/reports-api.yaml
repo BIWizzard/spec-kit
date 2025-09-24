@@ -1,0 +1,1742 @@
+openapi: 3.0.3
+info:
+  title: Family Finance - Reports & Analytics API
+  description: Reporting and analytics endpoints for family finance application
+  version: 1.0.0
+  contact:
+    name: Family Finance API Team
+    email: api@familyfinance.com
+
+servers:
+  - url: https://api.familyfinance.com/v1
+    description: Production server
+  - url: https://staging-api.familyfinance.com/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /reports/cash-flow:
+    get:
+      summary: Generate cash flow report
+      description: Get detailed cash flow analysis showing income vs expenses over time
+      tags:
+        - Cash Flow Reports
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for the report
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for the report
+          schema:
+            type: string
+            format: date
+        - name: groupBy
+          in: query
+          description: Time period grouping
+          schema:
+            type: string
+            enum: [day, week, month, quarter, year]
+            default: month
+        - name: includeProjections
+          in: query
+          description: Include future projections
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Cash flow report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashFlowReportResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reports/spending-analysis:
+    get:
+      summary: Generate spending analysis report
+      description: Get detailed spending breakdown by categories and trends
+      tags:
+        - Spending Reports
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for the report
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for the report
+          schema:
+            type: string
+            format: date
+        - name: groupBy
+          in: query
+          description: Time period grouping
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            default: month
+        - name: categoryId
+          in: query
+          description: Filter by specific spending category
+          schema:
+            type: string
+            format: uuid
+        - name: includeSubcategories
+          in: query
+          description: Include subcategory breakdown
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Spending analysis report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpendingAnalysisReportResponse'
+
+  /reports/budget-performance:
+    get:
+      summary: Generate budget performance report
+      description: Get detailed analysis of budget vs actual spending performance
+      tags:
+        - Budget Reports
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for the report
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for the report
+          schema:
+            type: string
+            format: date
+        - name: budgetCategoryId
+          in: query
+          description: Filter by specific budget category
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Budget performance report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetPerformanceReportResponse'
+
+  /reports/income-analysis:
+    get:
+      summary: Generate income analysis report
+      description: Get detailed income tracking and variance analysis
+      tags:
+        - Income Reports
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for the report
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for the report
+          schema:
+            type: string
+            format: date
+        - name: groupBy
+          in: query
+          description: Time period grouping
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            default: month
+        - name: includeAttributions
+          in: query
+          description: Include payment attribution details
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Income analysis report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeAnalysisReportResponse'
+
+  /reports/net-worth:
+    get:
+      summary: Generate net worth report
+      description: Get net worth analysis including all accounts and liabilities
+      tags:
+        - Net Worth Reports
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for the report
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for the report
+          schema:
+            type: string
+            format: date
+        - name: includeProjections
+          in: query
+          description: Include future net worth projections
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Net worth report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetWorthReportResponse'
+
+  /reports/savings-rate:
+    get:
+      summary: Generate savings rate report
+      description: Get savings rate analysis and trends
+      tags:
+        - Savings Reports
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for the report
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for the report
+          schema:
+            type: string
+            format: date
+        - name: groupBy
+          in: query
+          description: Time period grouping
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            default: month
+      responses:
+        '200':
+          description: Savings rate report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsRateReportResponse'
+
+  /reports/debt-analysis:
+    get:
+      summary: Generate debt analysis report
+      description: Get debt analysis including credit utilization and payment schedules
+      tags:
+        - Debt Reports
+      parameters:
+        - name: includeProjections
+          in: query
+          description: Include debt payoff projections
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Debt analysis report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtAnalysisReportResponse'
+
+  /reports/monthly-summary:
+    get:
+      summary: Generate monthly summary report
+      description: Get comprehensive monthly financial summary
+      tags:
+        - Summary Reports
+      parameters:
+        - name: year
+          in: query
+          required: true
+          description: Year for the report
+          schema:
+            type: integer
+            minimum: 2020
+            maximum: 2050
+        - name: month
+          in: query
+          required: true
+          description: Month for the report (1-12)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+      responses:
+        '200':
+          description: Monthly summary report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlySummaryReportResponse'
+
+  /reports/annual-summary:
+    get:
+      summary: Generate annual summary report
+      description: Get comprehensive yearly financial summary
+      tags:
+        - Summary Reports
+      parameters:
+        - name: year
+          in: query
+          required: true
+          description: Year for the report
+          schema:
+            type: integer
+            minimum: 2020
+            maximum: 2050
+      responses:
+        '200':
+          description: Annual summary report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnualSummaryReportResponse'
+
+  /reports/custom:
+    post:
+      summary: Generate custom report
+      description: Generate a custom report with user-defined parameters
+      tags:
+        - Custom Reports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomReportRequest'
+      responses:
+        '200':
+          description: Custom report generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomReportResponse'
+        '400':
+          description: Invalid report parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reports/export:
+    post:
+      summary: Export report data
+      description: Export report data in various formats (CSV, PDF, Excel)
+      tags:
+        - Report Export
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportReportRequest'
+      responses:
+        '200':
+          description: Export initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportReportResponse'
+        '400':
+          description: Invalid export parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reports/scheduled:
+    get:
+      summary: List scheduled reports
+      description: Get list of scheduled automatic reports
+      tags:
+        - Scheduled Reports
+      responses:
+        '200':
+          description: Scheduled reports retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledReportListResponse'
+
+    post:
+      summary: Create scheduled report
+      description: Create a new scheduled automatic report
+      tags:
+        - Scheduled Reports
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScheduledReportRequest'
+      responses:
+        '201':
+          description: Scheduled report created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledReportResponse'
+
+  /reports/scheduled/{reportId}:
+    get:
+      summary: Get scheduled report details
+      description: Get specific scheduled report configuration and history
+      tags:
+        - Scheduled Reports
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Scheduled report retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledReportDetailResponse'
+        '404':
+          description: Scheduled report not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update scheduled report
+      description: Update scheduled report configuration
+      tags:
+        - Scheduled Reports
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScheduledReportRequest'
+      responses:
+        '200':
+          description: Scheduled report updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduledReportResponse'
+        '404':
+          description: Scheduled report not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete scheduled report
+      description: Cancel a scheduled report
+      tags:
+        - Scheduled Reports
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Scheduled report deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Scheduled report not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /analytics/dashboard:
+    get:
+      summary: Get dashboard analytics
+      description: Get key financial metrics and trends for dashboard display
+      tags:
+        - Analytics
+      parameters:
+        - name: period
+          in: query
+          description: Time period for analytics
+          schema:
+            type: string
+            enum: [7days, 30days, 90days, 1year]
+            default: 30days
+      responses:
+        '200':
+          description: Dashboard analytics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardAnalyticsResponse'
+
+  /analytics/trends:
+    get:
+      summary: Get financial trends
+      description: Get trend analysis for various financial metrics
+      tags:
+        - Analytics
+      parameters:
+        - name: metrics
+          in: query
+          description: Comma-separated list of metrics to analyze
+          schema:
+            type: string
+            example: "income,spending,savings_rate,net_worth"
+        - name: fromDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: granularity
+          in: query
+          schema:
+            type: string
+            enum: [daily, weekly, monthly]
+            default: monthly
+      responses:
+        '200':
+          description: Financial trends retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialTrendsResponse'
+
+  /analytics/insights:
+    get:
+      summary: Get financial insights
+      description: Get AI-powered financial insights and recommendations
+      tags:
+        - Analytics
+      responses:
+        '200':
+          description: Financial insights retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinancialInsightsResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CashFlowReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        dateRange:
+          $ref: '#/components/schemas/DateRange'
+        summary:
+          type: object
+          properties:
+            totalIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalExpenses:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            netCashFlow:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            averageMonthlyIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            averageMonthlyExpenses:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashFlowPeriod'
+        projections:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashFlowPeriod'
+          nullable: true
+
+    CashFlowPeriod:
+      type: object
+      properties:
+        period:
+          type: string
+        periodStart:
+          type: string
+          format: date
+        periodEnd:
+          type: string
+          format: date
+        income:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        expenses:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        netFlow:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        runningBalance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    SpendingAnalysisReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        dateRange:
+          $ref: '#/components/schemas/DateRange'
+        summary:
+          type: object
+          properties:
+            totalSpending:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            averageMonthlySpending:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            largestExpense:
+              type: object
+              properties:
+                amount:
+                  type: number
+                  format: decimal
+                  multipleOf: 0.01
+                description:
+                  type: string
+                category:
+                  type: string
+                date:
+                  type: string
+                  format: date
+        categoryBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              categoryId:
+                type: string
+                format: uuid
+              categoryName:
+                type: string
+              totalSpent:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              percentage:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              transactionCount:
+                type: integer
+              averageTransaction:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              trend:
+                type: string
+                enum: [increasing, stable, decreasing]
+        monthlyTrends:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                format: date
+              totalSpent:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              categoryBreakdown:
+                type: object
+                additionalProperties:
+                  type: number
+                  format: decimal
+                  multipleOf: 0.01
+
+    BudgetPerformanceReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        dateRange:
+          $ref: '#/components/schemas/DateRange'
+        summary:
+          type: object
+          properties:
+            totalBudgeted:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalSpent:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            budgetUtilization:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+              description: Percentage of budget used
+            overBudgetAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            underBudgetAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        categoryPerformance:
+          type: array
+          items:
+            type: object
+            properties:
+              categoryId:
+                type: string
+                format: uuid
+              categoryName:
+                type: string
+              budgeted:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              spent:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              variance:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              utilizationRate:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              status:
+                type: string
+                enum: [under_budget, on_budget, over_budget]
+        monthlyComparison:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                format: date
+              budgeted:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              spent:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              utilizationRate:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    IncomeAnalysisReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        dateRange:
+          $ref: '#/components/schemas/DateRange'
+        summary:
+          type: object
+          properties:
+            totalScheduledIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalActualIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            incomeVariance:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            averageMonthlyIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            incomeReliability:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+              description: Percentage showing income consistency
+        incomeStreams:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              totalIncome:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              percentage:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              frequency:
+                type: string
+              reliability:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+        attributionAnalysis:
+          type: object
+          properties:
+            totalAttributed:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalUnattributed:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            attributionRate:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            topAttributions:
+              type: array
+              items:
+                type: object
+                properties:
+                  paymentName:
+                    type: string
+                  attributedAmount:
+                    type: number
+                    format: decimal
+                    multipleOf: 0.01
+
+    NetWorthReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        dateRange:
+          $ref: '#/components/schemas/DateRange'
+        currentNetWorth:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        netWorthChange:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        percentageChange:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        assets:
+          type: object
+          properties:
+            totalAssets:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            breakdown:
+              type: array
+              items:
+                type: object
+                properties:
+                  accountType:
+                    type: string
+                  accountName:
+                    type: string
+                  currentBalance:
+                    type: number
+                    format: decimal
+                    multipleOf: 0.01
+                  changeAmount:
+                    type: number
+                    format: decimal
+                    multipleOf: 0.01
+        liabilities:
+          type: object
+          properties:
+            totalLiabilities:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            breakdown:
+              type: array
+              items:
+                type: object
+                properties:
+                  accountType:
+                    type: string
+                  accountName:
+                    type: string
+                  currentBalance:
+                    type: number
+                    format: decimal
+                    multipleOf: 0.01
+                  changeAmount:
+                    type: number
+                    format: decimal
+                    multipleOf: 0.01
+        monthlyHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                format: date
+              netWorth:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              assets:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              liabilities:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    SavingsRateReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        dateRange:
+          $ref: '#/components/schemas/DateRange'
+        currentSavingsRate:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        averageSavingsRate:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalSaved:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        savingsGoal:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          nullable: true
+        goalProgress:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          nullable: true
+        monthlySavings:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                format: date
+              income:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              expenses:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              saved:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              savingsRate:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+        savingsBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              amount:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              percentage:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    DebtAnalysisReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        totalDebt:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        monthlyDebtPayments:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        debtToIncomeRatio:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        creditUtilization:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        debtAccounts:
+          type: array
+          items:
+            type: object
+            properties:
+              accountName:
+                type: string
+              accountType:
+                type: string
+              currentBalance:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              minimumPayment:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              interestRate:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              payoffTime:
+                type: integer
+                description: Months to payoff at minimum payment
+        payoffProjections:
+          type: array
+          items:
+            type: object
+            properties:
+              strategy:
+                type: string
+                enum: [minimum_payments, debt_snowball, debt_avalanche, custom]
+              totalInterest:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              payoffTime:
+                type: integer
+                description: Total months to become debt-free
+              monthlySavings:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    MonthlySummaryReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        month:
+          type: string
+          format: date
+        income:
+          type: object
+          properties:
+            total:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            scheduled:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            actual:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            variance:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        expenses:
+          type: object
+          properties:
+            total:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            budgeted:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            actual:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            variance:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        cashFlow:
+          type: object
+          properties:
+            net:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            savingsRate:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        budgetPerformance:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              budgeted:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              spent:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              variance:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+        topExpenses:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type: string
+              amount:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              category:
+                type: string
+              date:
+                type: string
+                format: date
+
+    AnnualSummaryReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        generatedAt:
+          type: string
+          format: date-time
+        year:
+          type: integer
+        income:
+          type: object
+          properties:
+            total:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            growth:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            monthlyAverage:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        expenses:
+          type: object
+          properties:
+            total:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            growth:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            monthlyAverage:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        savings:
+          type: object
+          properties:
+            total:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            rate:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            growth:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        netWorth:
+          type: object
+          properties:
+            startOfYear:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            endOfYear:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            change:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        monthlyBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                format: date
+              income:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              expenses:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              savings:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              savingsRate:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    CustomReportRequest:
+      type: object
+      required:
+        - reportType
+        - parameters
+      properties:
+        reportType:
+          type: string
+          enum: [cash_flow, spending_analysis, budget_performance, income_analysis, custom_query]
+        parameters:
+          type: object
+          properties:
+            fromDate:
+              type: string
+              format: date
+            toDate:
+              type: string
+              format: date
+            groupBy:
+              type: string
+              enum: [day, week, month, quarter, year]
+            filters:
+              type: object
+              additionalProperties: true
+            metrics:
+              type: array
+              items:
+                type: string
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+
+    CustomReportResponse:
+      type: object
+      properties:
+        reportId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        generatedAt:
+          type: string
+          format: date-time
+        data:
+          type: object
+          additionalProperties: true
+          description: Report data structure varies by report type
+
+    ExportReportRequest:
+      type: object
+      required:
+        - reportType
+        - format
+        - parameters
+      properties:
+        reportType:
+          type: string
+          enum: [cash_flow, spending_analysis, budget_performance, income_analysis, monthly_summary, annual_summary]
+        format:
+          type: string
+          enum: [csv, xlsx, pdf]
+        parameters:
+          type: object
+          additionalProperties: true
+        includeCharts:
+          type: boolean
+          default: true
+          description: Include charts in PDF exports
+        email:
+          type: string
+          format: email
+          description: Email address to send export to
+
+    ExportReportResponse:
+      type: object
+      properties:
+        exportId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        downloadUrl:
+          type: string
+          nullable: true
+        estimatedCompletionTime:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    ScheduledReportListResponse:
+      type: object
+      properties:
+        scheduledReports:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduledReportSummary'
+
+    ScheduledReportSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        reportType:
+          type: string
+        frequency:
+          type: string
+          enum: [weekly, monthly, quarterly, annually]
+        isActive:
+          type: boolean
+        lastGenerated:
+          type: string
+          format: date-time
+          nullable: true
+        nextGeneration:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateScheduledReportRequest:
+      type: object
+      required:
+        - name
+        - reportType
+        - frequency
+        - parameters
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        reportType:
+          type: string
+          enum: [cash_flow, spending_analysis, budget_performance, income_analysis, monthly_summary]
+        frequency:
+          type: string
+          enum: [weekly, monthly, quarterly, annually]
+        parameters:
+          type: object
+          additionalProperties: true
+        deliverySettings:
+          type: object
+          properties:
+            emailAddresses:
+              type: array
+              items:
+                type: string
+                format: email
+            format:
+              type: string
+              enum: [pdf, xlsx]
+              default: pdf
+            includeCharts:
+              type: boolean
+              default: true
+
+    UpdateScheduledReportRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        frequency:
+          type: string
+          enum: [weekly, monthly, quarterly, annually]
+        parameters:
+          type: object
+          additionalProperties: true
+        deliverySettings:
+          type: object
+          additionalProperties: true
+        isActive:
+          type: boolean
+
+    ScheduledReportResponse:
+      allOf:
+        - $ref: '#/components/schemas/ScheduledReportSummary'
+        - type: object
+          properties:
+            parameters:
+              type: object
+              additionalProperties: true
+            deliverySettings:
+              type: object
+              additionalProperties: true
+            updatedAt:
+              type: string
+              format: date-time
+
+    ScheduledReportDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/ScheduledReportResponse'
+        - type: object
+          properties:
+            generationHistory:
+              type: array
+              items:
+                type: object
+                properties:
+                  generatedAt:
+                    type: string
+                    format: date-time
+                  status:
+                    type: string
+                    enum: [success, failed]
+                  downloadUrl:
+                    type: string
+                    nullable: true
+                  error:
+                    type: string
+                    nullable: true
+
+    DashboardAnalyticsResponse:
+      type: object
+      properties:
+        currentPeriod:
+          type: object
+          properties:
+            totalIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalExpenses:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            netCashFlow:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            savingsRate:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            budgetUtilization:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        trends:
+          type: object
+          properties:
+            incomeGrowth:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            expenseGrowth:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            savingsGrowth:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        alerts:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [budget_exceeded, low_savings, unusual_spending, payment_due]
+              severity:
+                type: string
+                enum: [info, warning, critical]
+              message:
+                type: string
+              amount:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+                nullable: true
+        upcomingEvents:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [income, payment, bill_due]
+              name:
+                type: string
+              amount:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              date:
+                type: string
+                format: date
+
+    FinancialTrendsResponse:
+      type: object
+      properties:
+        trends:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                    value:
+                      type: number
+                      format: decimal
+                      multipleOf: 0.01
+              trend:
+                type: string
+                enum: [increasing, decreasing, stable, volatile]
+              changeRate:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+                description: Percentage change over period
+
+    FinancialInsightsResponse:
+      type: object
+      properties:
+        insights:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              type:
+                type: string
+                enum: [spending_pattern, savings_opportunity, budget_optimization, income_growth]
+              title:
+                type: string
+              description:
+                type: string
+              priority:
+                type: string
+                enum: [low, medium, high]
+              potentialSavings:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+                nullable: true
+              actionable:
+                type: boolean
+              createdAt:
+                type: string
+                format: date-time
+        summary:
+          type: object
+          properties:
+            totalInsights:
+              type: integer
+            highPriorityCount:
+              type: integer
+            potentialMonthlySavings:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+
+    DateRange:
+      type: object
+      properties:
+        fromDate:
+          type: string
+          format: date
+        toDate:
+          type: string
+          format: date
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

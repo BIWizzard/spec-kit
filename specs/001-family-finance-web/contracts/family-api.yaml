@@ -1,0 +1,808 @@
+openapi: 3.0.3
+info:
+  title: Family Finance - Family Management API
+  description: Family and member management endpoints for family finance application
+  version: 1.0.0
+  contact:
+    name: Family Finance API Team
+    email: api@familyfinance.com
+
+servers:
+  - url: https://api.familyfinance.com/v1
+    description: Production server
+  - url: https://staging-api.familyfinance.com/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /families:
+    get:
+      summary: Get family details
+      description: Get current family information and settings
+      tags:
+        - Family Management
+      responses:
+        '200':
+          description: Family information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update family details
+      description: Update family name and settings (admin only)
+      tags:
+        - Family Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFamilyRequest'
+      responses:
+        '200':
+          description: Family updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /families/members:
+    get:
+      summary: List family members
+      description: Get list of all family members with their roles and permissions
+      tags:
+        - Member Management
+      parameters:
+        - name: includeDeleted
+          in: query
+          description: Include soft-deleted members
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Family members retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberListResponse'
+
+    post:
+      summary: Invite new family member
+      description: Send invitation to new family member via email (admin only)
+      tags:
+        - Member Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteMemberRequest'
+      responses:
+        '201':
+          description: Invitation sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Member already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /families/members/{memberId}:
+    get:
+      summary: Get member details
+      description: Get specific family member information
+      tags:
+        - Member Management
+      parameters:
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Member information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+        '404':
+          description: Member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update member details
+      description: Update member role and permissions (admin only, or self for limited fields)
+      tags:
+        - Member Management
+      parameters:
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberRequest'
+      responses:
+        '200':
+          description: Member updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove family member
+      description: Soft delete family member (admin only, cannot delete self)
+      tags:
+        - Member Management
+      parameters:
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Member removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Cannot delete self or last admin
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /families/invitations:
+    get:
+      summary: List pending invitations
+      description: Get list of pending family invitations (admin only)
+      tags:
+        - Invitations
+      responses:
+        '200':
+          description: Invitations retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationListResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /families/invitations/{invitationId}:
+    get:
+      summary: Get invitation details
+      description: Get invitation details by token (public endpoint for invited user)
+      tags:
+        - Invitations
+      security: []
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Invitation details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationDetailsResponse'
+        '404':
+          description: Invitation not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Cancel invitation
+      description: Cancel pending invitation (admin only)
+      tags:
+        - Invitations
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Invitation cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invitation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /families/invitations/{invitationId}/accept:
+    post:
+      summary: Accept family invitation
+      description: Accept invitation and create family member account
+      tags:
+        - Invitations
+      security: []
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptInvitationRequest'
+      responses:
+        '201':
+          description: Invitation accepted, member created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptInvitationResponse'
+        '400':
+          description: Invalid request data or expired invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /families/invitations/{invitationId}/resend:
+    post:
+      summary: Resend invitation email
+      description: Resend invitation email (admin only)
+      tags:
+        - Invitations
+      parameters:
+        - name: invitationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Invitation email resent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Invitation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /families/activity:
+    get:
+      summary: Get family activity log
+      description: Get recent family activity and audit log
+      tags:
+        - Activity
+      parameters:
+        - name: limit
+          in: query
+          description: Number of activities to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of activities to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: memberId
+          in: query
+          description: Filter by specific member
+          schema:
+            type: string
+            format: uuid
+        - name: action
+          in: query
+          description: Filter by action type
+          schema:
+            type: string
+            enum: [create, update, delete, login, logout, sync]
+        - name: fromDate
+          in: query
+          description: Filter activities from date
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: Filter activities to date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Activity log retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityListResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    FamilyResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        settings:
+          $ref: '#/components/schemas/FamilySettings'
+        subscriptionStatus:
+          type: string
+          enum: [trial, active, suspended, cancelled]
+        memberCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UpdateFamilyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        settings:
+          $ref: '#/components/schemas/FamilySettings'
+
+    FamilySettings:
+      type: object
+      properties:
+        timezone:
+          type: string
+          description: IANA timezone identifier
+          example: America/New_York
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+          description: ISO 4217 currency code
+          example: USD
+        fiscalYearStart:
+          type: integer
+          minimum: 1
+          maximum: 12
+          description: Month number when fiscal year starts
+          example: 1
+
+    MemberListResponse:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberSummary'
+        total:
+          type: integer
+
+    MemberSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+        status:
+          type: string
+          enum: [active, inactive, deleted]
+        lastLoginAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    MemberResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+        permissions:
+          $ref: '#/components/schemas/MemberPermissions'
+        mfaEnabled:
+          type: boolean
+        emailVerified:
+          type: boolean
+        lastLoginAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    MemberPermissions:
+      type: object
+      properties:
+        canManageBankAccounts:
+          type: boolean
+        canEditPayments:
+          type: boolean
+        canViewReports:
+          type: boolean
+        canManageFamily:
+          type: boolean
+
+    InviteMemberRequest:
+      type: object
+      required:
+        - email
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+          default: viewer
+        permissions:
+          $ref: '#/components/schemas/MemberPermissions'
+        message:
+          type: string
+          maxLength: 500
+          description: Optional personal message to include in invitation
+
+    UpdateMemberRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+          description: Admin only field
+        permissions:
+          $ref: '#/components/schemas/MemberPermissions'
+          description: Admin only field
+
+    InvitationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+        expiresAt:
+          type: string
+          format: date-time
+        message:
+          type: string
+
+    InvitationListResponse:
+      type: object
+      properties:
+        invitations:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvitationSummary'
+        total:
+          type: integer
+
+    InvitationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+        status:
+          type: string
+          enum: [pending, accepted, expired, cancelled]
+        invitedBy:
+          type: string
+          description: Name of member who sent invitation
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+
+    InvitationDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        familyName:
+          type: string
+        role:
+          type: string
+          enum: [admin, editor, viewer]
+        invitedBy:
+          type: string
+        message:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+
+    AcceptInvitationRequest:
+      type: object
+      required:
+        - password
+        - firstName
+        - lastName
+      properties:
+        password:
+          type: string
+          minLength: 12
+          maxLength: 128
+          description: Must contain uppercase, lowercase, number, and special character
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    AcceptInvitationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        member:
+          $ref: '#/components/schemas/MemberResponse'
+        family:
+          $ref: '#/components/schemas/FamilyResponse'
+        tokens:
+          $ref: '#/components/schemas/TokenPair'
+
+    TokenPair:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          description: Access token expiration in seconds
+        tokenType:
+          type: string
+          enum: [Bearer]
+
+    ActivityListResponse:
+      type: object
+      properties:
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityEntry'
+        total:
+          type: integer
+        hasMore:
+          type: boolean
+
+    ActivityEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        action:
+          type: string
+          enum: [create, update, delete, login, logout, sync]
+        entityType:
+          type: string
+          description: Type of entity that was acted upon
+        entityId:
+          type: string
+          format: uuid
+        memberName:
+          type: string
+          description: Name of member who performed the action
+        description:
+          type: string
+          description: Human-readable description of the action
+        ipAddress:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

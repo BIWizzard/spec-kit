@@ -1,0 +1,854 @@
+openapi: 3.0.3
+info:
+  title: Family Finance - Income Management API
+  description: Income event management endpoints for family finance application
+  version: 1.0.0
+  contact:
+    name: Family Finance API Team
+    email: api@familyfinance.com
+
+servers:
+  - url: https://api.familyfinance.com/v1
+    description: Production server
+  - url: https://staging-api.familyfinance.com/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /income-events:
+    get:
+      summary: List income events
+      description: Get paginated list of income events with filtering options
+      tags:
+        - Income Events
+      parameters:
+        - name: limit
+          in: query
+          description: Number of income events to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of income events to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: status
+          in: query
+          description: Filter by income status
+          schema:
+            type: string
+            enum: [scheduled, received, cancelled]
+        - name: frequency
+          in: query
+          description: Filter by recurrence frequency
+          schema:
+            type: string
+            enum: [once, weekly, biweekly, monthly, quarterly, annual]
+        - name: fromDate
+          in: query
+          description: Filter income events from date (scheduled date)
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: Filter income events to date (scheduled date)
+          schema:
+            type: string
+            format: date
+        - name: sortBy
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [scheduledDate, amount, name, createdAt]
+            default: scheduledDate
+        - name: sortOrder
+          in: query
+          description: Sort direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Income events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeEventListResponse'
+
+    post:
+      summary: Create income event
+      description: Create a new income event (one-time or recurring)
+      tags:
+        - Income Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIncomeEventRequest'
+      responses:
+        '201':
+          description: Income event created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeEventResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /income-events/{incomeEventId}:
+    get:
+      summary: Get income event details
+      description: Get specific income event with attribution details
+      tags:
+        - Income Events
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Income event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeEventDetailResponse'
+        '404':
+          description: Income event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update income event
+      description: Update income event details (affects future occurrences for recurring events)
+      tags:
+        - Income Events
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIncomeEventRequest'
+      responses:
+        '200':
+          description: Income event updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeEventResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Income event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete income event
+      description: Delete income event (cancels future occurrences for recurring events)
+      tags:
+        - Income Events
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deleteAll
+          in: query
+          description: For recurring events, delete all future occurrences
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Income event deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Cannot delete income event with active attributions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Income event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /income-events/{incomeEventId}/mark-received:
+    post:
+      summary: Mark income event as received
+      description: Mark scheduled income event as received with actual amount and date
+      tags:
+        - Income Events
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkReceivedRequest'
+      responses:
+        '200':
+          description: Income event marked as received successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeEventResponse'
+        '400':
+          description: Invalid request data or income already received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Income event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /income-events/{incomeEventId}/revert-received:
+    post:
+      summary: Revert received income event
+      description: Revert income event back to scheduled status
+      tags:
+        - Income Events
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Income event reverted to scheduled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeEventResponse'
+        '400':
+          description: Cannot revert income with active attributions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Income event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /income-events/{incomeEventId}/attributions:
+    get:
+      summary: Get income event attributions
+      description: Get list of payment attributions for this income event
+      tags:
+        - Payment Attribution
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Attributions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributionListResponse'
+        '404':
+          description: Income event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /income-events/upcoming:
+    get:
+      summary: Get upcoming income events
+      description: Get income events scheduled in the near future
+      tags:
+        - Income Events
+      parameters:
+        - name: days
+          in: query
+          description: Number of days ahead to look for upcoming income
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 365
+            default: 30
+      responses:
+        '200':
+          description: Upcoming income events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpcomingIncomeResponse'
+
+  /income-events/summary:
+    get:
+      summary: Get income summary
+      description: Get income summary statistics for a date range
+      tags:
+        - Income Events
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for summary
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for summary
+          schema:
+            type: string
+            format: date
+        - name: groupBy
+          in: query
+          description: Group summary by time period
+          schema:
+            type: string
+            enum: [day, week, month, quarter, year]
+            default: month
+      responses:
+        '200':
+          description: Income summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeSummaryResponse'
+
+  /income-events/bulk:
+    post:
+      summary: Create multiple income events
+      description: Create multiple income events in a single request
+      tags:
+        - Income Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreateIncomeRequest'
+      responses:
+        '201':
+          description: Income events created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkCreateIncomeResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    IncomeEventListResponse:
+      type: object
+      properties:
+        incomeEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomeEventSummary'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        summary:
+          $ref: '#/components/schemas/IncomeListSummary'
+
+    IncomeEventSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        scheduledDate:
+          type: string
+          format: date
+        actualDate:
+          type: string
+          format: date
+          nullable: true
+        actualAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          nullable: true
+        frequency:
+          type: string
+          enum: [once, weekly, biweekly, monthly, quarterly, annual]
+        status:
+          type: string
+          enum: [scheduled, received, cancelled]
+        allocatedAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        remainingAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        nextOccurrence:
+          type: string
+          format: date
+          nullable: true
+        source:
+          type: string
+          nullable: true
+
+    IncomeEventResponse:
+      allOf:
+        - $ref: '#/components/schemas/IncomeEventSummary'
+        - type: object
+          properties:
+            notes:
+              type: string
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    IncomeEventDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/IncomeEventResponse'
+        - type: object
+          properties:
+            attributions:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentAttribution'
+            budgetAllocations:
+              type: array
+              items:
+                $ref: '#/components/schemas/BudgetAllocation'
+
+    CreateIncomeEventRequest:
+      type: object
+      required:
+        - name
+        - amount
+        - scheduledDate
+        - frequency
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Bi-weekly Paycheck"
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 999999.99
+        scheduledDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [once, weekly, biweekly, monthly, quarterly, annual]
+        source:
+          type: string
+          maxLength: 255
+          nullable: true
+          example: "ABC Company"
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+        autoBudgetAllocation:
+          type: boolean
+          default: true
+          description: Automatically allocate income to budget categories
+
+    UpdateIncomeEventRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 999999.99
+        scheduledDate:
+          type: string
+          format: date
+        frequency:
+          type: string
+          enum: [once, weekly, biweekly, monthly, quarterly, annual]
+        source:
+          type: string
+          maxLength: 255
+          nullable: true
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+        updateFutureOccurrences:
+          type: boolean
+          default: false
+          description: For recurring events, update all future occurrences
+
+    MarkReceivedRequest:
+      type: object
+      required:
+        - actualDate
+      properties:
+        actualDate:
+          type: string
+          format: date
+        actualAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 999999.99
+          description: If not provided, uses scheduled amount
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+
+    PaymentAttribution:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        paymentId:
+          type: string
+          format: uuid
+        paymentName:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        attributionType:
+          type: string
+          enum: [manual, automatic]
+        createdAt:
+          type: string
+          format: date-time
+        createdByName:
+          type: string
+
+    BudgetAllocation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        budgetCategoryId:
+          type: string
+          format: uuid
+        budgetCategoryName:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        percentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0
+          maximum: 100
+        createdAt:
+          type: string
+          format: date-time
+
+    AttributionListResponse:
+      type: object
+      properties:
+        attributions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAttribution'
+        totalAttributed:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        remainingAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    UpcomingIncomeResponse:
+      type: object
+      properties:
+        upcomingIncome:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomeEventSummary'
+        totalUpcoming:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        dateRange:
+          type: object
+          properties:
+            fromDate:
+              type: string
+              format: date
+            toDate:
+              type: string
+              format: date
+
+    IncomeSummaryResponse:
+      type: object
+      properties:
+        summaryPeriods:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomeSummaryPeriod'
+        totals:
+          $ref: '#/components/schemas/IncomeTotals'
+        dateRange:
+          type: object
+          properties:
+            fromDate:
+              type: string
+              format: date
+            toDate:
+              type: string
+              format: date
+
+    IncomeSummaryPeriod:
+      type: object
+      properties:
+        period:
+          type: string
+          description: Period identifier (e.g., "2024-01" for monthly)
+        periodStart:
+          type: string
+          format: date
+        periodEnd:
+          type: string
+          format: date
+        scheduledIncome:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        actualIncome:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        incomeCount:
+          type: integer
+        variance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          description: Actual - Scheduled
+
+    IncomeTotals:
+      type: object
+      properties:
+        totalScheduled:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalActual:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalVariance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalAllocated:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalRemaining:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    IncomeListSummary:
+      type: object
+      properties:
+        totalScheduled:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalReceived:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalAllocated:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalRemaining:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    BulkCreateIncomeRequest:
+      type: object
+      required:
+        - incomeEvents
+      properties:
+        incomeEvents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateIncomeEventRequest'
+          minItems: 1
+          maxItems: 50
+
+    BulkCreateIncomeResponse:
+      type: object
+      properties:
+        created:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomeEventResponse'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkOperationError'
+        summary:
+          type: object
+          properties:
+            totalRequested:
+              type: integer
+            totalCreated:
+              type: integer
+            totalErrors:
+              type: integer
+
+    BulkOperationError:
+      type: object
+      properties:
+        index:
+          type: integer
+          description: Index in the original request array
+        error:
+          type: string
+        message:
+          type: string
+
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        hasMore:
+          type: boolean
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

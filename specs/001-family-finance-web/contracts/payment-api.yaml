@@ -1,0 +1,1316 @@
+openapi: 3.0.3
+info:
+  title: Family Finance - Payment Management API
+  description: Payment and bill management endpoints for family finance application
+  version: 1.0.0
+  contact:
+    name: Family Finance API Team
+    email: api@familyfinance.com
+
+servers:
+  - url: https://api.familyfinance.com/v1
+    description: Production server
+  - url: https://staging-api.familyfinance.com/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /payments:
+    get:
+      summary: List payments
+      description: Get paginated list of payments with filtering options
+      tags:
+        - Payments
+      parameters:
+        - name: limit
+          in: query
+          description: Number of payments to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of payments to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: status
+          in: query
+          description: Filter by payment status
+          schema:
+            type: string
+            enum: [scheduled, paid, overdue, cancelled, partial]
+        - name: paymentType
+          in: query
+          description: Filter by payment type
+          schema:
+            type: string
+            enum: [once, recurring, variable]
+        - name: spendingCategoryId
+          in: query
+          description: Filter by spending category
+          schema:
+            type: string
+            format: uuid
+        - name: fromDueDate
+          in: query
+          description: Filter payments from due date
+          schema:
+            type: string
+            format: date
+        - name: toDueDate
+          in: query
+          description: Filter payments to due date
+          schema:
+            type: string
+            format: date
+        - name: sortBy
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [dueDate, amount, payee, status, createdAt]
+            default: dueDate
+        - name: sortOrder
+          in: query
+          description: Sort direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+      responses:
+        '200':
+          description: Payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentListResponse'
+
+    post:
+      summary: Create payment
+      description: Create a new payment (one-time, recurring, or variable)
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequest'
+      responses:
+        '201':
+          description: Payment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}:
+    get:
+      summary: Get payment details
+      description: Get specific payment with attribution details
+      tags:
+        - Payments
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentDetailResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update payment
+      description: Update payment details (affects future occurrences for recurring payments)
+      tags:
+        - Payments
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePaymentRequest'
+      responses:
+        '200':
+          description: Payment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete payment
+      description: Delete payment (cancels future occurrences for recurring payments)
+      tags:
+        - Payments
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: deleteAll
+          in: query
+          description: For recurring payments, delete all future occurrences
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Payment deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}/mark-paid:
+    post:
+      summary: Mark payment as paid
+      description: Mark scheduled payment as paid with actual amount and date
+      tags:
+        - Payments
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkPaidRequest'
+      responses:
+        '200':
+          description: Payment marked as paid successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid request data or payment already paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}/revert-paid:
+    post:
+      summary: Revert paid payment
+      description: Revert payment back to scheduled status
+      tags:
+        - Payments
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment reverted to scheduled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}/attributions:
+    get:
+      summary: Get payment attributions
+      description: Get list of income event attributions for this payment
+      tags:
+        - Payment Attribution
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Attributions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentAttributionListResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create payment attribution
+      description: Attribute payment to one or more income events
+      tags:
+        - Payment Attribution
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAttributionRequest'
+      responses:
+        '201':
+          description: Attribution created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributionResponse'
+        '400':
+          description: Invalid request data or insufficient income balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}/attributions/{attributionId}:
+    put:
+      summary: Update payment attribution
+      description: Update attribution amount between payment and income event
+      tags:
+        - Payment Attribution
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: attributionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAttributionRequest'
+      responses:
+        '200':
+          description: Attribution updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttributionResponse'
+        '400':
+          description: Invalid request data or insufficient income balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Attribution not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove payment attribution
+      description: Remove attribution between payment and income event
+      tags:
+        - Payment Attribution
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: attributionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Attribution removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: Attribution not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/{paymentId}/auto-attribute:
+    post:
+      summary: Auto-attribute payment
+      description: Automatically attribute payment to available income events
+      tags:
+        - Payment Attribution
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutoAttributeRequest'
+      responses:
+        '200':
+          description: Payment attributed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutoAttributeResponse'
+        '400':
+          description: Insufficient available income for attribution
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payments/upcoming:
+    get:
+      summary: Get upcoming payments
+      description: Get payments due in the near future
+      tags:
+        - Payments
+      parameters:
+        - name: days
+          in: query
+          description: Number of days ahead to look for upcoming payments
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 365
+            default: 30
+        - name: includeOverdue
+          in: query
+          description: Include overdue payments
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Upcoming payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpcomingPaymentsResponse'
+
+  /payments/overdue:
+    get:
+      summary: Get overdue payments
+      description: Get payments that are past due
+      tags:
+        - Payments
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: Overdue payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OverduePaymentsResponse'
+
+  /payments/summary:
+    get:
+      summary: Get payments summary
+      description: Get payment summary statistics for a date range
+      tags:
+        - Payments
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for summary
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for summary
+          schema:
+            type: string
+            format: date
+        - name: groupBy
+          in: query
+          description: Group summary by time period
+          schema:
+            type: string
+            enum: [day, week, month, quarter, year]
+            default: month
+      responses:
+        '200':
+          description: Payment summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentSummaryResponse'
+
+  /payments/bulk:
+    post:
+      summary: Create multiple payments
+      description: Create multiple payments in a single request
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkCreatePaymentRequest'
+      responses:
+        '201':
+          description: Payments created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BulkCreatePaymentResponse'
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /spending-categories:
+    get:
+      summary: List spending categories
+      description: Get list of spending categories for payment categorization
+      tags:
+        - Spending Categories
+      parameters:
+        - name: includeInactive
+          in: query
+          description: Include inactive categories
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Spending categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpendingCategoryListResponse'
+
+    post:
+      summary: Create spending category
+      description: Create a new spending category
+      tags:
+        - Spending Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSpendingCategoryRequest'
+      responses:
+        '201':
+          description: Spending category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpendingCategoryResponse'
+
+  /spending-categories/{categoryId}:
+    put:
+      summary: Update spending category
+      description: Update spending category details
+      tags:
+        - Spending Categories
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSpendingCategoryRequest'
+      responses:
+        '200':
+          description: Spending category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpendingCategoryResponse'
+
+    delete:
+      summary: Delete spending category
+      description: Deactivate spending category (soft delete)
+      tags:
+        - Spending Categories
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Spending category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    PaymentListResponse:
+      type: object
+      properties:
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        summary:
+          $ref: '#/components/schemas/PaymentListSummary'
+
+    PaymentSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        payee:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        dueDate:
+          type: string
+          format: date
+        paidDate:
+          type: string
+          format: date
+          nullable: true
+        paidAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          nullable: true
+        paymentType:
+          type: string
+          enum: [once, recurring, variable]
+        frequency:
+          type: string
+          enum: [once, weekly, biweekly, monthly, quarterly, annual]
+          nullable: true
+        status:
+          type: string
+          enum: [scheduled, paid, overdue, cancelled, partial]
+        spendingCategory:
+          $ref: '#/components/schemas/SpendingCategorySummary'
+        autoPayEnabled:
+          type: boolean
+        attributedAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        remainingAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        nextDueDate:
+          type: string
+          format: date
+          nullable: true
+
+    PaymentResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaymentSummary'
+        - type: object
+          properties:
+            notes:
+              type: string
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
+
+    PaymentDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaymentResponse'
+        - type: object
+          properties:
+            attributions:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncomeAttribution'
+
+    CreatePaymentRequest:
+      type: object
+      required:
+        - payee
+        - amount
+        - dueDate
+        - paymentType
+        - spendingCategoryId
+      properties:
+        payee:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: "Electric Company"
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 999999.99
+        dueDate:
+          type: string
+          format: date
+        paymentType:
+          type: string
+          enum: [once, recurring, variable]
+        frequency:
+          type: string
+          enum: [weekly, biweekly, monthly, quarterly, annual]
+          description: Required if paymentType is recurring or variable
+        spendingCategoryId:
+          type: string
+          format: uuid
+        autoPayEnabled:
+          type: boolean
+          default: false
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+        autoAttribute:
+          type: boolean
+          default: true
+          description: Automatically attribute to available income events
+
+    UpdatePaymentRequest:
+      type: object
+      properties:
+        payee:
+          type: string
+          minLength: 1
+          maxLength: 255
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 999999.99
+        dueDate:
+          type: string
+          format: date
+        paymentType:
+          type: string
+          enum: [once, recurring, variable]
+        frequency:
+          type: string
+          enum: [weekly, biweekly, monthly, quarterly, annual]
+        spendingCategoryId:
+          type: string
+          format: uuid
+        autoPayEnabled:
+          type: boolean
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+        updateFutureOccurrences:
+          type: boolean
+          default: false
+          description: For recurring payments, update all future occurrences
+
+    MarkPaidRequest:
+      type: object
+      required:
+        - paidDate
+      properties:
+        paidDate:
+          type: string
+          format: date
+        paidAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 999999.99
+          description: If not provided, uses scheduled amount
+        notes:
+          type: string
+          maxLength: 1000
+          nullable: true
+
+    IncomeAttribution:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        incomeEventId:
+          type: string
+          format: uuid
+        incomeEventName:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        attributionType:
+          type: string
+          enum: [manual, automatic]
+        createdAt:
+          type: string
+          format: date-time
+        createdByName:
+          type: string
+
+    PaymentAttributionListResponse:
+      type: object
+      properties:
+        attributions:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomeAttribution'
+        totalAttributed:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        remainingAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    CreateAttributionRequest:
+      type: object
+      required:
+        - incomeEventId
+        - amount
+      properties:
+        incomeEventId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          description: Amount to attribute from income event to payment
+
+    UpdateAttributionRequest:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+
+    AttributionResponse:
+      type: object
+      properties:
+        attribution:
+          $ref: '#/components/schemas/IncomeAttribution'
+        payment:
+          type: object
+          properties:
+            totalAttributed:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            remainingAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+        incomeEvent:
+          type: object
+          properties:
+            remainingAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+
+    AutoAttributeRequest:
+      type: object
+      properties:
+        strategy:
+          type: string
+          enum: [earliest_income, latest_income, proportional]
+          default: earliest_income
+          description: Strategy for automatic attribution
+        preferredIncomeEventIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Preferred income events to use for attribution
+
+    AutoAttributeResponse:
+      type: object
+      properties:
+        attributions:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomeAttribution'
+        totalAttributed:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        remainingAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    UpcomingPaymentsResponse:
+      type: object
+      properties:
+        upcomingPayments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
+        totalUpcoming:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        overduePayments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
+        totalOverdue:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        dateRange:
+          type: object
+          properties:
+            fromDate:
+              type: string
+              format: date
+            toDate:
+              type: string
+              format: date
+
+    OverduePaymentsResponse:
+      type: object
+      properties:
+        overduePayments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummary'
+        totalOverdue:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        overdueCount:
+          type: integer
+
+    PaymentSummaryResponse:
+      type: object
+      properties:
+        summaryPeriods:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentSummaryPeriod'
+        totals:
+          $ref: '#/components/schemas/PaymentTotals'
+        dateRange:
+          type: object
+          properties:
+            fromDate:
+              type: string
+              format: date
+            toDate:
+              type: string
+              format: date
+
+    PaymentSummaryPeriod:
+      type: object
+      properties:
+        period:
+          type: string
+          description: Period identifier (e.g., "2024-01" for monthly)
+        periodStart:
+          type: string
+          format: date
+        periodEnd:
+          type: string
+          format: date
+        scheduledPayments:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        actualPayments:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        paymentCount:
+          type: integer
+        categoryBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              categoryName:
+                type: string
+              amount:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    PaymentTotals:
+      type: object
+      properties:
+        totalScheduled:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalPaid:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalAttributed:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalRemaining:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    PaymentListSummary:
+      type: object
+      properties:
+        totalScheduled:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalPaid:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalOverdue:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalAttributed:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    BulkCreatePaymentRequest:
+      type: object
+      required:
+        - payments
+      properties:
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatePaymentRequest'
+          minItems: 1
+          maxItems: 50
+
+    BulkCreatePaymentResponse:
+      type: object
+      properties:
+        created:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentResponse'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/BulkOperationError'
+        summary:
+          type: object
+          properties:
+            totalRequested:
+              type: integer
+            totalCreated:
+              type: integer
+            totalErrors:
+              type: integer
+
+    SpendingCategoryListResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpendingCategoryResponse'
+
+    SpendingCategorySummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+        icon:
+          type: string
+
+    SpendingCategoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        parentCategoryId:
+          type: string
+          format: uuid
+          nullable: true
+        budgetCategoryId:
+          type: string
+          format: uuid
+        icon:
+          type: string
+        color:
+          type: string
+        monthlyTarget:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateSpendingCategoryRequest:
+      type: object
+      required:
+        - name
+        - budgetCategoryId
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        parentCategoryId:
+          type: string
+          format: uuid
+          nullable: true
+        budgetCategoryId:
+          type: string
+          format: uuid
+        icon:
+          type: string
+          maxLength: 50
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        monthlyTarget:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0
+          nullable: true
+
+    UpdateSpendingCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        parentCategoryId:
+          type: string
+          format: uuid
+          nullable: true
+        budgetCategoryId:
+          type: string
+          format: uuid
+        icon:
+          type: string
+          maxLength: 50
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        monthlyTarget:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0
+          nullable: true
+        isActive:
+          type: boolean
+
+    BulkOperationError:
+      type: object
+      properties:
+        index:
+          type: integer
+          description: Index in the original request array
+        error:
+          type: string
+        message:
+          type: string
+
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        hasMore:
+          type: boolean
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true

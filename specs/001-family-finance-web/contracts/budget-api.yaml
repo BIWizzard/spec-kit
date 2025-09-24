@@ -1,0 +1,1227 @@
+openapi: 3.0.3
+info:
+  title: Family Finance - Budget Management API
+  description: Budget categories and allocations endpoints for family finance application
+  version: 1.0.0
+  contact:
+    name: Family Finance API Team
+    email: api@familyfinance.com
+
+servers:
+  - url: https://api.familyfinance.com/v1
+    description: Production server
+  - url: https://staging-api.familyfinance.com/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /budget-categories:
+    get:
+      summary: List budget categories
+      description: Get list of budget categories with current allocations
+      tags:
+        - Budget Categories
+      parameters:
+        - name: includeInactive
+          in: query
+          description: Include inactive categories
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Budget categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetCategoryListResponse'
+
+    post:
+      summary: Create budget category
+      description: Create a new budget category
+      tags:
+        - Budget Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetCategoryRequest'
+      responses:
+        '201':
+          description: Budget category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetCategoryResponse'
+        '400':
+          description: Invalid request data or percentage validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /budget-categories/{categoryId}:
+    get:
+      summary: Get budget category details
+      description: Get specific budget category with allocation history
+      tags:
+        - Budget Categories
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Budget category retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetCategoryDetailResponse'
+        '404':
+          description: Budget category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update budget category
+      description: Update budget category details and percentage allocation
+      tags:
+        - Budget Categories
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetCategoryRequest'
+      responses:
+        '200':
+          description: Budget category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetCategoryResponse'
+        '400':
+          description: Invalid request data or percentage validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Budget category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete budget category
+      description: Deactivate budget category (soft delete, requires reassignment of allocations)
+      tags:
+        - Budget Categories
+      parameters:
+        - name: categoryId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Budget category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Cannot delete category with active allocations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Budget category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /budget-categories/validate-percentages:
+    post:
+      summary: Validate budget percentages
+      description: Validate that budget category percentages sum to 100%
+      tags:
+        - Budget Categories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidatePercentagesRequest'
+      responses:
+        '200':
+          description: Percentages validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatePercentagesResponse'
+
+  /budget-allocations:
+    get:
+      summary: List budget allocations
+      description: Get budget allocations for income events with filtering options
+      tags:
+        - Budget Allocations
+      parameters:
+        - name: limit
+          in: query
+          description: Number of allocations to return
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          description: Number of allocations to skip
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: incomeEventId
+          in: query
+          description: Filter by specific income event
+          schema:
+            type: string
+            format: uuid
+        - name: budgetCategoryId
+          in: query
+          description: Filter by specific budget category
+          schema:
+            type: string
+            format: uuid
+        - name: fromDate
+          in: query
+          description: Filter allocations from income event date
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: Filter allocations to income event date
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Budget allocations retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetAllocationListResponse'
+
+  /budget-allocations/{incomeEventId}/generate:
+    post:
+      summary: Generate budget allocations for income event
+      description: Automatically generate budget allocations for an income event based on category percentages
+      tags:
+        - Budget Allocations
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Budget allocations generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateAllocationsResponse'
+        '400':
+          description: Income event not found or allocations already exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /budget-allocations/{allocationId}:
+    get:
+      summary: Get budget allocation details
+      description: Get specific budget allocation details
+      tags:
+        - Budget Allocations
+      parameters:
+        - name: allocationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Budget allocation retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetAllocationResponse'
+        '404':
+          description: Budget allocation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update budget allocation
+      description: Update budget allocation amount or percentage
+      tags:
+        - Budget Allocations
+      parameters:
+        - name: allocationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetAllocationRequest'
+      responses:
+        '200':
+          description: Budget allocation updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetAllocationResponse'
+        '400':
+          description: Invalid request data or allocation exceeds income amount
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Budget allocation not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /budget-allocations/{incomeEventId}/summary:
+    get:
+      summary: Get budget allocation summary for income event
+      description: Get summary of all budget allocations for a specific income event
+      tags:
+        - Budget Allocations
+      parameters:
+        - name: incomeEventId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Budget allocation summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeEventBudgetSummaryResponse'
+        '404':
+          description: Income event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /budget/overview:
+    get:
+      summary: Get budget overview
+      description: Get overall budget status and performance for a date range
+      tags:
+        - Budget Overview
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for budget overview
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for budget overview
+          schema:
+            type: string
+            format: date
+        - name: groupBy
+          in: query
+          description: Group overview by time period
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            default: month
+      responses:
+        '200':
+          description: Budget overview retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetOverviewResponse'
+
+  /budget/performance:
+    get:
+      summary: Get budget performance metrics
+      description: Get detailed budget vs actual spending analysis
+      tags:
+        - Budget Overview
+      parameters:
+        - name: fromDate
+          in: query
+          required: true
+          description: Start date for performance analysis
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          required: true
+          description: End date for performance analysis
+          schema:
+            type: string
+            format: date
+        - name: categoryId
+          in: query
+          description: Filter by specific budget category
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Budget performance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetPerformanceResponse'
+
+  /budget/projections:
+    get:
+      summary: Get budget projections
+      description: Get projected budget allocations based on upcoming income events
+      tags:
+        - Budget Overview
+      parameters:
+        - name: months
+          in: query
+          description: Number of months ahead to project
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+            default: 3
+      responses:
+        '200':
+          description: Budget projections retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetProjectionsResponse'
+
+  /budget/templates:
+    get:
+      summary: List budget templates
+      description: Get list of predefined budget category templates
+      tags:
+        - Budget Templates
+      responses:
+        '200':
+          description: Budget templates retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetTemplateListResponse'
+
+    post:
+      summary: Apply budget template
+      description: Apply a budget template to create default budget categories
+      tags:
+        - Budget Templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyBudgetTemplateRequest'
+      responses:
+        '201':
+          description: Budget template applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyBudgetTemplateResponse'
+        '400':
+          description: Template not found or categories already exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    BudgetCategoryListResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCategoryResponse'
+        summary:
+          type: object
+          properties:
+            totalPercentage:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalAllocated:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            isValid:
+              type: boolean
+              description: True if percentages sum to 100%
+
+    BudgetCategoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        targetPercentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0
+          maximum: 100
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+        currentPeriodAllocated:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        currentPeriodSpent:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        remainingBalance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BudgetCategoryDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/BudgetCategoryResponse'
+        - type: object
+          properties:
+            allocationHistory:
+              type: array
+              items:
+                $ref: '#/components/schemas/AllocationHistoryEntry'
+            spendingCategories:
+              type: array
+              items:
+                $ref: '#/components/schemas/SpendingCategorySummary'
+            monthlyPerformance:
+              type: array
+              items:
+                $ref: '#/components/schemas/MonthlyBudgetPerformance'
+
+    CreateBudgetCategoryRequest:
+      type: object
+      required:
+        - name
+        - targetPercentage
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Essential Needs"
+        targetPercentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 100
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          default: "#3B82F6"
+        sortOrder:
+          type: integer
+          minimum: 0
+          description: Display order, auto-assigned if not provided
+
+    UpdateBudgetCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        targetPercentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0.01
+          maximum: 100
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        sortOrder:
+          type: integer
+          minimum: 0
+        isActive:
+          type: boolean
+
+    ValidatePercentagesRequest:
+      type: object
+      required:
+        - categories
+      properties:
+        categories:
+          type: array
+          items:
+            type: object
+            required:
+              - id
+              - targetPercentage
+            properties:
+              id:
+                type: string
+                format: uuid
+              targetPercentage:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+                minimum: 0
+                maximum: 100
+
+    ValidatePercentagesResponse:
+      type: object
+      properties:
+        isValid:
+          type: boolean
+        totalPercentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        difference:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          description: Difference from 100%
+        suggestions:
+          type: array
+          items:
+            type: object
+            properties:
+              categoryId:
+                type: string
+                format: uuid
+              currentPercentage:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              suggestedPercentage:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    BudgetAllocationListResponse:
+      type: object
+      properties:
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetAllocationSummary'
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        summary:
+          type: object
+          properties:
+            totalAllocated:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalSpent:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            remainingBalance:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+
+    BudgetAllocationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        incomeEvent:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            amount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            scheduledDate:
+              type: string
+              format: date
+        budgetCategory:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            color:
+              type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        percentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        spentAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        remainingAmount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        createdAt:
+          type: string
+          format: date-time
+
+    BudgetAllocationResponse:
+      allOf:
+        - $ref: '#/components/schemas/BudgetAllocationSummary'
+
+    GenerateAllocationsResponse:
+      type: object
+      properties:
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetAllocationResponse'
+        summary:
+          type: object
+          properties:
+            totalAllocated:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            incomeAmount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            categoriesAllocated:
+              type: integer
+
+    UpdateBudgetAllocationRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0
+        percentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          minimum: 0
+          maximum: 100
+          description: Alternative to amount, will calculate amount from percentage
+
+    IncomeEventBudgetSummaryResponse:
+      type: object
+      properties:
+        incomeEvent:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            amount:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            scheduledDate:
+              type: string
+              format: date
+            status:
+              type: string
+              enum: [scheduled, received, cancelled]
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetAllocationSummary'
+        summary:
+          type: object
+          properties:
+            totalAllocated:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalSpent:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalRemaining:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            allocationPercentage:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+              description: Percentage of income allocated
+
+    BudgetOverviewResponse:
+      type: object
+      properties:
+        periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetOverviewPeriod'
+        summary:
+          type: object
+          properties:
+            totalIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalAllocated:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalSpent:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            savingsRate:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+              description: Percentage of income saved
+            budgetEfficiency:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+              description: Percentage of budget allocated
+        dateRange:
+          type: object
+          properties:
+            fromDate:
+              type: string
+              format: date
+            toDate:
+              type: string
+              format: date
+
+    BudgetOverviewPeriod:
+      type: object
+      properties:
+        period:
+          type: string
+          description: Period identifier (e.g., "2024-01" for monthly)
+        periodStart:
+          type: string
+          format: date
+        periodEnd:
+          type: string
+          format: date
+        totalIncome:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalAllocated:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalSpent:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        categoryBreakdown:
+          type: array
+          items:
+            type: object
+            properties:
+              categoryId:
+                type: string
+                format: uuid
+              categoryName:
+                type: string
+              allocated:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              spent:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              remaining:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              performance:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+                description: Spending vs allocation percentage
+
+    BudgetPerformanceResponse:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryPerformance'
+        overall:
+          type: object
+          properties:
+            budgetUtilization:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            averageOverspend:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            consistencyScore:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+              description: Score from 0-100 based on budget adherence
+        trends:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                format: date
+              budgetUtilization:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              overspendAmount:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    CategoryPerformance:
+      type: object
+      properties:
+        category:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            color:
+              type: string
+        totalAllocated:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        totalSpent:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        variance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          description: Spent - Allocated
+        utilizationRate:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+          description: Percentage of budget used
+        trend:
+          type: string
+          enum: [improving, stable, declining]
+        monthlyData:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+                format: date
+              allocated:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              spent:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+
+    BudgetProjectionsResponse:
+      type: object
+      properties:
+        projections:
+          type: array
+          items:
+            $ref: '#/components/schemas/MonthlyProjection'
+        summary:
+          type: object
+          properties:
+            totalProjectedIncome:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            totalProjectedAllocations:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+            projectedSavings:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+
+    MonthlyProjection:
+      type: object
+      properties:
+        month:
+          type: string
+          format: date
+        projectedIncome:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        categoryProjections:
+          type: array
+          items:
+            type: object
+            properties:
+              categoryId:
+                type: string
+                format: uuid
+              categoryName:
+                type: string
+              projectedAllocation:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+        confidence:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 1
+          description: Confidence score for projections
+
+    BudgetTemplateListResponse:
+      type: object
+      properties:
+        templates:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetTemplate'
+
+    BudgetTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              targetPercentage:
+                type: number
+                format: decimal
+                multipleOf: 0.01
+              color:
+                type: string
+              description:
+                type: string
+
+    ApplyBudgetTemplateRequest:
+      type: object
+      required:
+        - templateId
+      properties:
+        templateId:
+          type: string
+        customizations:
+          type: object
+          description: Optional customizations to template percentages
+          additionalProperties:
+            type: number
+            format: decimal
+            multipleOf: 0.01
+
+    ApplyBudgetTemplateResponse:
+      type: object
+      properties:
+        createdCategories:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCategoryResponse'
+        summary:
+          type: object
+          properties:
+            totalCategories:
+              type: integer
+            totalPercentage:
+              type: number
+              format: decimal
+              multipleOf: 0.01
+
+    AllocationHistoryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        incomeEventName:
+          type: string
+        amount:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        percentage:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        createdAt:
+          type: string
+          format: date-time
+
+    SpendingCategorySummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        color:
+          type: string
+        icon:
+          type: string
+
+    MonthlyBudgetPerformance:
+      type: object
+      properties:
+        month:
+          type: string
+          format: date
+        allocated:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        spent:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+        variance:
+          type: number
+          format: decimal
+          multipleOf: 0.01
+
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+        hasMore:
+          type: boolean
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        code:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
