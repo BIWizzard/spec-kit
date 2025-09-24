@@ -218,7 +218,7 @@ tests/
 - [x] T145 [P] FamilyService CRUD operations in backend/src/services/family.service.ts
 - [x] T146 [P] UserService authentication and profile in backend/src/services/user.service.ts
 - [x] T147 [P] IncomeService for income event management in backend/src/services/income.service.ts
-- [ ] T148 [P] PaymentService for payment management in backend/src/services/payment.service.ts
+- [x] T148 [P] PaymentService for payment management in backend/src/services/payment.service.ts
 - [ ] T149 [P] BudgetService for budget management in backend/src/services/budget.service.ts
 - [ ] T150 [P] BankService for Plaid integration in backend/src/services/bank.service.ts
 - [ ] T151 [P] TransactionService for transaction categorization in backend/src/services/transaction.service.ts
