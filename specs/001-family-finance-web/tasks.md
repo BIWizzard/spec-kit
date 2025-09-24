@@ -283,26 +283,26 @@ tests/
 - [x] T200 POST /api/income-events/bulk endpoint in backend/src/api/income-events/bulk.ts
 
 ### Phase 5.4: Payment Management Endpoints
-- [ ] T201 GET /api/payments endpoint in backend/src/api/payments/index.ts
-- [ ] T202 POST /api/payments endpoint in backend/src/api/payments/create.ts
-- [ ] T203 GET /api/payments/[id] endpoint in backend/src/api/payments/[id]/index.ts
-- [ ] T204 PUT /api/payments/[id] endpoint in backend/src/api/payments/[id]/update.ts
-- [ ] T205 DELETE /api/payments/[id] endpoint in backend/src/api/payments/[id]/delete.ts
-- [ ] T206 POST /api/payments/[id]/mark-paid endpoint in backend/src/api/payments/[id]/mark-paid.ts
-- [ ] T207 POST /api/payments/[id]/revert-paid endpoint in backend/src/api/payments/[id]/revert-paid.ts
-- [ ] T208 POST /api/payments/[id]/auto-attribute endpoint in backend/src/api/payments/[id]/auto-attribute.ts
-- [ ] T209 GET /api/payments/upcoming endpoint in backend/src/api/payments/upcoming.ts
-- [ ] T210 GET /api/payments/overdue endpoint in backend/src/api/payments/overdue.ts
-- [ ] T211 GET /api/payments/summary endpoint in backend/src/api/payments/summary.ts
-- [ ] T212 POST /api/payments/bulk endpoint in backend/src/api/payments/bulk.ts
-- [ ] T213 GET /api/spending-categories endpoint in backend/src/api/spending-categories/index.ts
-- [ ] T214 POST /api/spending-categories endpoint in backend/src/api/spending-categories/create.ts
-- [ ] T215 PUT /api/spending-categories/[id] endpoint in backend/src/api/spending-categories/[id]/update.ts
-- [ ] T216 DELETE /api/spending-categories/[id] endpoint in backend/src/api/spending-categories/[id]/delete.ts
-- [ ] T217a GET /api/payments/[id]/attributions endpoint in backend/src/api/payments/[id]/attributions/index.ts
-- [ ] T217b POST /api/payments/[id]/attributions endpoint in backend/src/api/payments/[id]/attributions/create.ts
-- [ ] T217c PUT /api/payments/[id]/attributions/[attributionId] endpoint in backend/src/api/payments/[id]/attributions/[attributionId]/update.ts
-- [ ] T217d DELETE /api/payments/[id]/attributions/[attributionId] endpoint in backend/src/api/payments/[id]/attributions/[attributionId]/delete.ts
+- [x] T201 GET /api/payments endpoint in backend/src/api/payments/index.ts
+- [x] T202 POST /api/payments endpoint in backend/src/api/payments/create.ts
+- [x] T203 GET /api/payments/[id] endpoint in backend/src/api/payments/[id]/index.ts
+- [x] T204 PUT /api/payments/[id] endpoint in backend/src/api/payments/[id]/update.ts
+- [x] T205 DELETE /api/payments/[id] endpoint in backend/src/api/payments/[id]/delete.ts
+- [x] T206 POST /api/payments/[id]/mark-paid endpoint in backend/src/api/payments/[id]/mark-paid.ts
+- [x] T207 POST /api/payments/[id]/revert-paid endpoint in backend/src/api/payments/[id]/revert-paid.ts
+- [x] T208 POST /api/payments/[id]/auto-attribute endpoint in backend/src/api/payments/[id]/auto-attribute.ts
+- [x] T209 GET /api/payments/upcoming endpoint in backend/src/api/payments/upcoming.ts
+- [x] T210 GET /api/payments/overdue endpoint in backend/src/api/payments/overdue.ts
+- [x] T211 GET /api/payments/summary endpoint in backend/src/api/payments/summary.ts
+- [x] T212 POST /api/payments/bulk endpoint in backend/src/api/payments/bulk.ts
+- [x] T213 GET /api/spending-categories endpoint in backend/src/api/spending-categories/index.ts
+- [x] T214 POST /api/spending-categories endpoint in backend/src/api/spending-categories/create.ts
+- [x] T215 PUT /api/spending-categories/[id] endpoint in backend/src/api/spending-categories/[id]/update.ts
+- [x] T216 DELETE /api/spending-categories/[id] endpoint in backend/src/api/spending-categories/[id]/delete.ts
+- [x] T217a GET /api/payments/[id]/attributions endpoint in backend/src/api/payments/[id]/attributions/index.ts
+- [x] T217b POST /api/payments/[id]/attributions endpoint in backend/src/api/payments/[id]/attributions/create.ts
+- [x] T217c PUT /api/payments/[id]/attributions/[attributionId] endpoint in backend/src/api/payments/[id]/attributions/[attributionId]/update.ts
+- [x] T217d DELETE /api/payments/[id]/attributions/[attributionId] endpoint in backend/src/api/payments/[id]/attributions/[attributionId]/delete.ts
 
 ### Phase 5.5: Bank Integration Endpoints
 - [ ] T218 GET /api/bank-accounts endpoint in backend/src/api/bank-accounts/index.ts
