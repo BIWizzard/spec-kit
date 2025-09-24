@@ -256,8 +256,8 @@ tests/
 - [x] T177 DELETE /api/auth/sessions/[id] endpoint in backend/src/api/auth/sessions/[id].ts
 
 ### Phase 5.2: Family Management Endpoints
-- [ ] T178 GET /api/families endpoint in backend/src/api/families/index.ts
-- [ ] T179 PUT /api/families endpoint in backend/src/api/families/update.ts
+- [x] T178 GET /api/families endpoint in backend/src/api/families/index.ts
+- [x] T179 PUT /api/families endpoint in backend/src/api/families/update.ts
 - [x] T180 GET /api/families/members endpoint in backend/src/api/families/members/index.ts
 - [x] T181 POST /api/families/members endpoint in backend/src/api/families/members/invite.ts
 - [x] T182 PUT /api/families/members/[id] endpoint in backend/src/api/families/members/[id]/update.ts
