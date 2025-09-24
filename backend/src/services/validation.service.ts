@@ -580,4 +580,27 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateChangePassword(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    if (!data.currentPassword || data.currentPassword.trim().length === 0) {
+      errors.push('Current password is required');
+    }
+
+    const passwordValidation = this.validatePassword(data.newPassword);
+    if (!passwordValidation.isValid) {
+      errors.push(...passwordValidation.errors);
+    }
+
+    // Check if new password is different from current
+    if (data.currentPassword && data.newPassword && data.currentPassword === data.newPassword) {
+      errors.push('New password must be different from current password');
+    }
+
+    return errors;
+  }
 }
