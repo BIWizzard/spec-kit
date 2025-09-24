@@ -410,18 +410,18 @@ tests/
 - [x] T306 [P] Toast notification system in frontend/src/components/ui/toast.tsx
 
 ### Phase 6.2: Authentication Pages
-- [ ] T305 Login page in frontend/src/app/login/page.tsx
-- [ ] T306 Register page in frontend/src/app/register/page.tsx
-- [ ] T307 Forgot password page in frontend/src/app/forgot-password/page.tsx
-- [ ] T308 Reset password page in frontend/src/app/reset-password/page.tsx
-- [ ] T309 Email verification page in frontend/src/app/verify-email/page.tsx
-- [ ] T310 [P] Login form component in frontend/src/components/auth/login-form.tsx
-- [ ] T311 [P] Register form component in frontend/src/components/auth/register-form.tsx
-- [ ] T312 [P] Forgot password form component in frontend/src/components/auth/forgot-password-form.tsx
-- [ ] T313 [P] Reset password form component in frontend/src/components/auth/reset-password-form.tsx
-- [ ] T314 [P] MFA setup component in frontend/src/components/auth/mfa-setup.tsx
-- [ ] T315 [P] Email verification component in frontend/src/components/auth/email-verification.tsx
-- [ ] T316 [P] Session management component in frontend/src/components/auth/session-manager.tsx
+- [x] T307 Login page in frontend/src/app/login/page.tsx
+- [x] T308 Register page in frontend/src/app/register/page.tsx
+- [x] T309 Forgot password page in frontend/src/app/forgot-password/page.tsx
+- [x] T310 Reset password page in frontend/src/app/reset-password/page.tsx
+- [x] T311 Email verification page in frontend/src/app/verify-email/page.tsx
+- [x] T312 [P] Login form component in frontend/src/components/auth/login-form.tsx
+- [x] T313 [P] Register form component in frontend/src/components/auth/register-form.tsx
+- [x] T314 [P] Forgot password form component in frontend/src/components/auth/forgot-password-form.tsx
+- [x] T315 [P] Reset password form component in frontend/src/components/auth/reset-password-form.tsx
+- [x] T316 [P] MFA setup component in frontend/src/components/auth/mfa-setup.tsx
+- [x] T317 [P] Email verification component in frontend/src/components/auth/email-verification.tsx
+- [x] T318 [P] Session management component in frontend/src/components/auth/session-manager.tsx
 
 ### Phase 6.3: Dashboard and Overview
 - [ ] T317 Dashboard page in frontend/src/app/dashboard/page.tsx
