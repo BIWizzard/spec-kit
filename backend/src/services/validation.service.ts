@@ -529,4 +529,24 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateMfaDisable(data: {
+    password: string;
+    totpCode?: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    if (!data.password || data.password.trim().length === 0) {
+      errors.push('Password is required to disable MFA');
+    }
+
+    if (data.totpCode) {
+      const totpValidation = this.validateTotpCode(data.totpCode);
+      if (totpValidation.length > 0) {
+        errors.push(...totpValidation);
+      }
+    }
+
+    return errors;
+  }
 }
