@@ -1,0 +1,431 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+  POSTGRES_VERSION: '15'
+
+jobs:
+  # Security and dependency scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=high
+          cd backend && npm audit --audit-level=high
+          cd ../frontend && npm audit --audit-level=high
+
+  # Backend testing and linting
+  backend-test:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: family_finance_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Run database migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/family_finance_test
+        run: npx prisma migrate deploy
+
+      - name: Run backend linting
+        working-directory: backend
+        run: npm run lint
+
+      - name: Run backend type checking
+        working-directory: backend
+        run: npm run type-check || npx tsc --noEmit
+
+      - name: Run backend tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/family_finance_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-jwt-secret-for-ci-pipeline
+          NODE_ENV: test
+        run: npm run test:ci
+
+      - name: Run contract tests
+        working-directory: .
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/family_finance_test
+        run: npx jest tests/contract/test_*.ts --testMatch="**/test_*.ts"
+
+      - name: Upload backend test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: backend/coverage/
+
+  # Frontend testing and linting
+  frontend-test:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend linting
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Run frontend type checking
+        working-directory: frontend
+        run: npm run type-check || npx tsc --noEmit
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm run test:ci
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: test-nextauth-secret-for-ci
+        run: npm run build
+
+      - name: Upload frontend build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/.next/
+
+      - name: Upload frontend test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-test-results
+          path: frontend/coverage/
+
+  # End-to-end testing
+  e2e-test:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [backend-test, frontend-test]
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_USER: test_user
+          POSTGRES_DB: family_finance_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+
+      - name: Setup database
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/family_finance_test
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+          npx prisma db seed
+
+      - name: Install Playwright
+        working-directory: frontend
+        run: npx playwright install --with-deps
+
+      - name: Start backend server
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/family_finance_test
+          JWT_SECRET: test-jwt-secret-for-e2e
+          NODE_ENV: test
+        run: npm start &
+
+      - name: Start frontend server
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: test-nextauth-secret-for-e2e
+        run: npm start &
+
+      - name: Wait for services
+        run: |
+          npx wait-on http://localhost:3001/api/health
+          npx wait-on http://localhost:3000
+
+      - name: Run E2E tests
+        working-directory: tests/e2e
+        run: npx playwright test
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: tests/e2e/test-results/
+
+      - name: Upload E2E test videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-videos
+          path: tests/e2e/test-results/
+
+  # Build and deployment
+  build:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    needs: [security, backend-test, frontend-test, e2e-test]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        run: npx prisma generate
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        run: npm run build
+
+      # Deploy to Vercel (staging)
+      - name: Deploy to Vercel (staging)
+        if: github.ref == 'refs/heads/develop'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          alias-domains: staging-family-finance.vercel.app
+
+      # Deploy to Vercel (production)
+      - name: Deploy to Vercel (production)
+        if: github.ref == 'refs/heads/main'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+      # Run database migrations on production
+      - name: Run production migrations
+        if: github.ref == 'refs/heads/main'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          cd backend
+          npx prisma migrate deploy
+
+      # Notify deployment status
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "✅ Deployment successful"
+          echo "Environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed"
+          exit 1
+
+  # Code quality and metrics
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+
+      - name: Run SonarCloud scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Check code coverage threshold
+        working-directory: backend
+        run: |
+          npm run test:coverage
+          npx nyc check-coverage --lines 80 --functions 80 --branches 80 --statements 80
+
+  # Performance testing
+  performance:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install Lighthouse CLI
+        run: npm install -g @lhci/cli
+
+      - name: Run Lighthouse CI
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        run: lhci autorun
+
+  # Cleanup
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [security, backend-test, frontend-test, e2e-test, build, code-quality]
+    steps:
+      - name: Clean up old artifacts
+        run: |
+          echo "Cleaning up workflow artifacts older than 30 days"
+          # This would typically be handled by GitHub's built-in retention policies

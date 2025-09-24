@@ -1,0 +1,142 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run security checks weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+
+jobs:
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd backend && npm ci
+          cd ../frontend && npm ci
+
+      - name: Run npm audit (backend)
+        working-directory: backend
+        run: npm audit --audit-level=moderate --production
+
+      - name: Run npm audit (frontend)
+        working-directory: frontend
+        run: npm audit --audit-level=moderate --production
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  code-security:
+    name: Code Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build backend Docker image
+        run: docker build -f backend/Dockerfile.dev -t family-finance-backend:test ./backend
+
+      - name: Build frontend Docker image
+        run: docker build -f frontend/Dockerfile.dev -t family-finance-frontend:test ./frontend
+
+      - name: Scan backend image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'family-finance-backend:test'
+          format: 'sarif'
+          output: 'backend-trivy-results.sarif'
+
+      - name: Scan frontend image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'family-finance-frontend:test'
+          format: 'sarif'
+          output: 'frontend-trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'backend-trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'frontend-trivy-results.sarif'
+
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install license checker
+        run: npm install -g license-checker
+
+      - name: Check backend licenses
+        working-directory: backend
+        run: |
+          npm ci
+          license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;Unlicense'
+
+      - name: Check frontend licenses
+        working-directory: frontend
+        run: |
+          npm ci
+          license-checker --onlyAllow 'MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;0BSD;Unlicense'
