@@ -67,4 +67,87 @@ export async function matchTransactionsToPayments(req: AuthenticatedRequest, res
 
     try {
       // Build options for matching
-      const options: any = {};\n\n      if (fromDate || toDate) {\n        options.dateRange = {};\n        if (fromDate) {\n          try {\n            options.dateRange.start = new Date(fromDate);\n          } catch (err) {\n            return res.status(400).json({\n              error: 'Invalid from date',\n              message: 'Please provide from date in YYYY-MM-DD format.',\n            });\n          }\n        }\n        if (toDate) {\n          try {\n            options.dateRange.end = new Date(toDate);\n          } catch (err) {\n            return res.status(400).json({\n              error: 'Invalid to date',\n              message: 'Please provide to date in YYYY-MM-DD format.',\n            });\n          }\n        }\n      }\n\n      if (accountIds && Array.isArray(accountIds) && accountIds.length > 0) {\n        options.bankAccountIds = accountIds;\n      }\n\n      // Perform transaction matching\n      const matchResults = await TransactionService.matchTransactionsToPayments(familyId, options);\n\n      // Format matches\n      const matches: PaymentMatch[] = matchResults.map((match) => ({\n        transactionId: match.transactionId,\n        paymentId: match.paymentId,\n        confidence: match.matchConfidence,\n        matchType: match.matchConfidence >= 0.9 ? 'exact_amount' :\n                  match.matchConfidence >= 0.7 ? 'close_amount' :\n                  match.matchConfidence >= 0.5 ? 'merchant_match' : 'date_range',\n      }));\n\n      // Calculate summary statistics\n      const totalMatches = matches.length;\n      const highConfidenceMatches = matches.filter(m => m.confidence >= 0.8).length;\n\n      const response: MatchPaymentsResponse = {\n        message: 'Transaction matching completed successfully.',\n        matches,\n        summary: {\n          totalTransactions: matchResults.length, // This would be total processed in real implementation\n          totalMatches,\n          highConfidenceMatches,\n        },\n      };\n\n      res.status(200).json(response);\n    } catch (serviceError) {\n      console.error('Match transactions to payments error:', serviceError);\n\n      if (serviceError instanceof Error) {\n        if (serviceError.message.includes('Invalid date')) {\n          return res.status(400).json({\n            error: 'Invalid date format',\n            message: 'Please provide dates in YYYY-MM-DD format.',\n          });\n        }\n      }\n\n      res.status(500).json({\n        error: 'Failed to match transactions',\n        message: 'Failed to match transactions to payments. Please try again.',\n      });\n    }\n  } catch (error) {\n    console.error('Match transactions to payments endpoint error:', error);\n\n    res.status(500).json({\n      error: 'Internal server error',\n      message: 'Failed to match transactions to payments. Please try again.',\n    });\n  }\n}"}
+      const options: any = {};
+
+      if (fromDate || toDate) {
+        options.dateRange = {};
+        if (fromDate) {
+          try {
+            options.dateRange.start = new Date(fromDate);
+          } catch (err) {
+            return res.status(400).json({
+              error: 'Invalid from date',
+              message: 'Please provide from date in YYYY-MM-DD format.',
+            });
+          }
+        }
+        if (toDate) {
+          try {
+            options.dateRange.end = new Date(toDate);
+          } catch (err) {
+            return res.status(400).json({
+              error: 'Invalid to date',
+              message: 'Please provide to date in YYYY-MM-DD format.',
+            });
+          }
+        }
+      }
+
+      if (accountIds && Array.isArray(accountIds) && accountIds.length > 0) {
+        options.bankAccountIds = accountIds;
+      }
+
+      // Perform transaction matching
+      const matchResults = await TransactionService.matchTransactionsToPayments(familyId, options);
+
+      // Format matches
+      const matches: PaymentMatch[] = matchResults.map((match) => ({
+        transactionId: match.transactionId,
+        paymentId: match.paymentId,
+        confidence: match.matchConfidence,
+        matchType: match.matchConfidence >= 0.9 ? 'exact_amount' :
+                  match.matchConfidence >= 0.7 ? 'close_amount' :
+                  match.matchConfidence >= 0.5 ? 'merchant_match' : 'date_range',
+      }));
+
+      // Calculate summary statistics
+      const totalMatches = matches.length;
+      const highConfidenceMatches = matches.filter(m => m.confidence >= 0.8).length;
+
+      const response: MatchPaymentsResponse = {
+        message: 'Transaction matching completed successfully.',
+        matches,
+        summary: {
+          totalTransactions: matchResults.length, // This would be total processed in real implementation
+          totalMatches,
+          highConfidenceMatches,
+        },
+      };
+
+      res.status(200).json(response);
+    } catch (serviceError) {
+      console.error('Match transactions to payments error:', serviceError);
+
+      if (serviceError instanceof Error) {
+        if (serviceError.message.includes('Invalid date')) {
+          return res.status(400).json({
+            error: 'Invalid date format',
+            message: 'Please provide dates in YYYY-MM-DD format.',
+          });
+        }
+      }
+
+      res.status(500).json({
+        error: 'Failed to match transactions',
+        message: 'Failed to match transactions to payments. Please try again.',
+      });
+    }
+  } catch (error) {
+    console.error('Match transactions to payments endpoint error:', error);
+
+    res.status(500).json({
+      error: 'Internal server error',
+      message: 'Failed to match transactions to payments. Please try again.',
+    });
+  }
+}

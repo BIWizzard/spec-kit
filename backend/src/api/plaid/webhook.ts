@@ -63,4 +63,28 @@ export async function handlePlaidWebhook(req: Request, res: Response) {
       // to avoid webhook retries for known errors
       if (serviceError instanceof Error) {
         if (serviceError.message.includes('No bank accounts found')) {
-          console.warn(`No accounts found for Plaid item ${item_id}`);\n          return res.status(200).json({\n            message: 'Webhook acknowledged - no accounts found for item.',\n          });\n        }\n      }\n\n      // For other errors, still return success to avoid retries\n      // but log the error for investigation\n      console.error(`Failed to process webhook for item ${item_id}:`, serviceError);\n      \n      res.status(200).json({\n        message: 'Webhook acknowledged.',\n      });\n    }\n  } catch (error) {\n    console.error('Plaid webhook endpoint error:', error);\n\n    // Return success even on errors to prevent Plaid webhook retries\n    // The error is logged for investigation\n    res.status(200).json({\n      message: 'Webhook acknowledged.',\n    });\n  }\n}"}
+          console.warn(`No accounts found for Plaid item ${item_id}`);
+          return res.status(200).json({
+            message: 'Webhook acknowledged - no accounts found for item.',
+          });
+        }
+      }
+
+      // For other errors, still return success to avoid retries
+      // but log the error for investigation
+      console.error(`Failed to process webhook for item ${item_id}:`, serviceError);
+
+      res.status(200).json({
+        message: 'Webhook acknowledged.',
+      });
+    }
+  } catch (error) {
+    console.error('Plaid webhook endpoint error:', error);
+
+    // Return success even on errors to prevent Plaid webhook retries
+    // The error is logged for investigation
+    res.status(200).json({
+      message: 'Webhook acknowledged.',
+    });
+  }
+}
