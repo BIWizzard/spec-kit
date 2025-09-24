@@ -671,4 +671,29 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateInviteFamilyMember(data: {
+    email: string;
+    role: 'admin' | 'editor' | 'viewer';
+    permissions?: {
+      canManageBankAccounts?: boolean;
+      canEditPayments?: boolean;
+      canViewReports?: boolean;
+      canManageFamily?: boolean;
+    };
+  }): string[] {
+    const errors: string[] = [];
+
+    const emailValidation = this.validateEmail(data.email);
+    if (!emailValidation.isValid) {
+      errors.push(...emailValidation.errors);
+    }
+
+    const validRoles = ['admin', 'editor', 'viewer'];
+    if (!data.role || !validRoles.includes(data.role)) {
+      errors.push('Role must be one of: admin, editor, viewer');
+    }
+
+    return errors;
+  }
 }

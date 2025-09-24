@@ -590,6 +590,15 @@ export class EmailService {
     });
   }
 
+  static async sendInvitationEmail(email: string, invitationToken: string, familyId: string): Promise<EmailJob> {
+    return this.sendFamilyInvitation(email, {
+      familyName: 'Family', // Generic name - could be enhanced to get actual family name
+      inviterName: 'Admin', // Generic name - could be enhanced to get actual inviter name
+      acceptUrl: `${process.env.FRONTEND_URL}/accept-invitation?token=${invitationToken}&familyId=${familyId}`,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    });
+  }
+
   private static mapEmailJob(job: any): EmailJob {
     return {
       id: job.id,
