@@ -381,7 +381,7 @@ tests/
 - [x] T281 Neon PostgreSQL database configuration in backend/src/lib/neon.ts
 - [x] T282 Environment variables configuration in .env.example and .env.local
 - [x] T283 Vercel deployment configuration in vercel.json
-- [ ] T284 Database migration scripts in backend/prisma/migrations/
+- [x] T284 Database migration scripts in backend/prisma/migrations/
 - [ ] T285 Database seeding scripts in backend/prisma/seed.ts
 - [ ] T286 Docker configuration for development in docker-compose.yml
 - [ ] T287 GitHub Actions CI/CD pipeline in .github/workflows/ci.yml
