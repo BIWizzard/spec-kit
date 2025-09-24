@@ -424,7 +424,7 @@ tests/
 - [x] T318 [P] Session management component in frontend/src/components/auth/session-manager.tsx
 
 ### Phase 6.3: Dashboard and Overview
-- [ ] T317 Dashboard page in frontend/src/app/dashboard/page.tsx
+- [x] T317 Dashboard page in frontend/src/app/dashboard/page.tsx
 - [ ] T318 [P] Dashboard metrics cards in frontend/src/components/dashboard/metrics-cards.tsx
 - [ ] T319 [P] Cash flow chart component in frontend/src/components/dashboard/cash-flow-chart.tsx
 - [ ] T320 [P] Recent activity component in frontend/src/components/dashboard/recent-activity.tsx
