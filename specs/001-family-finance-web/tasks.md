@@ -400,7 +400,7 @@ tests/
 ## Phase 6: Frontend Implementation
 
 ### Phase 6.1: Core Layout and Navigation
-- [ ] T299 Main layout component in frontend/src/app/layout.tsx
+- [x] T299 Main layout component in frontend/src/app/layout.tsx
 - [ ] T300 [P] Navigation component in frontend/src/components/navigation/nav.tsx
 - [ ] T301 [P] Sidebar component in frontend/src/components/navigation/sidebar.tsx
 - [ ] T300 [P] Header component in frontend/src/components/layout/header.tsx
