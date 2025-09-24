@@ -333,12 +333,12 @@ tests/
 - [x] T241 GET /api/budget-allocations/[id] endpoint in backend/src/api/budget-allocations/[id]/index.ts
 - [x] T242 PUT /api/budget-allocations/[id] endpoint in backend/src/api/budget-allocations/[id]/update.ts
 - [x] T243 POST /api/budget-allocations/[incomeEventId]/generate endpoint in backend/src/api/budget-allocations/[incomeEventId]/generate.ts
-- [ ] T244 GET /api/budget-allocations/[incomeEventId]/summary endpoint in backend/src/api/budget-allocations/[incomeEventId]/summary.ts
-- [ ] T245 GET /api/budget/overview endpoint in backend/src/api/budget/overview.ts
-- [ ] T246 GET /api/budget/performance endpoint in backend/src/api/budget/performance.ts
-- [ ] T247 GET /api/budget/projections endpoint in backend/src/api/budget/projections.ts
-- [ ] T248 GET /api/budget/templates endpoint in backend/src/api/budget/templates/index.ts
-- [ ] T249 POST /api/budget/templates endpoint in backend/src/api/budget/templates/apply.ts
+- [x] T244 GET /api/budget-allocations/[incomeEventId]/summary endpoint in backend/src/api/budget-allocations/[incomeEventId]/summary.ts
+- [x] T245 GET /api/budget/overview endpoint in backend/src/api/budget/overview.ts
+- [x] T246 GET /api/budget/performance endpoint in backend/src/api/budget/performance.ts
+- [x] T247 GET /api/budget/projections endpoint in backend/src/api/budget/projections.ts
+- [x] T248 GET /api/budget/templates endpoint in backend/src/api/budget/templates/index.ts
+- [x] T249 POST /api/budget/templates endpoint in backend/src/api/budget/templates/apply.ts
 
 ### Phase 5.7: Reports and Analytics Endpoints
 - [x] T250 GET /api/reports/cash-flow endpoint in backend/src/api/reports/cash-flow.ts
@@ -350,16 +350,16 @@ tests/
 - [x] T256 GET /api/reports/debt-analysis endpoint in backend/src/api/reports/debt-analysis.ts
 - [x] T257 GET /api/reports/monthly-summary endpoint in backend/src/api/reports/monthly-summary.ts
 - [x] T258 GET /api/reports/annual-summary endpoint in backend/src/api/reports/annual-summary.ts
-- [ ] T259 POST /api/reports/custom endpoint in backend/src/api/reports/custom.ts
-- [ ] T260 POST /api/reports/export endpoint in backend/src/api/reports/export.ts
-- [ ] T261 GET /api/reports/scheduled endpoint in backend/src/api/reports/scheduled/index.ts
-- [ ] T262 POST /api/reports/scheduled endpoint in backend/src/api/reports/scheduled/create.ts
-- [ ] T263 GET /api/reports/scheduled/[id] endpoint in backend/src/api/reports/scheduled/[id]/index.ts
-- [ ] T264 PUT /api/reports/scheduled/[id] endpoint in backend/src/api/reports/scheduled/[id]/update.ts
-- [ ] T265 DELETE /api/reports/scheduled/[id] endpoint in backend/src/api/reports/scheduled/[id]/delete.ts
-- [ ] T266 GET /api/analytics/dashboard endpoint in backend/src/api/analytics/dashboard.ts
-- [ ] T267 GET /api/analytics/trends endpoint in backend/src/api/analytics/trends.ts
-- [ ] T268 GET /api/analytics/insights endpoint in backend/src/api/analytics/insights.ts
+- [x] T259 POST /api/reports/custom endpoint in backend/src/api/reports/custom.ts
+- [x] T260 POST /api/reports/export endpoint in backend/src/api/reports/export.ts
+- [x] T261 GET /api/reports/scheduled endpoint in backend/src/api/reports/scheduled/index.ts
+- [x] T262 POST /api/reports/scheduled endpoint in backend/src/api/reports/scheduled/create.ts
+- [x] T263 GET /api/reports/scheduled/[id] endpoint in backend/src/api/reports/scheduled/[id]/index.ts
+- [x] T264 PUT /api/reports/scheduled/[id] endpoint in backend/src/api/reports/scheduled/[id]/update.ts
+- [x] T265 DELETE /api/reports/scheduled/[id] endpoint in backend/src/api/reports/scheduled/[id]/delete.ts
+- [x] T266 GET /api/analytics/dashboard endpoint in backend/src/api/analytics/dashboard.ts
+- [x] T267 GET /api/analytics/trends endpoint in backend/src/api/analytics/trends.ts
+- [x] T268 GET /api/analytics/insights endpoint in backend/src/api/analytics/insights.ts
 
 ### Phase 5.8: Infrastructure and Configuration Endpoints
 - [ ] T267 OpenAPI schema validation endpoint in backend/src/api/schema/validate.ts
