@@ -430,7 +430,7 @@ tests/
 - [x] T320 [P] Recent activity component in frontend/src/components/dashboard/recent-activity.tsx
 - [x] T321 [P] Upcoming events component in frontend/src/components/dashboard/upcoming-events.tsx
 - [x] T322 [P] Financial insights component in frontend/src/components/dashboard/insights.tsx
-- [ ] T323 [P] Alert notifications component in frontend/src/components/dashboard/alerts.tsx
+- [x] T323 [P] Alert notifications component in frontend/src/components/dashboard/alerts.tsx
 - [ ] T324 [P] Quick actions component in frontend/src/components/dashboard/quick-actions.tsx
 
 ### Phase 6.4: Income Management Pages
