@@ -379,7 +379,7 @@ tests/
 
 ### Phase 5.10: Infrastructure and Deployment
 - [x] T281 Neon PostgreSQL database configuration in backend/src/lib/neon.ts
-- [ ] T282 Environment variables configuration in .env.example and .env.local
+- [x] T282 Environment variables configuration in .env.example and .env.local
 - [ ] T283 Vercel deployment configuration in vercel.json
 - [ ] T284 Database migration scripts in backend/prisma/migrations/
 - [ ] T285 Database seeding scripts in backend/prisma/seed.ts
