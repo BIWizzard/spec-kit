@@ -10,7 +10,9 @@ module.exports = {
     '<rootDir>/../backend/src/**/?(*.)+{test,spec}.{js,ts}',
   ],
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: '<rootDir>/../backend/tsconfig.json'
+    }],
   },
   setupFilesAfterEnv: ['<rootDir>/setup.ts'],
   moduleFileExtensions: ['ts', 'js', 'json', 'node'],
