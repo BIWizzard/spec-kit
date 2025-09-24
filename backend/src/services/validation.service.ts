@@ -549,4 +549,17 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateForgotPassword(data: {
+    email: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    const emailValidation = this.validateEmail(data.email);
+    if (!emailValidation.isValid) {
+      errors.push(...emailValidation.errors);
+    }
+
+    return errors;
+  }
 }

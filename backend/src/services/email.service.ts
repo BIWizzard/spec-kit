@@ -474,6 +474,18 @@ export class EmailService {
           text: `Reset your password: ${data.resetUrl}`,
         };
 
+      case 'email_verification':
+        return {
+          html: `
+            <h1>Verify Your Email Address</h1>
+            <p>Hi ${data.firstName},</p>
+            <p>Please verify your email address by clicking the link below:</p>
+            <p><a href="${data.verificationUrl}">Verify Email</a></p>
+            <p>This link expires on ${data.expiresAt.toLocaleDateString()}.</p>
+          `,
+          text: `Verify your email: ${data.verificationUrl}`,
+        };
+
       case 'report_ready':
         return {
           html: `
@@ -559,6 +571,23 @@ export class EmailService {
       default:
         throw new Error(`Unknown email template: ${template}`);
     }
+  }
+
+  // Convenience methods that match the API endpoint usage
+  static async sendVerificationEmail(email: string, verificationToken: string): Promise<EmailJob> {
+    return this.sendEmailVerification(email, {
+      firstName: 'User', // We don't have firstName at this point, so use generic
+      verificationUrl: `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    });
+  }
+
+  static async sendPasswordResetEmail(email: string, resetToken: string): Promise<EmailJob> {
+    return this.sendPasswordReset(email, {
+      firstName: 'User', // We don't have firstName at this point, so use generic
+      resetUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`,
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+    });
   }
 
   private static mapEmailJob(job: any): EmailJob {

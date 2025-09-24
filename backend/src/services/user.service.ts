@@ -36,6 +36,12 @@ export type MfaSetupResult = {
 };
 
 export class UserService {
+  // In-memory storage for password reset tokens (for MVP, in production use Redis or database)
+  private static passwordResetTokens = new Map<string, {
+    userId: string;
+    email: string;
+    expiresAt: Date;
+  }>();
   static async authenticate(credentials: LoginCredentials, userAgent: string, ipAddress: string): Promise<{ user: FamilyMember; session: Session } | null> {
     const user = await prisma.familyMember.findUnique({
       where: {
@@ -350,13 +356,23 @@ export class UserService {
       },
     });
 
-    if (!user) {
-      return crypto.randomUUID();
+    const resetToken = crypto.randomUUID();
+
+    // If user exists, store the reset token (using in-memory storage for MVP)
+    if (user) {
+      this.passwordResetTokens.set(resetToken, {
+        userId: user.id,
+        email: user.email,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+      });
+
+      await this.logAuditEvent(user.familyId, user.id, 'update', 'FamilyMember', user.id,
+        {},
+        { action: 'password_reset_requested' }
+      );
     }
 
-    const resetToken = crypto.randomUUID();
-    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
-
+    // Always return a token (even if user doesn't exist) to prevent email enumeration
     return resetToken;
   }
 
