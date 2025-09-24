@@ -442,7 +442,7 @@ tests/
 - [x] T330 [P] Income form component in frontend/src/components/income/income-form.tsx
 - [x] T331 [P] Income attribution modal in frontend/src/components/income/attribution-modal.tsx
 - [x] T332 [P] Income calendar view component in frontend/src/components/income/income-calendar.tsx
-- [ ] T333 [P] Bulk income creation component in frontend/src/components/income/bulk-create.tsx
+- [x] T333 [P] Bulk income creation component in frontend/src/components/income/bulk-create.tsx
 
 ### Phase 6.5: Payment Management Pages
 - [ ] T334 Payments page in frontend/src/app/payments/page.tsx
