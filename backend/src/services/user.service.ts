@@ -488,6 +488,12 @@ export class UserService {
     });
   }
 
+  static async getSessionById(sessionId: string): Promise<Session | null> {
+    return prisma.session.findUnique({
+      where: { id: sessionId },
+    });
+  }
+
   private static async logAuditEvent(
     familyId: string,
     memberId: string,
