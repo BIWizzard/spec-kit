@@ -1,0 +1,259 @@
+{
+  "ssl": {
+    "environments": {
+      "development": {
+        "enabled": false,
+        "selfSigned": true,
+        "certificates": {
+          "cert": "./certs/dev-cert.pem",
+          "key": "./certs/dev-key.pem"
+        }
+      },
+      "staging": {
+        "enabled": true,
+        "provider": "letsencrypt",
+        "domains": ["staging.familyfinance.app"],
+        "certificates": {
+          "cert": "./certs/staging-cert.pem",
+          "key": "./certs/staging-key.pem",
+          "ca": "./certs/staging-ca.pem"
+        },
+        "autoRenewal": true
+      },
+      "production": {
+        "enabled": true,
+        "provider": "vercel",
+        "domains": ["familyfinance.app", "www.familyfinance.app"],
+        "certificates": {
+          "managed": true,
+          "autoRenewal": true
+        }
+      }
+    },
+    "configuration": {
+      "minVersion": "TLSv1.2",
+      "maxVersion": "TLSv1.3",
+      "cipherSuites": [
+        "ECDHE-ECDSA-AES256-GCM-SHA384",
+        "ECDHE-RSA-AES256-GCM-SHA384",
+        "ECDHE-ECDSA-CHACHA20-POLY1305",
+        "ECDHE-RSA-CHACHA20-POLY1305",
+        "ECDHE-ECDSA-AES128-GCM-SHA256",
+        "ECDHE-RSA-AES128-GCM-SHA256",
+        "ECDHE-ECDSA-AES256-SHA384",
+        "ECDHE-RSA-AES256-SHA384"
+      ],
+      "dhParams": {
+        "size": 2048,
+        "file": "./certs/dhparam.pem"
+      },
+      "hsts": {
+        "enabled": true,
+        "maxAge": 31536000,
+        "includeSubdomains": true,
+        "preload": true
+      },
+      "ocspStapling": {
+        "enabled": true,
+        "responderURL": "http://ocsp.letsencrypt.org",
+        "cacheTime": 86400
+      },
+      "sessionTickets": false,
+      "sessionCache": "shared:SSL:10m",
+      "sessionTimeout": 300
+    },
+    "headers": {
+      "strictTransportSecurity": "max-age=31536000; includeSubDomains; preload",
+      "expectCT": "max-age=86400, enforce, report-uri=\"/api/security/ct-report\"",
+      "publicKeyPins": {
+        "enabled": false,
+        "pins": [],
+        "maxAge": 5184000,
+        "includeSubdomains": true,
+        "reportUri": "/api/security/hpkp-report"
+      }
+    },
+    "domains": {
+      "primary": "familyfinance.app",
+      "aliases": ["www.familyfinance.app"],
+      "subdomains": {
+        "api": "api.familyfinance.app",
+        "assets": "assets.familyfinance.app",
+        "cdn": "cdn.familyfinance.app"
+      },
+      "redirects": [
+        {
+          "from": "http://familyfinance.app",
+          "to": "https://familyfinance.app",
+          "status": 301,
+          "permanent": true
+        },
+        {
+          "from": "http://www.familyfinance.app",
+          "to": "https://familyfinance.app",
+          "status": 301,
+          "permanent": true
+        },
+        {
+          "from": "https://www.familyfinance.app",
+          "to": "https://familyfinance.app",
+          "status": 301,
+          "permanent": true
+        }
+      ]
+    },
+    "certificates": {
+      "letsencrypt": {
+        "email": "admin@familyfinance.app",
+        "server": "https://acme-v02.api.letsencrypt.org/directory",
+        "keyType": "ec256",
+        "challenge": "http-01",
+        "webroot": "/var/www/certbot",
+        "renewBefore": 2592000,
+        "postHook": "systemctl reload nginx"
+      },
+      "cloudflare": {
+        "enabled": false,
+        "apiToken": "",
+        "zoneId": "",
+        "proxied": true
+      },
+      "customCA": {
+        "enabled": false,
+        "ca": "./certs/custom-ca.pem",
+        "cert": "./certs/custom-cert.pem",
+        "key": "./certs/custom-key.pem"
+      }
+    },
+    "monitoring": {
+      "enabled": true,
+      "checks": [
+        {
+          "name": "certificate_expiry",
+          "interval": 86400,
+          "warningDays": 30,
+          "criticalDays": 7,
+          "alertChannels": ["email", "slack"]
+        },
+        {
+          "name": "ssl_labs_rating",
+          "interval": 604800,
+          "minRating": "A",
+          "alertChannels": ["email"]
+        },
+        {
+          "name": "certificate_transparency",
+          "interval": 3600,
+          "monitor": true,
+          "alertChannels": ["email"]
+        }
+      ],
+      "endpoints": [
+        "https://familyfinance.app",
+        "https://api.familyfinance.app"
+      ]
+    },
+    "backup": {
+      "enabled": true,
+      "location": "./backups/certs",
+      "retention": 90,
+      "encryption": {
+        "enabled": true,
+        "algorithm": "AES-256-GCM",
+        "keyFile": "./secrets/cert-backup-key"
+      },
+      "schedule": "0 2 * * 0"
+    },
+    "security": {
+      "keyProtection": {
+        "permissions": "0600",
+        "owner": "ssl-user",
+        "group": "ssl-group"
+      },
+      "hsm": {
+        "enabled": false,
+        "provider": "",
+        "slot": 0,
+        "pin": ""
+      },
+      "keyRotation": {
+        "enabled": true,
+        "interval": 31536000,
+        "algorithm": "ecdsa",
+        "keySize": 256
+      }
+    }
+  },
+  "dns": {
+    "provider": "vercel",
+    "zones": [
+      {
+        "name": "familyfinance.app",
+        "ttl": 300,
+        "records": [
+          {
+            "type": "A",
+            "name": "@",
+            "value": "76.76.19.123",
+            "ttl": 300
+          },
+          {
+            "type": "AAAA",
+            "name": "@",
+            "value": "2606:4700::6810:4b7b",
+            "ttl": 300
+          },
+          {
+            "type": "CNAME",
+            "name": "www",
+            "value": "familyfinance.app",
+            "ttl": 300
+          },
+          {
+            "type": "CNAME",
+            "name": "api",
+            "value": "vercel-deployment.vercel.app",
+            "ttl": 300
+          },
+          {
+            "type": "TXT",
+            "name": "@",
+            "value": "v=spf1 include:_spf.google.com ~all",
+            "ttl": 300
+          },
+          {
+            "type": "MX",
+            "name": "@",
+            "value": "10 mx.google.com",
+            "ttl": 300
+          }
+        ]
+      }
+    ],
+    "dnssec": {
+      "enabled": true,
+      "algorithm": "ECDSAP256SHA256",
+      "keyTag": 12345
+    },
+    "caa": {
+      "enabled": true,
+      "records": [
+        {
+          "flags": 0,
+          "tag": "issue",
+          "value": "letsencrypt.org"
+        },
+        {
+          "flags": 0,
+          "tag": "issuewild",
+          "value": "letsencrypt.org"
+        },
+        {
+          "flags": 0,
+          "tag": "iodef",
+          "value": "mailto:security@familyfinance.app"
+        }
+      ]
+    }
+  }
+}
