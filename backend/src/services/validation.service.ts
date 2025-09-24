@@ -696,4 +696,25 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateUpdateFamilyMember(data: {
+    role?: 'admin' | 'editor' | 'viewer';
+    permissions?: {
+      canManageBankAccounts?: boolean;
+      canEditPayments?: boolean;
+      canViewReports?: boolean;
+      canManageFamily?: boolean;
+    };
+  }): string[] {
+    const errors: string[] = [];
+
+    if (data.role !== undefined) {
+      const validRoles = ['admin', 'editor', 'viewer'];
+      if (!validRoles.includes(data.role)) {
+        errors.push('Role must be one of: admin, editor, viewer');
+      }
+    }
+
+    return errors;
+  }
 }
