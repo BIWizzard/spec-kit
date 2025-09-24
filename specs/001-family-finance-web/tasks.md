@@ -305,22 +305,22 @@ tests/
 - [x] T217d DELETE /api/payments/[id]/attributions/[attributionId] endpoint in backend/src/api/payments/[id]/attributions/[attributionId]/delete.ts
 
 ### Phase 5.5: Bank Integration Endpoints
-- [ ] T218 GET /api/bank-accounts endpoint in backend/src/api/bank-accounts/index.ts
-- [ ] T219 POST /api/bank-accounts endpoint in backend/src/api/bank-accounts/connect.ts
-- [ ] T220 GET /api/bank-accounts/[id] endpoint in backend/src/api/bank-accounts/[id]/index.ts
-- [ ] T221 PUT /api/bank-accounts/[id] endpoint in backend/src/api/bank-accounts/[id]/update.ts
-- [ ] T222 DELETE /api/bank-accounts/[id] endpoint in backend/src/api/bank-accounts/[id]/delete.ts
-- [ ] T223 POST /api/bank-accounts/[id]/sync endpoint in backend/src/api/bank-accounts/[id]/sync.ts
-- [ ] T224 POST /api/bank-accounts/[id]/reconnect endpoint in backend/src/api/bank-accounts/[id]/reconnect.ts
-- [ ] T225 GET /api/transactions endpoint in backend/src/api/transactions/index.ts
-- [ ] T226 GET /api/transactions/[id] endpoint in backend/src/api/transactions/[id]/index.ts
-- [ ] T227 PUT /api/transactions/[id] endpoint in backend/src/api/transactions/[id]/update.ts
-- [ ] T228 POST /api/transactions/categorize-batch endpoint in backend/src/api/transactions/categorize-batch.ts
-- [ ] T229 GET /api/transactions/uncategorized endpoint in backend/src/api/transactions/uncategorized.ts
-- [ ] T230 POST /api/transactions/match-payments endpoint in backend/src/api/transactions/match-payments.ts
-- [ ] T231 POST /api/plaid/link-token endpoint in backend/src/api/plaid/link-token.ts
-- [ ] T232 POST /api/plaid/webhook endpoint in backend/src/api/plaid/webhook.ts
-- [ ] T233 POST /api/bank-accounts/sync-all endpoint in backend/src/api/bank-accounts/sync-all.ts
+- [x] T218 GET /api/bank-accounts endpoint in backend/src/api/bank-accounts/index.ts
+- [x] T219 POST /api/bank-accounts endpoint in backend/src/api/bank-accounts/connect.ts
+- [x] T220 GET /api/bank-accounts/[id] endpoint in backend/src/api/bank-accounts/[id]/index.ts
+- [x] T221 PUT /api/bank-accounts/[id] endpoint in backend/src/api/bank-accounts/[id]/update.ts
+- [x] T222 DELETE /api/bank-accounts/[id] endpoint in backend/src/api/bank-accounts/[id]/delete.ts
+- [x] T223 POST /api/bank-accounts/[id]/sync endpoint in backend/src/api/bank-accounts/[id]/sync.ts
+- [x] T224 POST /api/bank-accounts/[id]/reconnect endpoint in backend/src/api/bank-accounts/[id]/reconnect.ts
+- [x] T225 GET /api/transactions endpoint in backend/src/api/transactions/index.ts
+- [x] T226 GET /api/transactions/[id] endpoint in backend/src/api/transactions/[id]/index.ts
+- [x] T227 PUT /api/transactions/[id] endpoint in backend/src/api/transactions/[id]/update.ts
+- [x] T228 POST /api/transactions/categorize-batch endpoint in backend/src/api/transactions/categorize-batch.ts
+- [x] T229 GET /api/transactions/uncategorized endpoint in backend/src/api/transactions/uncategorized.ts
+- [x] T230 POST /api/transactions/match-payments endpoint in backend/src/api/transactions/match-payments.ts
+- [x] T231 POST /api/plaid/link-token endpoint in backend/src/api/plaid/link-token.ts
+- [x] T232 POST /api/plaid/webhook endpoint in backend/src/api/plaid/webhook.ts
+- [x] T233 POST /api/bank-accounts/sync-all endpoint in backend/src/api/bank-accounts/sync-all.ts
 
 ### Phase 5.6: Budget Management Endpoints
 - [ ] T234 GET /api/budget-categories endpoint in backend/src/api/budget-categories/index.ts
