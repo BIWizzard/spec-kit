@@ -374,8 +374,8 @@ tests/
 - [x] T276 Rate limiting middleware in backend/src/middleware/rate-limit.ts
 - [x] T277 CORS configuration in backend/src/middleware/cors.ts
 - [x] T278 Request logging middleware in backend/src/middleware/logger.ts
-- [ ] T279 OpenAPI validation middleware in backend/src/middleware/openapi-validator.ts
-- [ ] T280 Security headers middleware in backend/src/middleware/security.ts
+- [x] T279 OpenAPI validation middleware in backend/src/middleware/openapi-validator.ts
+- [x] T280 Security headers middleware in backend/src/middleware/security.ts
 
 ### Phase 5.10: Infrastructure and Deployment
 - [ ] T281 Neon PostgreSQL database configuration in backend/src/lib/neon.ts
