@@ -468,7 +468,7 @@ tests/
 - [ ] T352 [P] Bank reconnection modal in frontend/src/components/bank/reconnect-modal.tsx
 - [ ] T353 [P] Transaction list component in frontend/src/components/bank/transaction-list.tsx
 - [ ] T354 [P] Transaction categorization modal in frontend/src/components/bank/categorize-modal.tsx
-- [ ] T355 [P] Batch categorization component in frontend/src/components/bank/batch-categorize.tsx
+- [x] T355 [P] Batch categorization component in frontend/src/components/bank/batch-categorize.tsx
 - [ ] T356 [P] Payment matching component in frontend/src/components/bank/payment-matching.tsx
 
 ### Phase 6.7: Budget Management Pages
