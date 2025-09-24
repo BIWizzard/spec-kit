@@ -445,7 +445,7 @@ tests/
 - [x] T333 [P] Bulk income creation component in frontend/src/components/income/bulk-create.tsx
 
 ### Phase 6.5: Payment Management Pages
-- [ ] T334 Payments page in frontend/src/app/payments/page.tsx
+- [x] T334 Payments page in frontend/src/app/payments/page.tsx
 - [ ] T335 Create payment page in frontend/src/app/payments/create/page.tsx
 - [ ] T336 Edit payment page in frontend/src/app/payments/[id]/edit/page.tsx
 - [ ] T337 Payment details page in frontend/src/app/payments/[id]/page.tsx
