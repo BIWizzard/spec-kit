@@ -39,12 +39,21 @@ tests/
 - **Phase 6: Frontend Implementation** ⏳ PENDING (T297-T415)
 - **Phase 7: Integration & Polish** ⏳ PENDING (T416-T475)
 
+## ⚠️ CRITICAL: Git Workflow Issue Must Be Fixed First
+
+**IMMEDIATE PRIORITY**: Address git workflow violation before continuing implementation.
+
 ## Next Session Priorities
-1. **PRIORITY**: Implement core services in Phase 4 (T145-T161)
+1. **CRITICAL PRIORITY**: Fix git workflow (read GIT_WORKFLOW.md)
+   - Choose remediation approach for missing Phase 1-2 commits
+   - Establish task-level commit discipline
+   - Commit after every single task going forward
+2. **AFTER GIT FIX**: Implement core services in Phase 4 (T145-T161)
    - Start with: UserService, FamilyService, IncomeService, PaymentService
    - All services should use Prisma client and follow established patterns
-2. After services complete: Implement API endpoints in Phase 5
-3. Ensure all contract tests pass as implementation progresses
+   - **COMMIT AFTER EACH TASK** (T145, then commit; T146, then commit; etc.)
+3. After services complete: Implement API endpoints in Phase 5
+4. Ensure all contract tests pass as implementation progresses
 
 ## Code Style
 TypeScript 5.x / Node.js 20 LTS: Follow standard conventions, no comments unless requested

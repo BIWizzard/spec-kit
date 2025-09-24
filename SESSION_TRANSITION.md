@@ -78,9 +78,33 @@
 - **Testing**: Jest + supertest + Playwright (E2E)
 - **Deployment**: Vercel (zero-cost architecture)
 
+## ⚠️ CRITICAL GIT WORKFLOW ISSUE
+
+**VIOLATION OF DEFINED COMMIT STRATEGY IDENTIFIED**
+
+The tasks.md specifies: *"Commit Strategy: Commit after each completed task for rollback capability"*
+
+**What Actually Happened:**
+- ❌ Phases 1-2 (T001-T026) completed but bundled into single commit
+- ❌ Lost fine-grained rollback capability
+- ❌ No individual task audit trail
+
+**Required Action for Next Session:**
+1. **READ** `GIT_WORKFLOW.md` for detailed remediation plan
+2. **CHOOSE** remediation approach (retroactive commits vs. document and move forward)
+3. **IMPLEMENT** task-level commit discipline for Phase 4
+4. **COMMIT** after every single task (T145, T146, T147, etc.)
+
 ## Branch Status:
 - **Current Branch**: `001-family-finance-web`
-- **Latest Commit**: Phase 3 TDD contract tests complete
-- **Ready for**: Phase 4 service layer implementation
+- **Latest Commit**: Phase 3 + session transition docs
+- **Git Issue**: Missing 26+ individual task commits from Phases 1-2
+- **Next Priority**: Fix git workflow BEFORE continuing Phase 4
 
-The implementation is well-structured and ready for the next developer to continue with Phase 4 service layer implementation following the established TDD methodology.
+## Success Criteria for Next Session:
+- [ ] Address git workflow issue per GIT_WORKFLOW.md
+- [ ] Commit after every individual task completion
+- [ ] Update tasks.md in separate commit after each task
+- [ ] Maintain atomic, rollback-safe commits
+
+The implementation is technically ready for Phase 4, but **git workflow must be fixed first** to maintain project quality and rollback capabilities.
