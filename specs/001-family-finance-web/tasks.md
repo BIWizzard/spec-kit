@@ -243,11 +243,11 @@ tests/
 - [x] T164 POST /api/auth/logout endpoint in backend/src/api/auth/logout.ts
 - [x] T165 POST /api/auth/refresh endpoint in backend/src/api/auth/refresh.ts
 - [x] T166 POST /api/auth/mfa/setup endpoint in backend/src/api/auth/mfa/setup.ts
-- [ ] T167 POST /api/auth/mfa/enable endpoint in backend/src/api/auth/mfa/enable.ts
-- [ ] T168 POST /api/auth/mfa/disable endpoint in backend/src/api/auth/mfa/disable.ts
-- [ ] T169 POST /api/auth/forgot-password endpoint in backend/src/api/auth/forgot-password.ts
-- [ ] T170 POST /api/auth/reset-password endpoint in backend/src/api/auth/reset-password.ts
-- [ ] T171 POST /api/auth/change-password endpoint in backend/src/api/auth/change-password.ts
+- [x] T167 POST /api/auth/mfa/enable endpoint in backend/src/api/auth/mfa/enable.ts
+- [x] T168 POST /api/auth/mfa/disable endpoint in backend/src/api/auth/mfa/disable.ts
+- [x] T169 POST /api/auth/forgot-password endpoint in backend/src/api/auth/forgot-password.ts
+- [x] T170 POST /api/auth/reset-password endpoint in backend/src/api/auth/reset-password.ts
+- [x] T171 POST /api/auth/change-password endpoint in backend/src/api/auth/change-password.ts
 - [ ] T172 POST /api/auth/verify-email endpoint in backend/src/api/auth/verify-email.ts
 - [ ] T173 POST /api/auth/resend-verification endpoint in backend/src/api/auth/resend-verification.ts
 - [ ] T174 GET /api/auth/me endpoint in backend/src/api/auth/me.ts
