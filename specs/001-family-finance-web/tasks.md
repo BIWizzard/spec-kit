@@ -439,7 +439,7 @@ tests/
 - [x] T327 Edit income page in frontend/src/app/income/[id]/edit/page.tsx
 - [x] T328 Income details page in frontend/src/app/income/[id]/page.tsx
 - [x] T329 [P] Income event list component in frontend/src/components/income/income-list.tsx
-- [ ] T330 [P] Income form component in frontend/src/components/income/income-form.tsx
+- [x] T330 [P] Income form component in frontend/src/components/income/income-form.tsx
 - [ ] T331 [P] Income attribution modal in frontend/src/components/income/attribution-modal.tsx
 - [ ] T332 [P] Income calendar view component in frontend/src/components/income/income-calendar.tsx
 - [ ] T333 [P] Bulk income creation component in frontend/src/components/income/bulk-create.tsx
