@@ -1,0 +1,211 @@
+{
+  "performance": {
+    "enabled": true,
+    "environment": {
+      "development": {
+        "enabled": false,
+        "sampleRate": 1.0,
+        "detailedLogging": true
+      },
+      "staging": {
+        "enabled": true,
+        "sampleRate": 0.5,
+        "detailedLogging": true
+      },
+      "production": {
+        "enabled": true,
+        "sampleRate": 0.1,
+        "detailedLogging": false
+      }
+    },
+    "thresholds": {
+      "api": {
+        "warning": 1000,
+        "critical": 5000,
+        "unit": "ms"
+      },
+      "database": {
+        "warning": 500,
+        "critical": 2000,
+        "unit": "ms"
+      },
+      "frontend": {
+        "fcp": {
+          "good": 1800,
+          "poor": 3000,
+          "unit": "ms"
+        },
+        "lcp": {
+          "good": 2500,
+          "poor": 4000,
+          "unit": "ms"
+        },
+        "fid": {
+          "good": 100,
+          "poor": 300,
+          "unit": "ms"
+        },
+        "cls": {
+          "good": 0.1,
+          "poor": 0.25,
+          "unit": "score"
+        }
+      },
+      "system": {
+        "memory": {
+          "warning": 104857600,
+          "critical": 268435456,
+          "unit": "bytes"
+        },
+        "cpu": {
+          "warning": 70,
+          "critical": 90,
+          "unit": "percent"
+        },
+        "eventLoop": {
+          "warning": 10,
+          "critical": 50,
+          "unit": "ms"
+        }
+      }
+    },
+    "metrics": {
+      "system": {
+        "enabled": true,
+        "interval": 30000,
+        "metrics": [
+          "memory_usage",
+          "cpu_usage",
+          "event_loop_lag",
+          "active_handles",
+          "garbage_collection"
+        ]
+      },
+      "api": {
+        "enabled": true,
+        "trackAllEndpoints": true,
+        "excludeHealthCheck": true,
+        "trackRequestSize": true,
+        "trackResponseSize": true,
+        "excludePaths": [
+          "/health",
+          "/metrics",
+          "/favicon.ico"
+        ]
+      },
+      "database": {
+        "enabled": true,
+        "trackQueries": true,
+        "trackConnections": true,
+        "logSlowQueries": true,
+        "slowQueryThreshold": 1000
+      },
+      "frontend": {
+        "enabled": true,
+        "webVitals": true,
+        "userInteractions": true,
+        "resourceTiming": true,
+        "componentRendering": false
+      }
+    },
+    "alerting": {
+      "enabled": true,
+      "channels": [
+        {
+          "type": "sentry",
+          "enabled": true,
+          "severity": "high"
+        },
+        {
+          "type": "logger",
+          "enabled": true,
+          "severity": "medium"
+        }
+      ],
+      "rules": [
+        {
+          "metric": "api_endpoint_duration",
+          "threshold": 5000,
+          "operator": "gt",
+          "severity": "high",
+          "message": "API endpoint response time exceeded threshold"
+        },
+        {
+          "metric": "database_query_duration",
+          "threshold": 2000,
+          "operator": "gt",
+          "severity": "medium",
+          "message": "Database query exceeded performance threshold"
+        },
+        {
+          "metric": "system_memory_usage",
+          "threshold": 268435456,
+          "operator": "gt",
+          "severity": "critical",
+          "message": "Memory usage exceeded critical threshold"
+        },
+        {
+          "metric": "largest_contentful_paint",
+          "threshold": 4000,
+          "operator": "gt",
+          "severity": "medium",
+          "message": "LCP exceeded poor threshold"
+        },
+        {
+          "metric": "cumulative_layout_shift",
+          "threshold": 0.25,
+          "operator": "gt",
+          "severity": "medium",
+          "message": "CLS exceeded poor threshold"
+        }
+      ]
+    },
+    "retention": {
+      "metrics": {
+        "inMemory": 1000,
+        "flushInterval": 60000
+      },
+      "logs": {
+        "maxAge": 604800000,
+        "maxSize": 104857600
+      }
+    },
+    "reporting": {
+      "enabled": true,
+      "interval": 300000,
+      "destinations": [
+        {
+          "type": "console",
+          "enabled": true,
+          "format": "summary"
+        },
+        {
+          "type": "file",
+          "enabled": false,
+          "path": "./logs/performance.log",
+          "format": "json"
+        },
+        {
+          "type": "external",
+          "enabled": false,
+          "endpoint": "",
+          "headers": {},
+          "format": "json"
+        }
+      ]
+    },
+    "profiling": {
+      "enabled": false,
+      "cpu": {
+        "enabled": false,
+        "sampleRate": 0.01,
+        "duration": 30000
+      },
+      "heap": {
+        "enabled": false,
+        "interval": 60000,
+        "maxSnapshots": 5
+      }
+    }
+  }
+}
