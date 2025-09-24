@@ -368,12 +368,12 @@ tests/
 - [x] T272 Environment info endpoint in backend/src/api/env/index.ts
 
 ### Phase 5.9: Middleware and Error Handling
-- [ ] T273 Authentication middleware in backend/src/middleware/auth.ts
-- [ ] T274 Request validation middleware in backend/src/middleware/validation.ts
-- [ ] T275 Error handling middleware in backend/src/middleware/error-handler.ts
-- [ ] T276 Rate limiting middleware in backend/src/middleware/rate-limit.ts
-- [ ] T277 CORS configuration in backend/src/middleware/cors.ts
-- [ ] T278 Request logging middleware in backend/src/middleware/logger.ts
+- [x] T273 Authentication middleware in backend/src/middleware/auth.ts
+- [x] T274 Request validation middleware in backend/src/middleware/validation.ts
+- [x] T275 Error handling middleware in backend/src/middleware/error-handler.ts
+- [x] T276 Rate limiting middleware in backend/src/middleware/rate-limit.ts
+- [x] T277 CORS configuration in backend/src/middleware/cors.ts
+- [x] T278 Request logging middleware in backend/src/middleware/logger.ts
 - [ ] T279 OpenAPI validation middleware in backend/src/middleware/openapi-validator.ts
 - [ ] T280 Security headers middleware in backend/src/middleware/security.ts
 
