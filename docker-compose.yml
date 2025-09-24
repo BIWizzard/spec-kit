@@ -1,0 +1,179 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for development
+  postgres:
+    image: postgres:15-alpine
+    container_name: family-finance-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: family_finance_dev
+      POSTGRES_USER: family_finance_user
+      POSTGRES_PASSWORD: dev_password_change_in_production
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/prisma/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U family_finance_user -d family_finance_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - family-finance-network
+
+  # Redis for caching (optional, not used in zero-cost setup)
+  redis:
+    image: redis:7-alpine
+    container_name: family-finance-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass dev_redis_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - family-finance-network
+
+  # Backend API service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: family-finance-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://family_finance_user:dev_password_change_in_production@postgres:5432/family_finance_dev
+      REDIS_URL: redis://:dev_redis_password@redis:6379
+      JWT_SECRET: dev-jwt-secret-change-this-in-production-make-it-really-long
+      PLAID_ENV: sandbox
+      PLAID_CLIENT_ID: sandbox_client_id
+      PLAID_SECRET: sandbox_secret_key
+      EMAIL_FROM: dev@familyfinance.local
+      LOG_LEVEL: debug
+      DEV_LOG_SQL: "true"
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - backend_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - family-finance-network
+
+  # Frontend Next.js service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: family-finance-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: dev-nextauth-secret-also-change-this-in-production
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - family-finance-network
+
+  # Mailhog for email testing in development
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: family-finance-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025" # SMTP server
+      - "8025:8025" # Web UI
+    networks:
+      - family-finance-network
+
+  # Adminer for database management
+  adminer:
+    image: adminer:4-standalone
+    container_name: family-finance-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: pepa-linha
+    depends_on:
+      - postgres
+    networks:
+      - family-finance-network
+
+  # Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: family-finance-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:dev_redis_password
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - family-finance-network
+
+  # Nginx reverse proxy for local development
+  nginx:
+    image: nginx:alpine
+    container_name: family-finance-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - family-finance-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_uploads:
+    driver: local
+
+networks:
+  family-finance-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

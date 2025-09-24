@@ -1,0 +1,48 @@
+# Docker Compose override for local development
+# This file extends docker-compose.yml with development-specific settings
+version: '3.8'
+
+services:
+  # Development-specific backend configuration
+  backend:
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - DEV_DISABLE_AUTH=false
+      - DEV_MOCK_PLAID=false
+      - DEV_CORS_ALLOW_ALL=true
+      - FEATURE_MFA_REQUIRED=false
+      - FEATURE_EMAIL_VERIFICATION=false
+      - FEATURE_RATE_LIMITING=false
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        while ! nc -z postgres 5432; do sleep 1; done &&
+        echo 'Database is ready!' &&
+        npx prisma migrate deploy &&
+        npx prisma db seed &&
+        npm run dev
+      "
+
+  # Development-specific frontend configuration
+  frontend:
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_PUBLIC_DEV_MODE=true
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    command: >
+      sh -c "
+        echo 'Waiting for backend...' &&
+        while ! nc -z backend 3001; do sleep 1; done &&
+        echo 'Backend is ready!' &&
+        npm run dev
+      "
+
+  # Override postgres for development with sample data
+  postgres:
+    environment:
+      - POSTGRES_DB=family_finance_dev
+      - POSTGRES_USER=family_finance_user
+      - POSTGRES_PASSWORD=dev_password_change_in_production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/prisma/migrations:/docker-entrypoint-initdb.d:ro
