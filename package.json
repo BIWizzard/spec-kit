@@ -1,0 +1,39 @@
+{
+  "name": "spec-kit",
+  "version": "1.0.0",
+  "description": "Repo for learning and practicing spec-kit",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BIWizzard/spec-kit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/BIWizzard/spec-kit/issues"
+  },
+  "homepage": "https://github.com/BIWizzard/spec-kit#readme",
+  "devDependencies": {
+    "@prisma/client": "^6.16.2",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "jest": "^30.1.3",
+    "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.4"
+  }
+}
