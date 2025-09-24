@@ -342,7 +342,7 @@ tests/
 
 ### Phase 5.7: Reports and Analytics Endpoints
 - [x] T250 GET /api/reports/cash-flow endpoint in backend/src/api/reports/cash-flow.ts
-- [ ] T251 GET /api/reports/spending-analysis endpoint in backend/src/api/reports/spending-analysis.ts
+- [x] T251 GET /api/reports/spending-analysis endpoint in backend/src/api/reports/spending-analysis.ts
 - [ ] T252 GET /api/reports/budget-performance endpoint in backend/src/api/reports/budget-performance.ts
 - [ ] T253 GET /api/reports/income-analysis endpoint in backend/src/api/reports/income-analysis.ts
 - [ ] T254 GET /api/reports/net-worth endpoint in backend/src/api/reports/net-worth.ts
