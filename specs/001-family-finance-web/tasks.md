@@ -347,7 +347,7 @@ tests/
 - [x] T253 GET /api/reports/income-analysis endpoint in backend/src/api/reports/income-analysis.ts
 - [x] T254 GET /api/reports/net-worth endpoint in backend/src/api/reports/net-worth.ts
 - [x] T255 GET /api/reports/savings-rate endpoint in backend/src/api/reports/savings-rate.ts
-- [ ] T256 GET /api/reports/debt-analysis endpoint in backend/src/api/reports/debt-analysis.ts
+- [x] T256 GET /api/reports/debt-analysis endpoint in backend/src/api/reports/debt-analysis.ts
 - [ ] T257 GET /api/reports/monthly-summary endpoint in backend/src/api/reports/monthly-summary.ts
 - [ ] T258 GET /api/reports/annual-summary endpoint in backend/src/api/reports/annual-summary.ts
 - [ ] T259 POST /api/reports/custom endpoint in backend/src/api/reports/custom.ts
