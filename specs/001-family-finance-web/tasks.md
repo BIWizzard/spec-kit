@@ -231,9 +231,9 @@ tests/
 ### Phase 4.2: Integration Services
 - [x] T157 PlaidIntegrationService for bank data sync in backend/src/services/plaid-integration.service.ts
 - [x] T158 EmailService with Resend integration for notifications in backend/src/services/email.service.ts
-- [ ] T159 AuditService for activity logging in backend/src/services/audit.service.ts
-- [ ] T160 ValidationService for data validation in backend/src/services/validation.service.ts
-- [ ] T161 CacheService with TanStack Query + PostgreSQL sessions (no Redis) in backend/src/services/cache.service.ts
+- [x] T159 AuditService for activity logging in backend/src/services/audit.service.ts
+- [x] T160 ValidationService for data validation in backend/src/services/validation.service.ts
+- [x] T161 CacheService with TanStack Query + PostgreSQL sessions (no Redis) in backend/src/services/cache.service.ts
 
 ## Phase 5: API Implementation
 
