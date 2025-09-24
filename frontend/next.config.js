@@ -3,7 +3,7 @@ const { withSentryConfig } = require('@sentry/nextjs')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    instrumentationHook: true,
+    // instrumentationHook: true, // Temporarily disabled
   },
   compress: true,
   poweredByHeader: false,
@@ -26,7 +26,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/(.*\\.(js|css|woff|woff2|ttf|eot|ico|png|jpg|jpeg|gif|svg|webp|avif))',
+        source: '/(.*)\\.(js|css|woff|woff2|ttf|eot|ico|png|jpg|jpeg|gif|svg|webp|avif)',
         headers: [
           {
             key: 'Cache-Control',
@@ -58,6 +58,5 @@ const sentryWebpackPluginOptions = {
 }
 
 // Make sure adding Sentry options is the last code to run before exporting
-module.exports = process.env.SENTRY_DSN ?
-  withSentryConfig(nextConfig, sentryWebpackPluginOptions) :
-  nextConfig
+// Temporarily disable Sentry for development
+module.exports = nextConfig
