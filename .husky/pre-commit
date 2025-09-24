@@ -1,0 +1,41 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Family Finance Web Application - Pre-commit Hook
+# This script runs before each commit to ensure code quality
+
+echo "🔍 Running pre-commit checks..."
+
+# Run lint-staged for staged files
+npx lint-staged
+
+# Check for merge conflicts
+if git diff --check HEAD~1; then
+    echo "✅ No merge conflict markers found"
+else
+    echo "❌ Merge conflict markers found. Please resolve them before committing."
+    exit 1
+fi
+
+# Check for TODO/FIXME comments in staged files
+staged_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx|js|jsx)$')
+if [ -n "$staged_files" ]; then
+    todo_count=$(echo "$staged_files" | xargs grep -l "TODO\|FIXME" | wc -l)
+    if [ "$todo_count" -gt 0 ]; then
+        echo "⚠️  Warning: Found $todo_count file(s) with TODO/FIXME comments"
+        echo "$staged_files" | xargs grep -n "TODO\|FIXME" || true
+        echo "Consider addressing these before committing."
+    fi
+fi
+
+# Check commit message format
+commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}'
+if ! head -1 .git/COMMIT_EDITMSG | grep -qE "$commit_regex"; then
+    echo "❌ Invalid commit message format!"
+    echo "Format: type(scope): description"
+    echo "Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+    echo "Example: feat(auth): add user login functionality"
+    exit 1
+fi
+
+echo "✅ Pre-commit checks passed!"
