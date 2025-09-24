@@ -603,4 +603,17 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateEmailVerification(data: {
+    token: string;
+    userId?: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    if (!data.token || data.token.trim().length === 0) {
+      errors.push('Verification token is required');
+    }
+
+    return errors;
+  }
 }

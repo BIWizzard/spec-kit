@@ -42,6 +42,13 @@ export class UserService {
     email: string;
     expiresAt: Date;
   }>();
+
+  // In-memory storage for email verification tokens (for MVP, in production use Redis or database)
+  private static emailVerificationTokens = new Map<string, {
+    userId: string;
+    email: string;
+    expiresAt: Date;
+  }>();
   static async authenticate(credentials: LoginCredentials, userAgent: string, ipAddress: string): Promise<{ user: FamilyMember; session: Session } | null> {
     const user = await prisma.familyMember.findUnique({
       where: {
@@ -143,6 +150,13 @@ export class UserService {
       },
     });
 
+    // Store verification token
+    this.emailVerificationTokens.set(verificationToken, {
+      userId: user.id,
+      email: user.email,
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    });
+
     return { user, verificationToken };
   }
 
@@ -181,18 +195,39 @@ export class UserService {
   }
 
   static async verifyEmail(userId: string, token: string): Promise<void> {
+    // Get verification token data
+    const tokenData = this.emailVerificationTokens.get(token);
+
+    if (!tokenData || tokenData.expiresAt < new Date()) {
+      // Clean up expired token
+      if (tokenData) {
+        this.emailVerificationTokens.delete(token);
+      }
+      throw new Error('Invalid verification token');
+    }
+
+    // Get user and verify token matches
     const user = await prisma.familyMember.findUnique({
-      where: { id: userId },
+      where: {
+        id: tokenData.userId,
+        email: tokenData.email,
+        deletedAt: null,
+      },
     });
 
     if (!user) {
+      this.emailVerificationTokens.delete(token);
       throw new Error('User not found');
     }
 
+    // Update user as verified
     await prisma.familyMember.update({
-      where: { id: userId },
+      where: { id: user.id },
       data: { emailVerified: true },
     });
+
+    // Remove the used verification token
+    this.emailVerificationTokens.delete(token);
 
     await this.logAuditEvent(user.familyId, user.id, 'update', 'FamilyMember', user.id,
       { emailVerified: false },
