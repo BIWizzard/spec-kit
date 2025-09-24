@@ -133,9 +133,12 @@ model BankAccount {
   familyId         String
   plaidAccountId   String      @unique
   plaidItemId      String
+  plaidAccessToken String?     // encrypted access token
+  institutionId    String      // Plaid institution ID
   institutionName  String
   accountName      String
   accountType      AccountType
+  accountSubtype   String?     // Plaid account subtype
   accountNumber    String      // last 4 digits only
   currentBalance   Decimal     @db.Decimal(12, 2)
   availableBalance Decimal     @db.Decimal(12, 2)
@@ -291,6 +294,9 @@ model Transaction {
   spendingCategoryId   String?
   categoryConfidence   Decimal?          @db.Decimal(3, 2) // 0-1
   userCategorized      Boolean           @default(false)
+  plaidCategoryId      String?           // Plaid category ID
+  plaidCategory        String?           // Plaid category hierarchy
+  accountOwner         String?           // Account owner from Plaid
   notes                String?
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
