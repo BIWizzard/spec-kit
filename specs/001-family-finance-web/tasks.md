@@ -437,7 +437,7 @@ tests/
 - [x] T325 Income events page in frontend/src/app/income/page.tsx
 - [x] T326 Create income page in frontend/src/app/income/create/page.tsx
 - [x] T327 Edit income page in frontend/src/app/income/[id]/edit/page.tsx
-- [ ] T328 Income details page in frontend/src/app/income/[id]/page.tsx
+- [x] T328 Income details page in frontend/src/app/income/[id]/page.tsx
 - [ ] T329 [P] Income event list component in frontend/src/components/income/income-list.tsx
 - [ ] T330 [P] Income form component in frontend/src/components/income/income-form.tsx
 - [ ] T331 [P] Income attribution modal in frontend/src/components/income/attribution-modal.tsx
