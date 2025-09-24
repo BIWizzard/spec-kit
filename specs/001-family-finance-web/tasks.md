@@ -238,11 +238,11 @@ tests/
 ## Phase 5: API Implementation
 
 ### Phase 5.1: Authentication Endpoints
-- [ ] T162 POST /api/auth/register endpoint in backend/src/api/auth/register.ts
-- [ ] T163 POST /api/auth/login endpoint in backend/src/api/auth/login.ts
-- [ ] T164 POST /api/auth/logout endpoint in backend/src/api/auth/logout.ts
-- [ ] T165 POST /api/auth/refresh endpoint in backend/src/api/auth/refresh.ts
-- [ ] T166 POST /api/auth/mfa/setup endpoint in backend/src/api/auth/mfa/setup.ts
+- [x] T162 POST /api/auth/register endpoint in backend/src/api/auth/register.ts
+- [x] T163 POST /api/auth/login endpoint in backend/src/api/auth/login.ts
+- [x] T164 POST /api/auth/logout endpoint in backend/src/api/auth/logout.ts
+- [x] T165 POST /api/auth/refresh endpoint in backend/src/api/auth/refresh.ts
+- [x] T166 POST /api/auth/mfa/setup endpoint in backend/src/api/auth/mfa/setup.ts
 - [ ] T167 POST /api/auth/mfa/enable endpoint in backend/src/api/auth/mfa/enable.ts
 - [ ] T168 POST /api/auth/mfa/disable endpoint in backend/src/api/auth/mfa/disable.ts
 - [ ] T169 POST /api/auth/forgot-password endpoint in backend/src/api/auth/forgot-password.ts
