@@ -216,7 +216,7 @@ tests/
 
 ### Phase 4.1: Core Services
 - [x] T145 [P] FamilyService CRUD operations in backend/src/services/family.service.ts
-- [ ] T146 [P] UserService authentication and profile in backend/src/services/user.service.ts
+- [x] T146 [P] UserService authentication and profile in backend/src/services/user.service.ts
 - [ ] T147 [P] IncomeService for income event management in backend/src/services/income.service.ts
 - [ ] T148 [P] PaymentService for payment management in backend/src/services/payment.service.ts
 - [ ] T149 [P] BudgetService for budget management in backend/src/services/budget.service.ts
