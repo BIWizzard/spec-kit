@@ -377,7 +377,52 @@ export class UserService {
   }
 
   static async resetPassword(token: string, newPassword: string): Promise<void> {
+    // Get reset token data
+    const tokenData = this.passwordResetTokens.get(token);
+
+    if (!tokenData || tokenData.expiresAt < new Date()) {
+      // Clean up expired token
+      if (tokenData) {
+        this.passwordResetTokens.delete(token);
+      }
+      throw new Error('Invalid or expired reset token');
+    }
+
+    // Get user
+    const user = await prisma.familyMember.findUnique({
+      where: {
+        id: tokenData.userId,
+        email: tokenData.email,
+        deletedAt: null,
+      },
+    });
+
+    if (!user) {
+      this.passwordResetTokens.delete(token);
+      throw new Error('User not found');
+    }
+
+    // Hash new password and update
     const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    await prisma.familyMember.update({
+      where: { id: user.id },
+      data: { passwordHash },
+    });
+
+    // Invalidate all sessions for security
+    await prisma.session.deleteMany({
+      where: { familyMemberId: user.id },
+    });
+
+    // Remove the used reset token
+    this.passwordResetTokens.delete(token);
+
+    // Log audit event
+    await this.logAuditEvent(user.familyId, user.id, 'update', 'FamilyMember', user.id,
+      {},
+      { action: 'password_reset_completed' }
+    );
   }
 
   static async logout(sessionToken: string): Promise<void> {

@@ -562,4 +562,22 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateResetPassword(data: {
+    token: string;
+    newPassword: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    if (!data.token || data.token.trim().length === 0) {
+      errors.push('Reset token is required');
+    }
+
+    const passwordValidation = this.validatePassword(data.newPassword);
+    if (!passwordValidation.isValid) {
+      errors.push(...passwordValidation.errors);
+    }
+
+    return errors;
+  }
 }
