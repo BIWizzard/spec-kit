@@ -318,4 +318,14 @@ export class FamilyService {
       },
     });
   }
+
+  static async getFamilyMemberById(familyId: string, memberId: string): Promise<FamilyMember | null> {
+    return prisma.familyMember.findFirst({
+      where: {
+        id: memberId,
+        familyId,
+        deletedAt: null,
+      },
+    });
+  }
 }

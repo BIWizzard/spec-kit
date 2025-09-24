@@ -629,4 +629,46 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateFamilyUpdate(data: {
+    name?: string;
+    settings?: {
+      timezone?: string;
+      currency?: string;
+      fiscalYearStart?: number;
+    };
+  }): string[] {
+    const errors: string[] = [];
+
+    if (data.name !== undefined) {
+      const nameValidation = this.validateStringLength(data.name, 'Family name', 1, 100);
+      if (!nameValidation.isValid) {
+        errors.push(...nameValidation.errors);
+      }
+    }
+
+    if (data.settings) {
+      if (data.settings.timezone !== undefined) {
+        // Basic timezone validation
+        if (!data.settings.timezone || data.settings.timezone.trim().length === 0) {
+          errors.push('Timezone is required');
+        }
+      }
+
+      if (data.settings.currency !== undefined) {
+        const currencyRegex = /^[A-Z]{3}$/;
+        if (!data.settings.currency || !currencyRegex.test(data.settings.currency)) {
+          errors.push('Currency must be a 3-letter ISO code (e.g., USD, EUR)');
+        }
+      }
+
+      if (data.settings.fiscalYearStart !== undefined) {
+        if (data.settings.fiscalYearStart < 1 || data.settings.fiscalYearStart > 12) {
+          errors.push('Fiscal year start must be between 1 and 12');
+        }
+      }
+    }
+
+    return errors;
+  }
 }
