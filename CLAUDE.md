@@ -24,6 +24,12 @@ Auto-generated from all feature plans. Last updated: 2025-01-24
 ## Active Technologies
 - TypeScript 5.x / Node.js 20 LTS + React 18, Next.js 14, Prisma ORM, TanStack Query (001-family-finance-web)
 
+## Brand Identity
+- **Product Brand**: KGiQ Family Finance (under KGiQ freelance brand)
+- **Design System**: Glassmorphic dark theme with KGiQ color palette
+- **Color Scheme**: Golden yellow (#FFD166), sage green (#8FAD77), blue-gray (#5E7F9B)
+- **UI Style**: Professional glassmorphic cards with subtle transparency and backdrop blur effects
+
 ## Project Structure
 ```
 backend/
