@@ -309,4 +309,13 @@ export class FamilyService {
       },
     });
   }
+
+  static async getFamilyMemberCount(familyId: string): Promise<number> {
+    return prisma.familyMember.count({
+      where: {
+        familyId,
+        deletedAt: null,
+      },
+    });
+  }
 }
