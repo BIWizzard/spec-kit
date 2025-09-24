@@ -429,4 +429,89 @@ export class ValidationService {
 
     return this.validateMultiple(...validations);
   }
+
+  // Authentication validation methods
+  static validateRegistration(data: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    familyName: string;
+    timezone?: string;
+    currency?: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    const emailValidation = this.validateEmail(data.email);
+    if (!emailValidation.isValid) {
+      errors.push(...emailValidation.errors);
+    }
+
+    const passwordValidation = this.validatePassword(data.password);
+    if (!passwordValidation.isValid) {
+      errors.push(...passwordValidation.errors);
+    }
+
+    const firstNameValidation = this.validateStringLength(data.firstName, 'First name', 1, 50);
+    if (!firstNameValidation.isValid) {
+      errors.push(...firstNameValidation.errors);
+    }
+
+    const lastNameValidation = this.validateStringLength(data.lastName, 'Last name', 1, 50);
+    if (!lastNameValidation.isValid) {
+      errors.push(...lastNameValidation.errors);
+    }
+
+    const familyNameValidation = this.validateStringLength(data.familyName, 'Family name', 1, 100);
+    if (!familyNameValidation.isValid) {
+      errors.push(...familyNameValidation.errors);
+    }
+
+    if (data.currency) {
+      const currencyRegex = /^[A-Z]{3}$/;
+      if (!currencyRegex.test(data.currency)) {
+        errors.push('Currency must be a 3-letter ISO code (e.g., USD, EUR)');
+      }
+    }
+
+    return errors;
+  }
+
+  static validateLogin(data: {
+    email: string;
+    password: string;
+    totpCode?: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    const emailValidation = this.validateEmail(data.email);
+    if (!emailValidation.isValid) {
+      errors.push(...emailValidation.errors);
+    }
+
+    if (!data.password || data.password.trim().length === 0) {
+      errors.push('Password is required');
+    }
+
+    if (data.totpCode) {
+      const totpRegex = /^[0-9]{6}$/;
+      if (!totpRegex.test(data.totpCode)) {
+        errors.push('TOTP code must be 6 digits');
+      }
+    }
+
+    return errors;
+  }
+
+  static validateRefreshToken(token: string): string[] {
+    const errors: string[] = [];
+
+    if (!token || token.trim().length === 0) {
+      errors.push('Refresh token is required');
+    } else if (typeof token !== 'string') {
+      errors.push('Refresh token must be a string');
+    }
+
+    return errors;
+  }
 }

@@ -494,6 +494,15 @@ export class UserService {
     });
   }
 
+  static async extendSession(sessionId: string): Promise<void> {
+    await prisma.session.update({
+      where: { id: sessionId },
+      data: {
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Extend by 24 hours
+      },
+    });
+  }
+
   private static async logAuditEvent(
     familyId: string,
     memberId: string,
