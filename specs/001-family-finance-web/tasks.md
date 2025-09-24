@@ -258,29 +258,29 @@ tests/
 ### Phase 5.2: Family Management Endpoints
 - [ ] T178 GET /api/families endpoint in backend/src/api/families/index.ts
 - [ ] T179 PUT /api/families endpoint in backend/src/api/families/update.ts
-- [ ] T180 GET /api/families/members endpoint in backend/src/api/families/members/index.ts
-- [ ] T181 POST /api/families/members endpoint in backend/src/api/families/members/invite.ts
-- [ ] T182 PUT /api/families/members/[id] endpoint in backend/src/api/families/members/[id]/update.ts
-- [ ] T183 DELETE /api/families/members/[id] endpoint in backend/src/api/families/members/[id]/delete.ts
-- [ ] T184 GET /api/families/invitations endpoint in backend/src/api/families/invitations/index.ts
-- [ ] T185 GET /api/families/invitations/[id] endpoint in backend/src/api/families/invitations/[id]/index.ts
-- [ ] T186 DELETE /api/families/invitations/[id] endpoint in backend/src/api/families/invitations/[id]/cancel.ts
-- [ ] T187 POST /api/families/invitations/[id]/accept endpoint in backend/src/api/families/invitations/[id]/accept.ts
-- [ ] T188 POST /api/families/invitations/[id]/resend endpoint in backend/src/api/families/invitations/[id]/resend.ts
-- [ ] T189 GET /api/families/activity endpoint in backend/src/api/families/activity.ts
+- [x] T180 GET /api/families/members endpoint in backend/src/api/families/members/index.ts
+- [x] T181 POST /api/families/members endpoint in backend/src/api/families/members/invite.ts
+- [x] T182 PUT /api/families/members/[id] endpoint in backend/src/api/families/members/[id]/update.ts
+- [x] T183 DELETE /api/families/members/[id] endpoint in backend/src/api/families/members/[id]/delete.ts
+- [x] T184 GET /api/families/invitations endpoint in backend/src/api/families/invitations/index.ts
+- [x] T185 GET /api/families/invitations/[id] endpoint in backend/src/api/families/invitations/[id]/index.ts
+- [x] T186 DELETE /api/families/invitations/[id] endpoint in backend/src/api/families/invitations/[id]/cancel.ts
+- [x] T187 POST /api/families/invitations/[id]/accept endpoint in backend/src/api/families/invitations/[id]/accept.ts
+- [x] T188 POST /api/families/invitations/[id]/resend endpoint in backend/src/api/families/invitations/[id]/resend.ts
+- [x] T189 GET /api/families/activity endpoint in backend/src/api/families/activity.ts
 
 ### Phase 5.3: Income Management Endpoints
-- [ ] T190 GET /api/income-events endpoint in backend/src/api/income-events/index.ts
-- [ ] T191 POST /api/income-events endpoint in backend/src/api/income-events/create.ts
-- [ ] T192 GET /api/income-events/[id] endpoint in backend/src/api/income-events/[id]/index.ts
-- [ ] T193 PUT /api/income-events/[id] endpoint in backend/src/api/income-events/[id]/update.ts
-- [ ] T194 DELETE /api/income-events/[id] endpoint in backend/src/api/income-events/[id]/delete.ts
-- [ ] T195 POST /api/income-events/[id]/mark-received endpoint in backend/src/api/income-events/[id]/mark-received.ts
-- [ ] T196 POST /api/income-events/[id]/revert-received endpoint in backend/src/api/income-events/[id]/revert-received.ts
-- [ ] T197 GET /api/income-events/[id]/attributions endpoint in backend/src/api/income-events/[id]/attributions.ts
-- [ ] T198 GET /api/income-events/upcoming endpoint in backend/src/api/income-events/upcoming.ts
-- [ ] T199 GET /api/income-events/summary endpoint in backend/src/api/income-events/summary.ts
-- [ ] T200 POST /api/income-events/bulk endpoint in backend/src/api/income-events/bulk.ts
+- [x] T190 GET /api/income-events endpoint in backend/src/api/income-events/index.ts
+- [x] T191 POST /api/income-events endpoint in backend/src/api/income-events/create.ts
+- [x] T192 GET /api/income-events/[id] endpoint in backend/src/api/income-events/[id]/index.ts
+- [x] T193 PUT /api/income-events/[id] endpoint in backend/src/api/income-events/[id]/update.ts
+- [x] T194 DELETE /api/income-events/[id] endpoint in backend/src/api/income-events/[id]/delete.ts
+- [x] T195 POST /api/income-events/[id]/mark-received endpoint in backend/src/api/income-events/[id]/mark-received.ts
+- [x] T196 POST /api/income-events/[id]/revert-received endpoint in backend/src/api/income-events/[id]/revert-received.ts
+- [x] T197 GET /api/income-events/[id]/attributions endpoint in backend/src/api/income-events/[id]/attributions.ts
+- [x] T198 GET /api/income-events/upcoming endpoint in backend/src/api/income-events/upcoming.ts
+- [x] T199 GET /api/income-events/summary endpoint in backend/src/api/income-events/summary.ts
+- [x] T200 POST /api/income-events/bulk endpoint in backend/src/api/income-events/bulk.ts
 
 ### Phase 5.4: Payment Management Endpoints
 - [ ] T201 GET /api/payments endpoint in backend/src/api/payments/index.ts
