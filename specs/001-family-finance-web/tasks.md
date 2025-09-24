@@ -248,12 +248,12 @@ tests/
 - [x] T169 POST /api/auth/forgot-password endpoint in backend/src/api/auth/forgot-password.ts
 - [x] T170 POST /api/auth/reset-password endpoint in backend/src/api/auth/reset-password.ts
 - [x] T171 POST /api/auth/change-password endpoint in backend/src/api/auth/change-password.ts
-- [ ] T172 POST /api/auth/verify-email endpoint in backend/src/api/auth/verify-email.ts
-- [ ] T173 POST /api/auth/resend-verification endpoint in backend/src/api/auth/resend-verification.ts
-- [ ] T174 GET /api/auth/me endpoint in backend/src/api/auth/me.ts
-- [ ] T175 GET /api/auth/sessions endpoint in backend/src/api/auth/sessions/index.ts
-- [ ] T176 DELETE /api/auth/sessions endpoint in backend/src/api/auth/sessions/delete-all.ts
-- [ ] T177 DELETE /api/auth/sessions/[id] endpoint in backend/src/api/auth/sessions/[id].ts
+- [x] T172 POST /api/auth/verify-email endpoint in backend/src/api/auth/verify-email.ts
+- [x] T173 POST /api/auth/resend-verification endpoint in backend/src/api/auth/resend-verification.ts
+- [x] T174 GET /api/auth/me endpoint in backend/src/api/auth/me.ts
+- [x] T175 GET /api/auth/sessions endpoint in backend/src/api/auth/sessions/index.ts
+- [x] T176 DELETE /api/auth/sessions endpoint in backend/src/api/auth/sessions/delete-all.ts
+- [x] T177 DELETE /api/auth/sessions/[id] endpoint in backend/src/api/auth/sessions/[id].ts
 
 ### Phase 5.2: Family Management Endpoints
 - [ ] T178 GET /api/families endpoint in backend/src/api/families/index.ts
