@@ -448,7 +448,7 @@ tests/
 - [x] T334 Payments page in frontend/src/app/payments/page.tsx
 - [x] T335 Create payment page in frontend/src/app/payments/create/page.tsx
 - [x] T336 Edit payment page in frontend/src/app/payments/[id]/edit/page.tsx
-- [ ] T337 Payment details page in frontend/src/app/payments/[id]/page.tsx
+- [x] T337 Payment details page in frontend/src/app/payments/[id]/page.tsx
 - [ ] T338 Overdue payments page in frontend/src/app/payments/overdue/page.tsx
 - [ ] T339 [P] Payment list component in frontend/src/components/payments/payment-list.tsx
 - [ ] T340 [P] Payment form component in frontend/src/components/payments/payment-form.tsx
