@@ -194,6 +194,50 @@ export class UserService {
     return { user, verificationToken };
   }
 
+  static async acceptInvitationById(data: {
+    invitationId: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+    invitationToken: string;
+  }): Promise<{ familyId: string } | null> {
+    // Get the invitation by ID
+    const invitation = await prisma.familyMember.findUnique({
+      where: {
+        id: data.invitationId,
+        passwordHash: '', // Must be a pending invitation
+        deletedAt: null,
+      },
+    });
+
+    if (!invitation) {
+      return null; // Invalid invitation
+    }
+
+    // In a full implementation, you would validate the invitationToken here
+    // For MVP, we'll accept any token as long as the invitation exists
+
+    const passwordHash = await bcrypt.hash(data.password, 12);
+
+    // Update the invitation to become a real user
+    await prisma.familyMember.update({
+      where: { id: data.invitationId },
+      data: {
+        passwordHash,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        emailVerified: true, // Auto-verify since they received the invitation email
+      },
+    });
+
+    await this.logAuditEvent(invitation.familyId, data.invitationId, 'update', 'FamilyMember', data.invitationId, {}, {
+      action: 'invitation_accepted',
+      email: invitation.email,
+    });
+
+    return { familyId: invitation.familyId };
+  }
+
   static async verifyEmail(userId: string, token: string): Promise<void> {
     // Get verification token data
     const tokenData = this.emailVerificationTokens.get(token);

@@ -717,4 +717,34 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateAcceptInvitation(data: {
+    firstName: string;
+    lastName: string;
+    password: string;
+    invitationToken: string;
+  }): string[] {
+    const errors: string[] = [];
+
+    const firstNameValidation = this.validateStringLength(data.firstName, 'First name', 1, 50);
+    if (!firstNameValidation.isValid) {
+      errors.push(...firstNameValidation.errors);
+    }
+
+    const lastNameValidation = this.validateStringLength(data.lastName, 'Last name', 1, 50);
+    if (!lastNameValidation.isValid) {
+      errors.push(...lastNameValidation.errors);
+    }
+
+    const passwordValidation = this.validatePassword(data.password);
+    if (!passwordValidation.isValid) {
+      errors.push(...passwordValidation.errors);
+    }
+
+    if (!data.invitationToken || data.invitationToken.trim().length === 0) {
+      errors.push('Invitation token is required');
+    }
+
+    return errors;
+  }
 }
