@@ -446,7 +446,7 @@ tests/
 
 ### Phase 6.5: Payment Management Pages
 - [x] T334 Payments page in frontend/src/app/payments/page.tsx
-- [ ] T335 Create payment page in frontend/src/app/payments/create/page.tsx
+- [x] T335 Create payment page in frontend/src/app/payments/create/page.tsx
 - [ ] T336 Edit payment page in frontend/src/app/payments/[id]/edit/page.tsx
 - [ ] T337 Payment details page in frontend/src/app/payments/[id]/page.tsx
 - [ ] T338 Overdue payments page in frontend/src/app/payments/overdue/page.tsx
