@@ -472,7 +472,7 @@ tests/
 - [x] T356 [P] Payment matching component in frontend/src/components/bank/payment-matching.tsx
 
 ### Phase 6.7: Budget Management Pages
-- [ ] T357 Budget overview page in frontend/src/app/budget/page.tsx
+- [x] T357 Budget overview page in frontend/src/app/budget/page.tsx
 - [ ] T358 Budget categories page in frontend/src/app/budget/categories/page.tsx
 - [ ] T359 Budget allocations page in frontend/src/app/budget/allocations/page.tsx
 - [ ] T360 Budget performance page in frontend/src/app/budget/performance/page.tsx
