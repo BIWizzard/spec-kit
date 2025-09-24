@@ -747,4 +747,46 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateCreateIncomeEvent(data: {
+    sourceId: string;
+    amount: number;
+    receivedDate: string;
+    description?: string;
+    metadata?: Record<string, any>;
+  }): string[] {
+    const errors: string[] = [];
+
+    if (!data.sourceId || data.sourceId.trim().length === 0) {
+      errors.push('Income source ID is required');
+    }
+
+    if (typeof data.amount !== 'number' || data.amount <= 0) {
+      errors.push('Amount must be a positive number');
+    }
+
+    if (!data.receivedDate || data.receivedDate.trim().length === 0) {
+      errors.push('Received date is required');
+    } else {
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(data.receivedDate)) {
+        errors.push('Received date must be in YYYY-MM-DD format');
+      } else {
+        const parsedDate = new Date(data.receivedDate + 'T00:00:00.000Z');
+        if (isNaN(parsedDate.getTime())) {
+          errors.push('Received date must be a valid date');
+        }
+      }
+    }
+
+    if (data.description !== undefined && typeof data.description !== 'string') {
+      errors.push('Description must be a string');
+    }
+
+    if (data.description && data.description.length > 500) {
+      errors.push('Description cannot exceed 500 characters');
+    }
+
+    return errors;
+  }
 }
