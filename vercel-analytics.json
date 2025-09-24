@@ -1,0 +1,67 @@
+{
+  "analytics": {
+    "enabled": true,
+    "mode": "auto",
+    "beforeSend": null,
+    "debug": false,
+    "disableAutoTrack": false
+  },
+  "speedInsights": {
+    "enabled": true,
+    "sampleRate": 1.0,
+    "debug": false,
+    "route": null
+  },
+  "webVitals": {
+    "enabled": true,
+    "attribution": true
+  },
+  "monitoring": {
+    "errorTracking": {
+      "enabled": true,
+      "sampleRate": 1.0,
+      "ignoreErrors": [
+        "ChunkLoadError",
+        "ResizeObserver loop limit exceeded",
+        "Script error",
+        "Network request failed"
+      ]
+    },
+    "performanceTracking": {
+      "enabled": true,
+      "trackComponents": true,
+      "trackHooks": true,
+      "trackAPI": true
+    },
+    "customMetrics": {
+      "enabled": true,
+      "events": [
+        "user_registration",
+        "bank_connection",
+        "payment_created",
+        "income_added",
+        "budget_updated",
+        "report_generated"
+      ]
+    }
+  },
+  "privacy": {
+    "respectDoNotTrack": true,
+    "anonymizeIPs": true,
+    "cookieConsent": false
+  },
+  "environments": {
+    "development": {
+      "enabled": false,
+      "debug": true
+    },
+    "preview": {
+      "enabled": true,
+      "sampleRate": 0.5
+    },
+    "production": {
+      "enabled": true,
+      "sampleRate": 1.0
+    }
+  }
+}
