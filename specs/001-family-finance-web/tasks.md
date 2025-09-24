@@ -401,13 +401,13 @@ tests/
 
 ### Phase 6.1: Core Layout and Navigation
 - [x] T299 Main layout component in frontend/src/app/layout.tsx
-- [ ] T300 [P] Navigation component in frontend/src/components/navigation/nav.tsx
-- [ ] T301 [P] Sidebar component in frontend/src/components/navigation/sidebar.tsx
-- [ ] T300 [P] Header component in frontend/src/components/layout/header.tsx
-- [ ] T301 [P] Footer component in frontend/src/components/layout/footer.tsx
-- [ ] T302 [P] Loading components in frontend/src/components/ui/loading.tsx
-- [ ] T303 [P] Error boundary component in frontend/src/components/ui/error-boundary.tsx
-- [ ] T304 [P] Toast notification system in frontend/src/components/ui/toast.tsx
+- [x] T300 [P] Navigation component in frontend/src/components/navigation/nav.tsx
+- [x] T301 [P] Sidebar component in frontend/src/components/navigation/sidebar.tsx
+- [x] T302 [P] Header component in frontend/src/components/layout/header.tsx
+- [x] T303 [P] Footer component in frontend/src/components/layout/footer.tsx
+- [x] T304 [P] Loading components in frontend/src/components/ui/loading.tsx
+- [x] T305 [P] Error boundary component in frontend/src/components/ui/error-boundary.tsx
+- [x] T306 [P] Toast notification system in frontend/src/components/ui/toast.tsx
 
 ### Phase 6.2: Authentication Pages
 - [ ] T305 Login page in frontend/src/app/login/page.tsx
