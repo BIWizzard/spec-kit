@@ -476,6 +476,18 @@ export class UserService {
     return session.familyMember;
   }
 
+  static async getUserWithFamily(userId: string): Promise<(FamilyMember & { family: any }) | null> {
+    return prisma.familyMember.findUnique({
+      where: {
+        id: userId,
+        deletedAt: null,
+      },
+      include: {
+        family: true,
+      },
+    });
+  }
+
   private static async logAuditEvent(
     familyId: string,
     memberId: string,
