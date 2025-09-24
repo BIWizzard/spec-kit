@@ -458,18 +458,18 @@ tests/
 - [ ] T344 [P] Spending categories management in frontend/src/components/payments/spending-categories.tsx
 
 ### Phase 6.6: Bank Integration Pages
-- [ ] T345 Bank accounts page in frontend/src/app/bank-accounts/page.tsx
-- [ ] T346 Connect bank page in frontend/src/app/bank-accounts/connect/page.tsx
-- [ ] T347 Bank account details page in frontend/src/app/bank-accounts/[id]/page.tsx
-- [ ] T348 Transactions page in frontend/src/app/transactions/page.tsx
-- [ ] T349 Uncategorized transactions page in frontend/src/app/transactions/uncategorized/page.tsx
-- [ ] T350 [P] Bank account list component in frontend/src/components/bank/account-list.tsx
-- [ ] T351 [P] Connect bank modal in frontend/src/components/bank/connect-modal.tsx
-- [ ] T352 [P] Bank reconnection modal in frontend/src/components/bank/reconnect-modal.tsx
+- [x] T345 Bank accounts page in frontend/src/app/bank-accounts/page.tsx
+- [x] T346 Connect bank page in frontend/src/app/bank-accounts/connect/page.tsx
+- [x] T347 Bank account details page in frontend/src/app/bank-accounts/[id]/page.tsx
+- [x] T348 Transactions page in frontend/src/app/transactions/page.tsx
+- [x] T349 Uncategorized transactions page in frontend/src/app/transactions/uncategorized/page.tsx
+- [x] T350 [P] Bank account list component in frontend/src/components/bank/account-list.tsx
+- [x] T351 [P] Connect bank modal in frontend/src/components/bank/connect-modal.tsx
+- [x] T352 [P] Bank reconnection modal in frontend/src/components/bank/reconnect-modal.tsx
 - [ ] T353 [P] Transaction list component in frontend/src/components/bank/transaction-list.tsx
 - [ ] T354 [P] Transaction categorization modal in frontend/src/components/bank/categorize-modal.tsx
 - [x] T355 [P] Batch categorization component in frontend/src/components/bank/batch-categorize.tsx
-- [ ] T356 [P] Payment matching component in frontend/src/components/bank/payment-matching.tsx
+- [x] T356 [P] Payment matching component in frontend/src/components/bank/payment-matching.tsx
 
 ### Phase 6.7: Budget Management Pages
 - [ ] T357 Budget overview page in frontend/src/app/budget/page.tsx
