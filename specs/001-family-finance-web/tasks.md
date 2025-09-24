@@ -223,7 +223,7 @@ tests/
 - [ ] T150 [P] BankService for Plaid integration in backend/src/services/bank.service.ts
 - [ ] T151 [P] TransactionService for transaction categorization in backend/src/services/transaction.service.ts
 - [ ] T152 [P] ReportsService for analytics and reports in backend/src/services/reports.service.ts
-- [ ] T153 [P] AttributionService for payment-income linking in backend/src/services/attribution.service.ts
+- [x] T153 [P] AttributionService for payment-income linking in backend/src/services/attribution.service.ts
 - [ ] T154 [P] SpendingCategoryService for category management in backend/src/services/spending-category.service.ts
 - [ ] T155 [P] ScheduledReportService for automated reports in backend/src/services/scheduled-report.service.ts
 - [ ] T156 [P] ExportService for data export functionality in backend/src/services/export.service.ts
