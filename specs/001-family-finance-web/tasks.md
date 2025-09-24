@@ -425,7 +425,7 @@ tests/
 
 ### Phase 6.3: Dashboard and Overview
 - [x] T317 Dashboard page in frontend/src/app/dashboard/page.tsx
-- [ ] T318 [P] Dashboard metrics cards in frontend/src/components/dashboard/metrics-cards.tsx
+- [x] T318 [P] Dashboard metrics cards in frontend/src/components/dashboard/metrics-cards.tsx
 - [ ] T319 [P] Cash flow chart component in frontend/src/components/dashboard/cash-flow-chart.tsx
 - [ ] T320 [P] Recent activity component in frontend/src/components/dashboard/recent-activity.tsx
 - [ ] T321 [P] Upcoming events component in frontend/src/components/dashboard/upcoming-events.tsx
