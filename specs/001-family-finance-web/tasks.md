@@ -362,40 +362,40 @@ tests/
 - [x] T268 GET /api/analytics/insights endpoint in backend/src/api/analytics/insights.ts
 
 ### Phase 5.8: Infrastructure and Configuration Endpoints
-- [ ] T267 OpenAPI schema validation endpoint in backend/src/api/schema/validate.ts
-- [ ] T268 API documentation endpoint in backend/src/api/docs/index.ts
-- [ ] T269 Health check endpoint in backend/src/api/health/index.ts
-- [ ] T270 Environment info endpoint in backend/src/api/env/index.ts
+- [x] T269 OpenAPI schema validation endpoint in backend/src/api/schema/validate.ts
+- [x] T270 API documentation endpoint in backend/src/api/docs/index.ts
+- [x] T271 Health check endpoint in backend/src/api/health/index.ts
+- [x] T272 Environment info endpoint in backend/src/api/env/index.ts
 
 ### Phase 5.9: Middleware and Error Handling
-- [ ] T271 Authentication middleware in backend/src/middleware/auth.ts
-- [ ] T272 Request validation middleware in backend/src/middleware/validation.ts
-- [ ] T273 Error handling middleware in backend/src/middleware/error-handler.ts
-- [ ] T274 Rate limiting middleware in backend/src/middleware/rate-limit.ts
-- [ ] T275 CORS configuration in backend/src/middleware/cors.ts
-- [ ] T276 Request logging middleware in backend/src/middleware/logger.ts
-- [ ] T277 OpenAPI validation middleware in backend/src/middleware/openapi-validator.ts
-- [ ] T278 Security headers middleware in backend/src/middleware/security.ts
+- [ ] T273 Authentication middleware in backend/src/middleware/auth.ts
+- [ ] T274 Request validation middleware in backend/src/middleware/validation.ts
+- [ ] T275 Error handling middleware in backend/src/middleware/error-handler.ts
+- [ ] T276 Rate limiting middleware in backend/src/middleware/rate-limit.ts
+- [ ] T277 CORS configuration in backend/src/middleware/cors.ts
+- [ ] T278 Request logging middleware in backend/src/middleware/logger.ts
+- [ ] T279 OpenAPI validation middleware in backend/src/middleware/openapi-validator.ts
+- [ ] T280 Security headers middleware in backend/src/middleware/security.ts
 
 ### Phase 5.10: Infrastructure and Deployment
-- [ ] T279 Neon PostgreSQL database configuration in backend/src/lib/neon.ts
-- [ ] T280 Environment variables configuration in .env.example and .env.local
-- [ ] T281 Vercel deployment configuration in vercel.json
-- [ ] T282 Database migration scripts in backend/prisma/migrations/
-- [ ] T283 Database seeding scripts in backend/prisma/seed.ts
-- [ ] T284 Docker configuration for development in docker-compose.yml
-- [ ] T285 GitHub Actions CI/CD pipeline in .github/workflows/ci.yml
-- [ ] T286 Production environment setup script in scripts/setup-production.sh
-- [ ] T287 Database backup strategy configuration in scripts/backup-db.sh
-- [ ] T288 Monitoring and logging setup with Vercel Analytics
-- [ ] T289 Error tracking setup with Sentry integration
-- [ ] T290 Performance monitoring configuration
-- [ ] T291 Security configuration for production environment
-- [ ] T292 SSL certificate and domain configuration
-- [ ] T293 CDN configuration for static assets
-- [ ] T294 API rate limiting configuration per environment
-- [ ] T295 Automated testing pipeline configuration
-- [ ] T296 Code quality checks and linting pipeline
+- [ ] T281 Neon PostgreSQL database configuration in backend/src/lib/neon.ts
+- [ ] T282 Environment variables configuration in .env.example and .env.local
+- [ ] T283 Vercel deployment configuration in vercel.json
+- [ ] T284 Database migration scripts in backend/prisma/migrations/
+- [ ] T285 Database seeding scripts in backend/prisma/seed.ts
+- [ ] T286 Docker configuration for development in docker-compose.yml
+- [ ] T287 GitHub Actions CI/CD pipeline in .github/workflows/ci.yml
+- [ ] T288 Production environment setup script in scripts/setup-production.sh
+- [ ] T289 Database backup strategy configuration in scripts/backup-db.sh
+- [ ] T290 Monitoring and logging setup with Vercel Analytics
+- [ ] T291 Error tracking setup with Sentry integration
+- [ ] T292 Performance monitoring configuration
+- [ ] T293 Security configuration for production environment
+- [ ] T294 SSL certificate and domain configuration
+- [ ] T295 CDN configuration for static assets
+- [ ] T296 API rate limiting configuration per environment
+- [ ] T297 Automated testing pipeline configuration
+- [ ] T298 Code quality checks and linting pipeline
 
 ## Phase 6: Frontend Implementation
 
