@@ -220,17 +220,17 @@ tests/
 - [x] T147 [P] IncomeService for income event management in backend/src/services/income.service.ts
 - [x] T148 [P] PaymentService for payment management in backend/src/services/payment.service.ts
 - [x] T149 [P] BudgetService for budget management in backend/src/services/budget.service.ts
-- [ ] T150 [P] BankService for Plaid integration in backend/src/services/bank.service.ts
-- [ ] T151 [P] TransactionService for transaction categorization in backend/src/services/transaction.service.ts
-- [ ] T152 [P] ReportsService for analytics and reports in backend/src/services/reports.service.ts
+- [x] T150 [P] BankService for Plaid integration in backend/src/services/bank.service.ts
+- [x] T151 [P] TransactionService for transaction categorization in backend/src/services/transaction.service.ts
+- [x] T152 [P] ReportsService for analytics and reports in backend/src/services/reports.service.ts
 - [x] T153 [P] AttributionService for payment-income linking in backend/src/services/attribution.service.ts
-- [ ] T154 [P] SpendingCategoryService for category management in backend/src/services/spending-category.service.ts
-- [ ] T155 [P] ScheduledReportService for automated reports in backend/src/services/scheduled-report.service.ts
-- [ ] T156 [P] ExportService for data export functionality in backend/src/services/export.service.ts
+- [x] T154 [P] SpendingCategoryService for category management in backend/src/services/spending-category.service.ts
+- [x] T155 [P] ScheduledReportService for automated reports in backend/src/services/scheduled-report.service.ts
+- [x] T156 [P] ExportService for data export functionality in backend/src/services/export.service.ts
 
 ### Phase 4.2: Integration Services
-- [ ] T157 PlaidIntegrationService for bank data sync in backend/src/services/plaid-integration.service.ts
-- [ ] T158 EmailService with Resend integration for notifications in backend/src/services/email.service.ts
+- [x] T157 PlaidIntegrationService for bank data sync in backend/src/services/plaid-integration.service.ts
+- [x] T158 EmailService with Resend integration for notifications in backend/src/services/email.service.ts
 - [ ] T159 AuditService for activity logging in backend/src/services/audit.service.ts
 - [ ] T160 ValidationService for data validation in backend/src/services/validation.service.ts
 - [ ] T161 CacheService with TanStack Query + PostgreSQL sessions (no Redis) in backend/src/services/cache.service.ts
