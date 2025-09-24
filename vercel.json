@@ -1,0 +1,187 @@
+{
+  "version": 2,
+  "name": "family-finance-web",
+  "alias": ["family-finance.vercel.app"],
+  "regions": ["iad1"],
+  "framework": "nextjs",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "projectSettings": {
+          "framework": "nextjs",
+          "buildCommand": "npm run build",
+          "outputDirectory": ".next",
+          "installCommand": "npm install"
+        }
+      }
+    },
+    {
+      "src": "backend/src/**/*.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["backend/prisma/**", "backend/package.json"]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/backend/src/api/$1",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization"
+      }
+    },
+    {
+      "src": "/health",
+      "dest": "/backend/src/api/health/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "APP_NAME": "Family Finance",
+    "APP_VERSION": "1.0.0"
+  },
+  "build": {
+    "env": {
+      "DATABASE_URL": "@database-url",
+      "JWT_SECRET": "@jwt-secret",
+      "NEXTAUTH_SECRET": "@nextauth-secret",
+      "PLAID_CLIENT_ID": "@plaid-client-id",
+      "PLAID_SECRET": "@plaid-secret",
+      "PLAID_ENV": "production",
+      "RESEND_API_KEY": "@resend-api-key",
+      "WEBHOOK_SECRET": "@webhook-secret"
+    }
+  },
+  "functions": {
+    "backend/src/api/**/*.ts": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://family-finance.vercel.app"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.plaid.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https://api.plaid.com https://*.vercel.app; frame-src https://cdn.plaid.com; object-src 'none'; base-uri 'self'; form-action 'self';"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/docs",
+      "destination": "/api/docs",
+      "permanent": false
+    },
+    {
+      "source": "/swagger",
+      "destination": "/api/docs",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/backend/src/api/health/index.ts"
+    },
+    {
+      "source": "/api/env",
+      "destination": "/backend/src/api/env/index.ts"
+    },
+    {
+      "source": "/api/docs",
+      "destination": "/backend/src/api/docs/index.ts"
+    }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "github": {
+    "enabled": false
+  },
+  "crons": [
+    {
+      "path": "/api/cron/sync-bank-accounts",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/process-scheduled-reports",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-sessions",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
