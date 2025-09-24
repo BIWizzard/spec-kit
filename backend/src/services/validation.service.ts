@@ -514,4 +514,19 @@ export class ValidationService {
 
     return errors;
   }
+
+  static validateTotpCode(code: string): string[] {
+    const errors: string[] = [];
+
+    if (!code || code.trim().length === 0) {
+      errors.push('TOTP code is required');
+    } else {
+      const totpRegex = /^[0-9]{6}$/;
+      if (!totpRegex.test(code)) {
+        errors.push('TOTP code must be exactly 6 digits');
+      }
+    }
+
+    return errors;
+  }
 }
