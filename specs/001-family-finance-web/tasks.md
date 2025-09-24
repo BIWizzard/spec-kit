@@ -383,7 +383,7 @@ tests/
 - [x] T283 Vercel deployment configuration in vercel.json
 - [x] T284 Database migration scripts in backend/prisma/migrations/
 - [x] T285 Database seeding scripts in backend/prisma/seed.ts
-- [ ] T286 Docker configuration for development in docker-compose.yml
+- [x] T286 Docker configuration for development in docker-compose.yml
 - [ ] T287 GitHub Actions CI/CD pipeline in .github/workflows/ci.yml
 - [ ] T288 Production environment setup script in scripts/setup-production.sh
 - [ ] T289 Database backup strategy configuration in scripts/backup-db.sh
