@@ -378,7 +378,7 @@ tests/
 - [x] T280 Security headers middleware in backend/src/middleware/security.ts
 
 ### Phase 5.10: Infrastructure and Deployment
-- [ ] T281 Neon PostgreSQL database configuration in backend/src/lib/neon.ts
+- [x] T281 Neon PostgreSQL database configuration in backend/src/lib/neon.ts
 - [ ] T282 Environment variables configuration in .env.example and .env.local
 - [ ] T283 Vercel deployment configuration in vercel.json
 - [ ] T284 Database migration scripts in backend/prisma/migrations/
