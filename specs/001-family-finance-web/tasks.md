@@ -323,16 +323,16 @@ tests/
 - [x] T233 POST /api/bank-accounts/sync-all endpoint in backend/src/api/bank-accounts/sync-all.ts
 
 ### Phase 5.6: Budget Management Endpoints
-- [ ] T234 GET /api/budget-categories endpoint in backend/src/api/budget-categories/index.ts
-- [ ] T235 POST /api/budget-categories endpoint in backend/src/api/budget-categories/create.ts
-- [ ] T236 GET /api/budget-categories/[id] endpoint in backend/src/api/budget-categories/[id]/index.ts
-- [ ] T237 PUT /api/budget-categories/[id] endpoint in backend/src/api/budget-categories/[id]/update.ts
-- [ ] T238 DELETE /api/budget-categories/[id] endpoint in backend/src/api/budget-categories/[id]/delete.ts
-- [ ] T239 POST /api/budget-categories/validate-percentages endpoint in backend/src/api/budget-categories/validate-percentages.ts
-- [ ] T240 GET /api/budget-allocations endpoint in backend/src/api/budget-allocations/index.ts
-- [ ] T241 GET /api/budget-allocations/[id] endpoint in backend/src/api/budget-allocations/[id]/index.ts
-- [ ] T242 PUT /api/budget-allocations/[id] endpoint in backend/src/api/budget-allocations/[id]/update.ts
-- [ ] T243 POST /api/budget-allocations/[incomeEventId]/generate endpoint in backend/src/api/budget-allocations/[incomeEventId]/generate.ts
+- [x] T234 GET /api/budget-categories endpoint in backend/src/api/budget-categories/index.ts
+- [x] T235 POST /api/budget-categories endpoint in backend/src/api/budget-categories/create.ts
+- [x] T236 GET /api/budget-categories/[id] endpoint in backend/src/api/budget-categories/[id]/index.ts
+- [x] T237 PUT /api/budget-categories/[id] endpoint in backend/src/api/budget-categories/[id]/update.ts
+- [x] T238 DELETE /api/budget-categories/[id] endpoint in backend/src/api/budget-categories/[id]/delete.ts
+- [x] T239 POST /api/budget-categories/validate-percentages endpoint in backend/src/api/budget-categories/validate-percentages.ts
+- [x] T240 GET /api/budget-allocations endpoint in backend/src/api/budget-allocations/index.ts
+- [x] T241 GET /api/budget-allocations/[id] endpoint in backend/src/api/budget-allocations/[id]/index.ts
+- [x] T242 PUT /api/budget-allocations/[id] endpoint in backend/src/api/budget-allocations/[id]/update.ts
+- [x] T243 POST /api/budget-allocations/[incomeEventId]/generate endpoint in backend/src/api/budget-allocations/[incomeEventId]/generate.ts
 - [ ] T244 GET /api/budget-allocations/[incomeEventId]/summary endpoint in backend/src/api/budget-allocations/[incomeEventId]/summary.ts
 - [ ] T245 GET /api/budget/overview endpoint in backend/src/api/budget/overview.ts
 - [ ] T246 GET /api/budget/performance endpoint in backend/src/api/budget/performance.ts
