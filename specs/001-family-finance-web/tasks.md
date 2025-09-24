@@ -434,7 +434,7 @@ tests/
 - [x] T324 [P] Quick actions component in frontend/src/components/dashboard/quick-actions.tsx
 
 ### Phase 6.4: Income Management Pages
-- [ ] T325 Income events page in frontend/src/app/income/page.tsx
+- [x] T325 Income events page in frontend/src/app/income/page.tsx
 - [ ] T326 Create income page in frontend/src/app/income/create/page.tsx
 - [ ] T327 Edit income page in frontend/src/app/income/[id]/edit/page.tsx
 - [ ] T328 Income details page in frontend/src/app/income/[id]/page.tsx
