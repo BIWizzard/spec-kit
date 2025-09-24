@@ -64,7 +64,8 @@
   "functions": {
     "backend/src/api/**/*.ts": {
       "runtime": "nodejs18.x",
-      "maxDuration": 30
+      "maxDuration": 30,
+      "memory": 1024
     }
   },
   "headers": [

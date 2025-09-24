@@ -1,8 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
+import {
+  getRateLimitConfig,
+  getCurrentEnvironment,
+  getUserTierRateLimit,
+  getIPRateLimitMultiplier,
+  RateLimitConfig
+} from '../config/rate-limits';
 
 export interface RateLimitOptions {
   windowMs: number; // Time window in milliseconds
-  max: number; // Maximum number of requests per window
+  max: number | ((req: Request) => number); // Maximum number of requests per window
   message?: string;
   keyGenerator?: (req: Request) => string;
   skipSuccessfulRequests?: boolean;
@@ -72,6 +79,9 @@ export function rateLimit(options: RateLimitOptions) {
       const now = Date.now();
       const resetTime = now + windowMs;
 
+      // Calculate max requests (support dynamic max)
+      const maxRequests = typeof max === 'function' ? max(req) : max;
+
       // Get current request count
       const current = await store.get(key);
       let totalRequests = 1;
@@ -84,13 +94,13 @@ export function rateLimit(options: RateLimitOptions) {
       await store.set(key, { totalRequests, resetTime: current?.resetTime || resetTime });
 
       // Calculate remaining requests and reset time
-      const remaining = Math.max(0, max - totalRequests);
+      const remaining = Math.max(0, maxRequests - totalRequests);
       const resetTimeInSeconds = Math.ceil((current?.resetTime || resetTime) / 1000);
 
       // Add standard headers
       if (standardHeaders) {
         res.set({
-          'RateLimit-Limit': max.toString(),
+          'RateLimit-Limit': maxRequests.toString(),
           'RateLimit-Remaining': remaining.toString(),
           'RateLimit-Reset': resetTimeInSeconds.toString(),
         });
@@ -99,14 +109,14 @@ export function rateLimit(options: RateLimitOptions) {
       // Add legacy headers for backward compatibility
       if (legacyHeaders) {
         res.set({
-          'X-RateLimit-Limit': max.toString(),
+          'X-RateLimit-Limit': maxRequests.toString(),
           'X-RateLimit-Remaining': remaining.toString(),
           'X-RateLimit-Reset': resetTimeInSeconds.toString(),
         });
       }
 
       // Check if limit exceeded
-      if (totalRequests > max) {
+      if (totalRequests > maxRequests) {
         res.set('Retry-After', Math.ceil(windowMs / 1000).toString());
 
         return res.status(429).json({
@@ -144,54 +154,72 @@ export function rateLimit(options: RateLimitOptions) {
   };
 }
 
-// Preset configurations for different rate limits
+// Environment-aware preset configurations
 export const rateLimitPresets = {
   // General API requests
-  general: rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-  }),
+  general: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'general');
+    return rateLimit(config);
+  },
 
   // Authentication endpoints (stricter)
-  auth: rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // limit each IP to 5 requests per windowMs
-    message: 'Too many authentication attempts, please try again later.',
-  }),
+  auth: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'auth');
+    return rateLimit(config);
+  },
 
   // Password reset (very strict)
-  passwordReset: rateLimit({
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 3, // limit each IP to 3 requests per hour
-    message: 'Too many password reset attempts, please try again later.',
-  }),
+  passwordReset: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'passwordReset');
+    return rateLimit(config);
+  },
+
+  // Bank sync (resource intensive)
+  bankSync: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'bankSync');
+    return rateLimit(config);
+  },
 
   // File upload (moderate)
-  upload: rateLimit({
-    windowMs: 60 * 1000, // 1 minute
-    max: 10, // limit each IP to 10 uploads per minute
-    message: 'Too many uploads, please try again later.',
-  }),
+  fileUpload: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'fileUpload');
+    return rateLimit(config);
+  },
+
+  // Report export (resource intensive)
+  reportExport: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'reportExport');
+    return rateLimit(config);
+  },
 
   // API documentation (lenient)
-  docs: rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 50, // limit each IP to 50 requests per minute
-  }),
+  docs: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'docs');
+    return rateLimit(config);
+  },
 
   // Health checks (very lenient)
-  health: rateLimit({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    max: 100, // limit each IP to 100 requests per minute
-  }),
+  health: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'health');
+    return rateLimit(config);
+  },
+
+  // General API (same as general, for backward compatibility)
+  api: () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), 'api');
+    return rateLimit(config);
+  },
 };
 
-// User-based rate limiting (requires authentication)
-export function userRateLimit(options: RateLimitOptions & { userIdField?: string }) {
-  const { userIdField = 'id', ...rateLimitOptions } = options;
+// User-based rate limiting with tier support (requires authentication)
+export function userRateLimit(
+  rateLimitType: keyof import('../config/rate-limits').RateLimitTier,
+  options?: { userIdField?: string }
+) {
+  const { userIdField = 'id' } = options || {};
 
   return rateLimit({
-    ...rateLimitOptions,
+    ...getRateLimitConfig(getCurrentEnvironment(), rateLimitType),
     keyGenerator: (req) => {
       const user = (req as any).user;
       if (user && user[userIdField]) {
@@ -199,13 +227,32 @@ export function userRateLimit(options: RateLimitOptions & { userIdField?: string
       }
       return req.ip || 'anonymous';
     },
+    // Override with user tier limits if applicable
+    max: (req) => {
+      const user = (req as any).user;
+      const ip = req.ip || 'unknown';
+      const baseConfig = getRateLimitConfig(getCurrentEnvironment(), rateLimitType);
+      let max = baseConfig.max;
+
+      // Apply user tier limits
+      if (user && user.tier) {
+        const tierConfig = getUserTierRateLimit(user.tier, rateLimitType);
+        if (tierConfig && tierConfig.max) {
+          max = tierConfig.max;
+        }
+      }
+
+      // Apply IP multipliers
+      const multiplier = getIPRateLimitMultiplier(ip);
+      return Math.ceil(max * multiplier);
+    },
   });
 }
 
-// Family-based rate limiting
-export function familyRateLimit(options: RateLimitOptions) {
+// Family-based rate limiting with environment awareness
+export function familyRateLimit(rateLimitType: keyof import('../config/rate-limits').RateLimitTier) {
   return rateLimit({
-    ...options,
+    ...getRateLimitConfig(getCurrentEnvironment(), rateLimitType),
     keyGenerator: (req) => {
       const user = (req as any).user;
       if (user && user.familyId) {
@@ -213,5 +260,27 @@ export function familyRateLimit(options: RateLimitOptions) {
       }
       return req.ip || 'anonymous';
     },
+    // Apply IP multipliers
+    max: (req) => {
+      const ip = req.ip || 'unknown';
+      const baseConfig = getRateLimitConfig(getCurrentEnvironment(), rateLimitType);
+      const multiplier = getIPRateLimitMultiplier(ip);
+      return Math.ceil(baseConfig.max * multiplier);
+    },
   });
+}
+
+// Enhanced rate limit factory for specific endpoint types
+export function createEnvironmentRateLimit(rateLimitType: keyof import('../config/rate-limits').RateLimitTier) {
+  return () => {
+    const config = getRateLimitConfig(getCurrentEnvironment(), rateLimitType);
+    return rateLimit({
+      ...config,
+      max: (req) => {
+        const ip = req.ip || 'unknown';
+        const multiplier = getIPRateLimitMultiplier(ip);
+        return Math.ceil(config.max * multiplier);
+      },
+    });
+  };
 }
