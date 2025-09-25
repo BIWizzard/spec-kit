@@ -514,12 +514,12 @@ tests/
 - [x] T392 Family members page in frontend/src/app/family/members/page.tsx
 - [x] T393 Family invitations page in frontend/src/app/family/invitations/page.tsx
 - [x] T394 Family activity page in frontend/src/app/family/activity/page.tsx
-- [ ] T395 [P] Family members component in frontend/src/components/family/members.tsx
-- [ ] T396 [P] Family member profile component in frontend/src/components/family/member-profile.tsx
-- [ ] T397 [P] Invite member modal in frontend/src/components/family/invite-modal.tsx
-- [ ] T398 [P] Family invitations list in frontend/src/components/family/invitations-list.tsx
-- [ ] T399 [P] Family activity log in frontend/src/components/family/activity-log.tsx
-- [ ] T400 [P] Family settings form in frontend/src/components/family/settings-form.tsx
+- [x] T395 [P] Family members component in frontend/src/components/family/members.tsx
+- [x] T396 [P] Family member profile component in frontend/src/components/family/member-profile.tsx
+- [x] T397 [P] Invite member modal in frontend/src/components/family/invite-modal.tsx
+- [x] T398 [P] Family invitations list in frontend/src/components/family/invitations-list.tsx
+- [x] T399 [P] Family activity log in frontend/src/components/family/activity-log.tsx
+- [x] T400 [P] Family settings form in frontend/src/components/family/settings-form.tsx
 
 ### Phase 6.10: State Management and API Integration
 - [ ] T401 [P] Authentication store in frontend/src/stores/auth.store.ts
