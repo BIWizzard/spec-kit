@@ -560,7 +560,7 @@ tests/
 - [x] T432 [P] E2E test for scheduled reports in tests/e2e/scheduled-reports.spec.ts
 
 ### Phase 7.2: Unit Tests
-- [ ] T433 [P] Unit tests for validation utils in tests/unit/test_validation_utils.ts
+- [x] T433 [P] Unit tests for validation utils in tests/unit/test_validation_utils.ts
 - [ ] T434 [P] Unit tests for date utilities in tests/unit/test_date_utils.ts
 - [ ] T435 [P] Unit tests for currency formatting in tests/unit/test_currency_utils.ts
 - [ ] T436 [P] Unit tests for Plaid integration in tests/unit/test_plaid_service.ts
