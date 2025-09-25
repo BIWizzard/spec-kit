@@ -475,9 +475,9 @@ tests/
 - [x] T357 Budget overview page in frontend/src/app/budget/page.tsx
 - [x] T358 Budget categories page in frontend/src/app/budget/categories/page.tsx
 - [x] T359 Budget allocations page in frontend/src/app/budget/allocations/page.tsx
-- [ ] T360 Budget performance page in frontend/src/app/budget/performance/page.tsx
-- [ ] T361 Budget projections page in frontend/src/app/budget/projections/page.tsx
-- [ ] T362 Budget templates page in frontend/src/app/budget/templates/page.tsx
+- [x] T360 Budget performance page in frontend/src/app/budget/performance/page.tsx
+- [x] T361 Budget projections page in frontend/src/app/budget/projections/page.tsx
+- [x] T362 Budget templates page in frontend/src/app/budget/templates/page.tsx
 - [ ] T363 [P] Budget categories list in frontend/src/components/budget/categories-list.tsx
 - [ ] T364 [P] Budget category form in frontend/src/components/budget/category-form.tsx
 - [ ] T365 [P] Budget allocation component in frontend/src/components/budget/allocation.tsx
