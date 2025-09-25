@@ -550,7 +550,7 @@ tests/
 - [x] T422 [P] E2E test for transaction categorization in tests/e2e/transaction-categorization.spec.ts
 - [x] T423 [P] E2E test for income management in tests/e2e/income-management.spec.ts
 - [x] T424 [P] E2E test for payment management in tests/e2e/payment-management.spec.ts
-- [ ] T425 [P] E2E test for payment attribution in tests/e2e/payment-attribution.spec.ts
+- [x] T425 [P] E2E test for payment attribution in tests/e2e/payment-attribution.spec.ts
 - [ ] T426 [P] E2E test for budget setup in tests/e2e/budget-setup.spec.ts
 - [ ] T427 [P] E2E test for budget allocation in tests/e2e/budget-allocation.spec.ts
 - [ ] T428 [P] E2E test for cash flow calendar in tests/e2e/calendar.spec.ts
