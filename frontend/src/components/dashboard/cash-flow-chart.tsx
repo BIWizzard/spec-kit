@@ -42,7 +42,7 @@ function TimeframeSelector({ timeframe, onTimeframeChange }: ChartProps) {
   )
 }
 
-function CashFlowChart({ data }: { data: CashFlowDataPoint[] }) {
+function CashFlowChartInner({ data }: { data: CashFlowDataPoint[] }) {
   const maxValue = Math.max(...data.map(d => Math.max(d.income, d.expenses, d.balance)))
   const minValue = Math.min(...data.map(d => Math.min(d.income, d.expenses, d.balance, 0)))
   const range = maxValue - minValue
@@ -305,7 +305,7 @@ export default function CashFlowChart() {
 
       {/* Chart */}
       <div className="relative">
-        <CashFlowChart data={currentData} />
+        <CashFlowChartInner data={currentData} />
         <CashFlowLegend />
       </div>
 
