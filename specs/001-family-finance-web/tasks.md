@@ -487,7 +487,7 @@ tests/
 - [x] T369 [P] Percentage validation component in frontend/src/components/budget/percentage-validator.tsx
 
 ### Phase 6.8: Calendar and Reports
-- [ ] T370 Calendar page in frontend/src/app/calendar/page.tsx
+- [x] T370 Calendar page in frontend/src/app/calendar/page.tsx
 - [ ] T371 Reports page in frontend/src/app/reports/page.tsx
 - [ ] T372 Cash flow report page in frontend/src/app/reports/cash-flow/page.tsx
 - [ ] T373 Spending analysis page in frontend/src/app/reports/spending/page.tsx
