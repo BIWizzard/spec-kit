@@ -562,7 +562,7 @@ tests/
 ### Phase 7.2: Unit Tests
 - [x] T433 [P] Unit tests for validation utils in tests/unit/test_validation_utils.ts
 - [x] T434 [P] Unit tests for date utilities in tests/unit/test_date_utils.ts
-- [ ] T435 [P] Unit tests for currency formatting in tests/unit/test_currency_utils.ts
+- [x] T435 [P] Unit tests for currency formatting in tests/unit/test_currency_utils.ts
 - [ ] T436 [P] Unit tests for Plaid integration in tests/unit/test_plaid_service.ts
 - [ ] T437 [P] Unit tests for attribution logic in tests/unit/test_attribution_logic.ts
 - [ ] T438 [P] Unit tests for email service in tests/unit/test_email_service.ts
