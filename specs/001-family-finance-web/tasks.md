@@ -494,7 +494,7 @@ tests/
 - [x] T374 Budget performance report page in frontend/src/app/reports/budget-performance/page.tsx
 - [x] T375 Income analysis page in frontend/src/app/reports/income-analysis/page.tsx
 - [x] T376 Net worth report page in frontend/src/app/reports/net-worth/page.tsx
-- [ ] T377 Savings rate report page in frontend/src/app/reports/savings-rate/page.tsx
+- [x] T377 Savings rate report page in frontend/src/app/reports/savings-rate/page.tsx
 - [ ] T378 Custom reports page in frontend/src/app/reports/custom/page.tsx
 - [ ] T379 Scheduled reports page in frontend/src/app/reports/scheduled/page.tsx
 - [x] T380 [P] Cash flow calendar component in frontend/src/components/calendar/cash-flow-calendar.tsx
