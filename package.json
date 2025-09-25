@@ -79,5 +79,8 @@
     "prettier": "^3.6.2",
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.4"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.55.1"
   }
 }
