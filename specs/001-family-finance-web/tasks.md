@@ -608,7 +608,7 @@ tests/
 - [x] T471a Set up Neon PostgreSQL database and connection string
 - [x] T471b Configure authentication provider (Supabase Auth or NextAuth)
 - [x] T471c Set up Plaid API development account and obtain keys
-- [ ] T471d Configure Resend email service for notifications
+- [x] T471d Configure Resend email service for notifications
 - [ ] T471e Deploy to Vercel staging environment
 - [ ] T471f Run Prisma migrations on real database
 - [ ] T471g Verify all service connections and create .env files
