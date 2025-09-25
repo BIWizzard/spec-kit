@@ -568,7 +568,7 @@ tests/
 - [x] T438 [P] Unit tests for email service in tests/unit/test_email_service.ts
 - [x] T439 [P] Unit tests for export service in tests/unit/test_export_service.ts
 - [x] T440 [P] Unit tests for cache service in tests/unit/test_cache_service.ts
-- [ ] T441 [P] Unit tests for budget calculations in tests/unit/test_budget_calculations.ts
+- [x] T441 [P] Unit tests for budget calculations in tests/unit/test_budget_calculations.ts
 - [ ] T442 [P] Unit tests for report generators in tests/unit/test_report_generators.ts
 - [ ] T443 [P] Unit tests for authentication helpers in tests/unit/test_auth_helpers.ts
 - [ ] T444 [P] Unit tests for API middleware in tests/unit/test_middleware.ts
