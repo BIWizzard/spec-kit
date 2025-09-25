@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { ChevronDown, Check } from 'lucide-react';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 // Select Context
@@ -142,7 +142,7 @@ export const SelectTrigger: React.FC<SelectTriggerProps> = ({
       {...props}
     >
       <span className="block truncate">{children}</span>
-      <ChevronDownIcon
+      <ChevronDown
         className={`h-4 w-4 opacity-50 transition-transform duration-200 ${
           open ? 'rotate-180' : ''
         }`}
@@ -247,7 +247,7 @@ export const SelectItem: React.FC<SelectItemProps> = ({
     >
       <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
         {isSelected && (
-          <CheckIcon className="h-4 w-4 text-[#FFD166]" />
+          <Check className="h-4 w-4 text-[#FFD166]" />
         )}
       </span>
       <span className="block truncate">{children}</span>
