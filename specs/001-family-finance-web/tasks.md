@@ -75,142 +75,142 @@ tests/
 - [x] T029 [P] Contract test POST /api/auth/logout in tests/contract/test_auth_logout.ts
 - [x] T030 [P] Contract test POST /api/auth/refresh in tests/contract/test_auth_refresh.ts
 - [x] T031 [P] Contract test POST /api/auth/mfa/setup in tests/contract/test_auth_mfa_setup.ts
-- [ ] T032 [P] Contract test POST /api/auth/mfa/enable in tests/contract/test_auth_mfa_enable.ts
-- [ ] T033 [P] Contract test POST /api/auth/mfa/disable in tests/contract/test_auth_mfa_disable.ts
+- [x] T032 [P] Contract test POST /api/auth/mfa/enable in tests/contract/test_auth_mfa_enable.ts
+- [x] T033 [P] Contract test POST /api/auth/mfa/disable in tests/contract/test_auth_mfa_disable.ts
 - [x] T034 [P] Contract test POST /api/auth/forgot-password in tests/contract/test_auth_forgot_password.ts
-- [ ] T035 [P] Contract test POST /api/auth/reset-password in tests/contract/test_auth_reset_password.ts
-- [ ] T036 [P] Contract test POST /api/auth/change-password in tests/contract/test_auth_change_password.ts
-- [ ] T037 [P] Contract test POST /api/auth/verify-email in tests/contract/test_auth_verify_email.ts
-- [ ] T038 [P] Contract test POST /api/auth/resend-verification in tests/contract/test_auth_resend_verification.ts
+- [x] T035 [P] Contract test POST /api/auth/reset-password in tests/contract/test_auth_reset_password.ts
+- [x] T036 [P] Contract test POST /api/auth/change-password in tests/contract/test_auth_change_password.ts
+- [x] T037 [P] Contract test POST /api/auth/verify-email in tests/contract/test_auth_verify_email.ts
+- [x] T038 [P] Contract test POST /api/auth/resend-verification in tests/contract/test_auth_resend_verification.ts
 - [x] T039 [P] Contract test GET /api/auth/me in tests/contract/test_auth_profile.ts
-- [ ] T040 [P] Contract test GET /api/auth/sessions in tests/contract/test_auth_sessions_list.ts
-- [ ] T041 [P] Contract test DELETE /api/auth/sessions in tests/contract/test_auth_sessions_delete.ts
-- [ ] T042 [P] Contract test DELETE /api/auth/sessions/{id} in tests/contract/test_auth_sessions_delete_specific.ts
+- [x] T040 [P] Contract test GET /api/auth/sessions in tests/contract/test_auth_sessions_list.ts
+- [x] T041 [P] Contract test DELETE /api/auth/sessions in tests/contract/test_auth_sessions_delete.ts
+- [x] T042 [P] Contract test DELETE /api/auth/sessions/{id} in tests/contract/test_auth_sessions_delete_specific.ts
 
 ### Phase 3.2: Family API Contract Tests
-- [ ] T043 [P] Contract test GET /api/families in tests/contract/test_families_get.ts
-- [ ] T044 [P] Contract test PUT /api/families in tests/contract/test_families_update.ts
-- [ ] T045 [P] Contract test GET /api/families/members in tests/contract/test_family_members.ts
-- [ ] T046 [P] Contract test POST /api/families/members in tests/contract/test_family_invite.ts
-- [ ] T047 [P] Contract test PUT /api/families/members/{id} in tests/contract/test_family_member_update.ts
-- [ ] T048 [P] Contract test DELETE /api/families/members/{id} in tests/contract/test_family_member_delete.ts
-- [ ] T049 [P] Contract test GET /api/families/invitations in tests/contract/test_family_invitations_list.ts
-- [ ] T050 [P] Contract test GET /api/families/invitations/{id} in tests/contract/test_family_invitation_details.ts
-- [ ] T051 [P] Contract test DELETE /api/families/invitations/{id} in tests/contract/test_family_invitation_cancel.ts
-- [ ] T052 [P] Contract test POST /api/families/invitations/{id}/accept in tests/contract/test_family_invitation_accept.ts
-- [ ] T053 [P] Contract test POST /api/families/invitations/{id}/resend in tests/contract/test_family_invitation_resend.ts
-- [ ] T054 [P] Contract test GET /api/families/activity in tests/contract/test_family_activity.ts
+- [x] T043 [P] Contract test GET /api/families in tests/contract/test_families_get.ts
+- [x] T044 [P] Contract test PUT /api/families in tests/contract/test_families_update.ts
+- [x] T045 [P] Contract test GET /api/families/members in tests/contract/test_family_members.ts
+- [x] T046 [P] Contract test POST /api/families/members in tests/contract/test_family_invite.ts
+- [x] T047 [P] Contract test PUT /api/families/members/{id} in tests/contract/test_family_member_update.ts
+- [x] T048 [P] Contract test DELETE /api/families/members/{id} in tests/contract/test_family_member_delete.ts
+- [x] T049 [P] Contract test GET /api/families/invitations in tests/contract/test_family_invitations_list.ts
+- [x] T050 [P] Contract test GET /api/families/invitations/{id} in tests/contract/test_family_invitation_details.ts
+- [x] T051 [P] Contract test DELETE /api/families/invitations/{id} in tests/contract/test_family_invitation_cancel.ts
+- [x] T052 [P] Contract test POST /api/families/invitations/{id}/accept in tests/contract/test_family_invitation_accept.ts
+- [x] T053 [P] Contract test POST /api/families/invitations/{id}/resend in tests/contract/test_family_invitation_resend.ts
+- [x] T054 [P] Contract test GET /api/families/activity in tests/contract/test_family_activity.ts
 
 ### Phase 3.3: Income API Contract Tests
 - [x] T055 [P] Contract test GET /api/income-events in tests/contract/test_income_list.ts
-- [ ] T056 [P] Contract test POST /api/income-events in tests/contract/test_income_create.ts
-- [ ] T057 [P] Contract test GET /api/income-events/{id} in tests/contract/test_income_details.ts
-- [ ] T058 [P] Contract test PUT /api/income-events/{id} in tests/contract/test_income_update.ts
-- [ ] T059 [P] Contract test DELETE /api/income-events/{id} in tests/contract/test_income_delete.ts
-- [ ] T060 [P] Contract test POST /api/income-events/{id}/mark-received in tests/contract/test_income_mark_received.ts
-- [ ] T061 [P] Contract test POST /api/income-events/{id}/revert-received in tests/contract/test_income_revert_received.ts
-- [ ] T062 [P] Contract test GET /api/income-events/{id}/attributions in tests/contract/test_income_attributions.ts
-- [ ] T063 [P] Contract test GET /api/income-events/upcoming in tests/contract/test_income_upcoming.ts
-- [ ] T064 [P] Contract test GET /api/income-events/summary in tests/contract/test_income_summary.ts
-- [ ] T065 [P] Contract test POST /api/income-events/bulk in tests/contract/test_income_bulk_create.ts
+- [x] T056 [P] Contract test POST /api/income-events in tests/contract/test_income_create.ts
+- [x] T057 [P] Contract test GET /api/income-events/{id} in tests/contract/test_income_details.ts
+- [x] T058 [P] Contract test PUT /api/income-events/{id} in tests/contract/test_income_update.ts
+- [x] T059 [P] Contract test DELETE /api/income-events/{id} in tests/contract/test_income_delete.ts
+- [x] T060 [P] Contract test POST /api/income-events/{id}/mark-received in tests/contract/test_income_mark_received.ts
+- [x] T061 [P] Contract test POST /api/income-events/{id}/revert-received in tests/contract/test_income_revert_received.ts
+- [x] T062 [P] Contract test GET /api/income-events/{id}/attributions in tests/contract/test_income_attributions.ts
+- [x] T063 [P] Contract test GET /api/income-events/upcoming in tests/contract/test_income_upcoming.ts
+- [x] T064 [P] Contract test GET /api/income-events/summary in tests/contract/test_income_summary.ts
+- [x] T065 [P] Contract test POST /api/income-events/bulk in tests/contract/test_income_bulk_create.ts
 
 ### Phase 3.4: Payment API Contract Tests
-- [ ] T066 [P] Contract test GET /api/payments in tests/contract/test_payments_list.ts
-- [ ] T067 [P] Contract test POST /api/payments in tests/contract/test_payments_create.ts
-- [ ] T068 [P] Contract test GET /api/payments/{id} in tests/contract/test_payments_details.ts
-- [ ] T069 [P] Contract test PUT /api/payments/{id} in tests/contract/test_payments_update.ts
-- [ ] T070 [P] Contract test DELETE /api/payments/{id} in tests/contract/test_payments_delete.ts
-- [ ] T071 [P] Contract test POST /api/payments/{id}/mark-paid in tests/contract/test_payments_mark_paid.ts
-- [ ] T072 [P] Contract test POST /api/payments/{id}/revert-paid in tests/contract/test_payments_revert_paid.ts
-- [ ] T073 [P] Contract test POST /api/payments/{id}/auto-attribute in tests/contract/test_payments_auto_attribute.ts
-- [ ] T074 [P] Contract test GET /api/payments/upcoming in tests/contract/test_payments_upcoming.ts
-- [ ] T075 [P] Contract test GET /api/payments/overdue in tests/contract/test_payments_overdue.ts
-- [ ] T076 [P] Contract test GET /api/payments/summary in tests/contract/test_payments_summary.ts
-- [ ] T077 [P] Contract test POST /api/payments/bulk in tests/contract/test_payments_bulk_create.ts
-- [ ] T078 [P] Contract test GET /api/spending-categories in tests/contract/test_spending_categories_list.ts
-- [ ] T079 [P] Contract test POST /api/spending-categories in tests/contract/test_spending_categories_create.ts
-- [ ] T080 [P] Contract test PUT /api/spending-categories/{id} in tests/contract/test_spending_categories_update.ts
-- [ ] T081 [P] Contract test DELETE /api/spending-categories/{id} in tests/contract/test_spending_categories_delete.ts
-- [ ] T081a [P] Contract test GET /api/payments/{id}/attributions in tests/contract/test_payment_attributions_list.ts
-- [ ] T081b [P] Contract test POST /api/payments/{id}/attributions in tests/contract/test_payment_attributions_create.ts
-- [ ] T081c [P] Contract test PUT /api/payments/{id}/attributions/{attributionId} in tests/contract/test_payment_attributions_update.ts
-- [ ] T081d [P] Contract test DELETE /api/payments/{id}/attributions/{attributionId} in tests/contract/test_payment_attributions_delete.ts
+- [x] T066 [P] Contract test GET /api/payments in tests/contract/test_payments_list.ts
+- [x] T067 [P] Contract test POST /api/payments in tests/contract/test_payments_create.ts
+- [x] T068 [P] Contract test GET /api/payments/{id} in tests/contract/test_payments_details.ts
+- [x] T069 [P] Contract test PUT /api/payments/{id} in tests/contract/test_payments_update.ts
+- [x] T070 [P] Contract test DELETE /api/payments/{id} in tests/contract/test_payments_delete.ts
+- [x] T071 [P] Contract test POST /api/payments/{id}/mark-paid in tests/contract/test_payments_mark_paid.ts
+- [x] T072 [P] Contract test POST /api/payments/{id}/revert-paid in tests/contract/test_payments_revert_paid.ts
+- [x] T073 [P] Contract test POST /api/payments/{id}/auto-attribute in tests/contract/test_payments_auto_attribute.ts
+- [x] T074 [P] Contract test GET /api/payments/upcoming in tests/contract/test_payments_upcoming.ts
+- [x] T075 [P] Contract test GET /api/payments/overdue in tests/contract/test_payments_overdue.ts
+- [x] T076 [P] Contract test GET /api/payments/summary in tests/contract/test_payments_summary.ts
+- [x] T077 [P] Contract test POST /api/payments/bulk in tests/contract/test_payments_bulk_create.ts
+- [x] T078 [P] Contract test GET /api/spending-categories in tests/contract/test_spending_categories_list.ts
+- [x] T079 [P] Contract test POST /api/spending-categories in tests/contract/test_spending_categories_create.ts
+- [x] T080 [P] Contract test PUT /api/spending-categories/{id} in tests/contract/test_spending_categories_update.ts
+- [x] T081 [P] Contract test DELETE /api/spending-categories/{id} in tests/contract/test_spending_categories_delete.ts
+- [x] T081a [P] Contract test GET /api/payments/{id}/attributions in tests/contract/test_payment_attributions_list.ts
+- [x] T081b [P] Contract test POST /api/payments/{id}/attributions in tests/contract/test_payment_attributions_create.ts
+- [x] T081c [P] Contract test PUT /api/payments/{id}/attributions/{attributionId} in tests/contract/test_payment_attributions_update.ts
+- [x] T081d [P] Contract test DELETE /api/payments/{id}/attributions/{attributionId} in tests/contract/test_payment_attributions_delete.ts
 
 ### Phase 3.5: Bank API Contract Tests
-- [ ] T082 [P] Contract test GET /api/bank-accounts in tests/contract/test_bank_accounts_list.ts
-- [ ] T083 [P] Contract test POST /api/bank-accounts in tests/contract/test_bank_accounts_connect.ts
-- [ ] T084 [P] Contract test GET /api/bank-accounts/{id} in tests/contract/test_bank_accounts_details.ts
-- [ ] T085 [P] Contract test PUT /api/bank-accounts/{id} in tests/contract/test_bank_accounts_update.ts
-- [ ] T086 [P] Contract test DELETE /api/bank-accounts/{id} in tests/contract/test_bank_accounts_delete.ts
-- [ ] T087 [P] Contract test POST /api/bank-accounts/{id}/sync in tests/contract/test_bank_sync.ts
-- [ ] T088 [P] Contract test POST /api/bank-accounts/{id}/reconnect in tests/contract/test_bank_reconnect.ts
-- [ ] T089 [P] Contract test GET /api/transactions in tests/contract/test_transactions_list.ts
-- [ ] T090 [P] Contract test GET /api/transactions/{id} in tests/contract/test_transactions_details.ts
-- [ ] T091 [P] Contract test PUT /api/transactions/{id} in tests/contract/test_transactions_update.ts
-- [ ] T092 [P] Contract test POST /api/transactions/categorize-batch in tests/contract/test_transactions_categorize_batch.ts
-- [ ] T093 [P] Contract test GET /api/transactions/uncategorized in tests/contract/test_transactions_uncategorized.ts
-- [ ] T094 [P] Contract test POST /api/transactions/match-payments in tests/contract/test_transactions_match_payments.ts
-- [ ] T095 [P] Contract test POST /api/plaid/link-token in tests/contract/test_plaid_link_token.ts
-- [ ] T096 [P] Contract test POST /api/plaid/webhook in tests/contract/test_plaid_webhook.ts
-- [ ] T096a [P] Contract test POST /api/bank-accounts/sync-all in tests/contract/test_bank_sync_all.ts
+- [x] T082 [P] Contract test GET /api/bank-accounts in tests/contract/test_bank_accounts_list.ts
+- [x] T083 [P] Contract test POST /api/bank-accounts in tests/contract/test_bank_accounts_connect.ts
+- [x] T084 [P] Contract test GET /api/bank-accounts/{id} in tests/contract/test_bank_accounts_details.ts
+- [x] T085 [P] Contract test PUT /api/bank-accounts/{id} in tests/contract/test_bank_accounts_update.ts
+- [x] T086 [P] Contract test DELETE /api/bank-accounts/{id} in tests/contract/test_bank_accounts_delete.ts
+- [x] T087 [P] Contract test POST /api/bank-accounts/{id}/sync in tests/contract/test_bank_sync.ts
+- [x] T088 [P] Contract test POST /api/bank-accounts/{id}/reconnect in tests/contract/test_bank_reconnect.ts
+- [x] T089 [P] Contract test GET /api/transactions in tests/contract/test_transactions_list.ts
+- [x] T090 [P] Contract test GET /api/transactions/{id} in tests/contract/test_transactions_details.ts
+- [x] T091 [P] Contract test PUT /api/transactions/{id} in tests/contract/test_transactions_update.ts
+- [x] T092 [P] Contract test POST /api/transactions/categorize-batch in tests/contract/test_transactions_categorize_batch.ts
+- [x] T093 [P] Contract test GET /api/transactions/uncategorized in tests/contract/test_transactions_uncategorized.ts
+- [x] T094 [P] Contract test POST /api/transactions/match-payments in tests/contract/test_transactions_match_payments.ts
+- [x] T095 [P] Contract test POST /api/plaid/link-token in tests/contract/test_plaid_link_token.ts
+- [x] T096 [P] Contract test POST /api/plaid/webhook in tests/contract/test_plaid_webhook.ts
+- [x] T096a [P] Contract test POST /api/bank-accounts/sync-all in tests/contract/test_bank_sync_all.ts
 
 ### Phase 3.6: Budget API Contract Tests
-- [ ] T097 [P] Contract test GET /api/budget-categories in tests/contract/test_budget_categories_list.ts
-- [ ] T098 [P] Contract test POST /api/budget-categories in tests/contract/test_budget_categories_create.ts
-- [ ] T099 [P] Contract test GET /api/budget-categories/{id} in tests/contract/test_budget_categories_details.ts
-- [ ] T100 [P] Contract test PUT /api/budget-categories/{id} in tests/contract/test_budget_categories_update.ts
-- [ ] T101 [P] Contract test DELETE /api/budget-categories/{id} in tests/contract/test_budget_categories_delete.ts
-- [ ] T102 [P] Contract test POST /api/budget-categories/validate-percentages in tests/contract/test_budget_validate_percentages.ts
-- [ ] T103 [P] Contract test GET /api/budget-allocations in tests/contract/test_budget_allocations_list.ts
-- [ ] T104 [P] Contract test GET /api/budget-allocations/{id} in tests/contract/test_budget_allocations_details.ts
-- [ ] T105 [P] Contract test PUT /api/budget-allocations/{id} in tests/contract/test_budget_allocations_update.ts
-- [ ] T106 [P] Contract test POST /api/budget-allocations/{incomeEventId}/generate in tests/contract/test_budget_generate.ts
-- [ ] T107 [P] Contract test GET /api/budget-allocations/{incomeEventId}/summary in tests/contract/test_budget_allocation_summary.ts
-- [ ] T108 [P] Contract test GET /api/budget/overview in tests/contract/test_budget_overview.ts
-- [ ] T109 [P] Contract test GET /api/budget/performance in tests/contract/test_budget_performance.ts
-- [ ] T110 [P] Contract test GET /api/budget/projections in tests/contract/test_budget_projections.ts
-- [ ] T111 [P] Contract test GET /api/budget/templates in tests/contract/test_budget_templates_list.ts
-- [ ] T112 [P] Contract test POST /api/budget/templates in tests/contract/test_budget_templates_apply.ts
+- [x] T097 [P] Contract test GET /api/budget-categories in tests/contract/test_budget_categories_list.ts
+- [x] T098 [P] Contract test POST /api/budget-categories in tests/contract/test_budget_categories_create.ts
+- [x] T099 [P] Contract test GET /api/budget-categories/{id} in tests/contract/test_budget_categories_details.ts
+- [x] T100 [P] Contract test PUT /api/budget-categories/{id} in tests/contract/test_budget_categories_update.ts
+- [x] T101 [P] Contract test DELETE /api/budget-categories/{id} in tests/contract/test_budget_categories_delete.ts
+- [x] T102 [P] Contract test POST /api/budget-categories/validate-percentages in tests/contract/test_budget_validate_percentages.ts
+- [x] T103 [P] Contract test GET /api/budget-allocations in tests/contract/test_budget_allocations_list.ts
+- [x] T104 [P] Contract test GET /api/budget-allocations/{id} in tests/contract/test_budget_allocations_details.ts
+- [x] T105 [P] Contract test PUT /api/budget-allocations/{id} in tests/contract/test_budget_allocations_update.ts
+- [x] T106 [P] Contract test POST /api/budget-allocations/{incomeEventId}/generate in tests/contract/test_budget_generate.ts
+- [x] T107 [P] Contract test GET /api/budget-allocations/{incomeEventId}/summary in tests/contract/test_budget_allocation_summary.ts
+- [x] T108 [P] Contract test GET /api/budget/overview in tests/contract/test_budget_overview.ts
+- [x] T109 [P] Contract test GET /api/budget/performance in tests/contract/test_budget_performance.ts
+- [x] T110 [P] Contract test GET /api/budget/projections in tests/contract/test_budget_projections.ts
+- [x] T111 [P] Contract test GET /api/budget/templates in tests/contract/test_budget_templates_list.ts
+- [x] T112 [P] Contract test POST /api/budget/templates in tests/contract/test_budget_templates_apply.ts
 
 ### Phase 3.7: Reports API Contract Tests
-- [ ] T113 [P] Contract test GET /api/reports/cash-flow in tests/contract/test_reports_cash_flow.ts
-- [ ] T114 [P] Contract test GET /api/reports/spending-analysis in tests/contract/test_reports_spending.ts
-- [ ] T115 [P] Contract test GET /api/reports/budget-performance in tests/contract/test_reports_budget_performance.ts
-- [ ] T116 [P] Contract test GET /api/reports/income-analysis in tests/contract/test_reports_income_analysis.ts
-- [ ] T117 [P] Contract test GET /api/reports/net-worth in tests/contract/test_reports_net_worth.ts
-- [ ] T118 [P] Contract test GET /api/reports/savings-rate in tests/contract/test_reports_savings_rate.ts
-- [ ] T119 [P] Contract test GET /api/reports/debt-analysis in tests/contract/test_reports_debt_analysis.ts
-- [ ] T120 [P] Contract test GET /api/reports/monthly-summary in tests/contract/test_reports_monthly_summary.ts
-- [ ] T121 [P] Contract test GET /api/reports/annual-summary in tests/contract/test_reports_annual_summary.ts
-- [ ] T122 [P] Contract test POST /api/reports/custom in tests/contract/test_reports_custom.ts
-- [ ] T123 [P] Contract test POST /api/reports/export in tests/contract/test_reports_export.ts
-- [ ] T124 [P] Contract test GET /api/reports/scheduled in tests/contract/test_reports_scheduled_list.ts
-- [ ] T125 [P] Contract test POST /api/reports/scheduled in tests/contract/test_reports_scheduled_create.ts
-- [ ] T126 [P] Contract test GET /api/reports/scheduled/{id} in tests/contract/test_reports_scheduled_details.ts
-- [ ] T127 [P] Contract test PUT /api/reports/scheduled/{id} in tests/contract/test_reports_scheduled_update.ts
-- [ ] T128 [P] Contract test DELETE /api/reports/scheduled/{id} in tests/contract/test_reports_scheduled_delete.ts
-- [ ] T129 [P] Contract test GET /api/analytics/dashboard in tests/contract/test_analytics_dashboard.ts
-- [ ] T130 [P] Contract test GET /api/analytics/trends in tests/contract/test_analytics_trends.ts
-- [ ] T131 [P] Contract test GET /api/analytics/insights in tests/contract/test_analytics_insights.ts
+- [x] T113 [P] Contract test GET /api/reports/cash-flow in tests/contract/test_reports_cash_flow.ts
+- [x] T114 [P] Contract test GET /api/reports/spending-analysis in tests/contract/test_reports_spending.ts
+- [x] T115 [P] Contract test GET /api/reports/budget-performance in tests/contract/test_reports_budget_performance.ts
+- [x] T116 [P] Contract test GET /api/reports/income-analysis in tests/contract/test_reports_income_analysis.ts
+- [x] T117 [P] Contract test GET /api/reports/net-worth in tests/contract/test_reports_net_worth.ts
+- [x] T118 [P] Contract test GET /api/reports/savings-rate in tests/contract/test_reports_savings_rate.ts
+- [x] T119 [P] Contract test GET /api/reports/debt-analysis in tests/contract/test_reports_debt_analysis.ts
+- [x] T120 [P] Contract test GET /api/reports/monthly-summary in tests/contract/test_reports_monthly_summary.ts
+- [x] T121 [P] Contract test GET /api/reports/annual-summary in tests/contract/test_reports_annual_summary.ts
+- [x] T122 [P] Contract test POST /api/reports/custom in tests/contract/test_reports_custom.ts
+- [x] T123 [P] Contract test POST /api/reports/export in tests/contract/test_reports_export.ts
+- [x] T124 [P] Contract test GET /api/reports/scheduled in tests/contract/test_reports_scheduled_list.ts
+- [x] T125 [P] Contract test POST /api/reports/scheduled in tests/contract/test_reports_scheduled_create.ts
+- [x] T126 [P] Contract test GET /api/reports/scheduled/{id} in tests/contract/test_reports_scheduled_details.ts
+- [x] T127 [P] Contract test PUT /api/reports/scheduled/{id} in tests/contract/test_reports_scheduled_update.ts
+- [x] T128 [P] Contract test DELETE /api/reports/scheduled/{id} in tests/contract/test_reports_scheduled_delete.ts
+- [x] T129 [P] Contract test GET /api/analytics/dashboard in tests/contract/test_analytics_dashboard.ts
+- [x] T130 [P] Contract test GET /api/analytics/trends in tests/contract/test_analytics_trends.ts
+- [x] T131 [P] Contract test GET /api/analytics/insights in tests/contract/test_analytics_insights.ts
 
 ### Phase 3.8: Infrastructure and Configuration Contract Tests
-- [ ] T132 [P] Contract test OpenAPI schema validation in tests/contract/test_openapi_schema.ts
-- [ ] T133 [P] Contract test API documentation generation in tests/contract/test_api_docs.ts
-- [ ] T134 [P] Contract test environment configuration in tests/contract/test_environment.ts
-- [ ] T135 [P] Contract test database migrations in tests/contract/test_migrations.ts
+- [x] T132 [P] Contract test OpenAPI schema validation in tests/contract/test_openapi_schema.ts
+- [x] T133 [P] Contract test API documentation generation in tests/contract/test_api_docs.ts
+- [x] T134 [P] Contract test environment configuration in tests/contract/test_environment.ts
+- [x] T135 [P] Contract test database migrations in tests/contract/test_migrations.ts
 - [x] T135a Verify all contract tests fail before implementation begins in tests/scripts/verify_tdd.ts
 
 ### Phase 3.9: Integration Test Scenarios
-- [ ] T136 [P] Integration test user registration flow in tests/integration/test_user_registration.ts
-- [ ] T137 [P] Integration test bank account connection in tests/integration/test_bank_connection.ts
-- [ ] T138 [P] Integration test income scheduling in tests/integration/test_income_scheduling.ts
-- [ ] T139 [P] Integration test payment attribution in tests/integration/test_payment_attribution.ts
-- [ ] T140 [P] Integration test budget allocation flow in tests/integration/test_budget_allocation.ts
-- [ ] T141 [P] Integration test cash flow calendar in tests/integration/test_cash_flow_calendar.ts
-- [ ] T142 [P] Integration test family member invitation in tests/integration/test_family_invitation.ts
-- [ ] T142a [P] Integration test payment splitting across multiple income events in tests/integration/test_payment_splitting.ts
-- [ ] T143 [P] Integration test reports generation in tests/integration/test_reports_generation.ts
-- [ ] T144 [P] Integration test data export functionality in tests/integration/test_data_export.ts
+- [x] T136 [P] Integration test user registration flow in tests/integration/test_user_registration.ts
+- [x] T137 [P] Integration test bank account connection in tests/integration/test_bank_connection.ts
+- [x] T138 [P] Integration test income scheduling in tests/integration/test_income_scheduling.ts
+- [x] T139 [P] Integration test payment attribution in tests/integration/test_payment_attribution.ts
+- [x] T140 [P] Integration test budget allocation flow in tests/integration/test_budget_allocation.ts
+- [x] T141 [P] Integration test cash flow calendar in tests/integration/test_cash_flow_calendar.ts
+- [x] T142 [P] Integration test family member invitation in tests/integration/test_family_invitation.ts
+- [x] T142a [P] Integration test payment splitting across multiple income events in tests/integration/test_payment_splitting.ts
+- [x] T143 [P] Integration test reports generation in tests/integration/test_reports_generation.ts
+- [x] T144 [P] Integration test data export functionality in tests/integration/test_data_export.ts
 
 ## Phase 4: Service Layer (ONLY after tests are failing)
 
@@ -451,11 +451,11 @@ tests/
 - [x] T337 Payment details page in frontend/src/app/payments/[id]/page.tsx
 - [x] T338 Overdue payments page in frontend/src/app/payments/overdue/page.tsx
 - [x] T339 [P] Payment list component in frontend/src/components/payments/payment-list.tsx
-- [ ] T340 [P] Payment form component in frontend/src/components/payments/payment-form.tsx
-- [ ] T341 [P] Payment attribution component in frontend/src/components/payments/attribution.tsx
-- [ ] T342 [P] Payment calendar view component in frontend/src/components/payments/payment-calendar.tsx
-- [ ] T343 [P] Bulk payment creation component in frontend/src/components/payments/bulk-create.tsx
-- [ ] T344 [P] Spending categories management in frontend/src/components/payments/spending-categories.tsx
+- [x] T340 [P] Payment form component in frontend/src/components/payments/payment-form.tsx
+- [x] T341 [P] Payment attribution component in frontend/src/components/payments/attribution.tsx
+- [x] T342 [P] Payment calendar view component in frontend/src/components/payments/payment-calendar.tsx
+- [x] T343 [P] Bulk payment creation component in frontend/src/components/payments/bulk-create.tsx
+- [x] T344 [P] Spending categories management in frontend/src/components/payments/spending-categories.tsx
 
 ### Phase 6.6: Bank Integration Pages
 - [x] T345 Bank accounts page in frontend/src/app/bank-accounts/page.tsx
@@ -466,8 +466,8 @@ tests/
 - [x] T350 [P] Bank account list component in frontend/src/components/bank/account-list.tsx
 - [x] T351 [P] Connect bank modal in frontend/src/components/bank/connect-modal.tsx
 - [x] T352 [P] Bank reconnection modal in frontend/src/components/bank/reconnect-modal.tsx
-- [ ] T353 [P] Transaction list component in frontend/src/components/bank/transaction-list.tsx
-- [ ] T354 [P] Transaction categorization modal in frontend/src/components/bank/categorize-modal.tsx
+- [x] T353 [P] Transaction list component in frontend/src/components/bank/transaction-list.tsx
+- [x] T354 [P] Transaction categorization modal in frontend/src/components/bank/categorize-modal.tsx
 - [x] T355 [P] Batch categorization component in frontend/src/components/bank/batch-categorize.tsx
 - [x] T356 [P] Payment matching component in frontend/src/components/bank/payment-matching.tsx
 
@@ -522,21 +522,21 @@ tests/
 - [x] T400 [P] Family settings form in frontend/src/components/family/settings-form.tsx
 
 ### Phase 6.10: State Management and API Integration
-- [ ] T401 [P] Authentication store in frontend/src/stores/auth.store.ts
-- [ ] T402 [P] Family store in frontend/src/stores/family.store.ts
-- [ ] T403 [P] Income store in frontend/src/stores/income.store.ts
-- [ ] T404 [P] Payments store in frontend/src/stores/payments.store.ts
-- [ ] T405 [P] Budget store in frontend/src/stores/budget.store.ts
-- [ ] T406 [P] Bank accounts store in frontend/src/stores/bank.store.ts
-- [ ] T407 [P] Transactions store in frontend/src/stores/transactions.store.ts
-- [ ] T408 [P] Reports store in frontend/src/stores/reports.store.ts
-- [ ] T409 [P] Notifications store in frontend/src/stores/notifications.store.ts
-- [ ] T410 [P] API client configuration in frontend/src/lib/api-client.ts
-- [ ] T411 [P] API client hooks in frontend/src/hooks/use-api.ts
-- [ ] T412 [P] Authentication hooks in frontend/src/hooks/use-auth.ts
-- [ ] T413 [P] Custom React Query hooks in frontend/src/hooks/use-queries.ts
-- [ ] T414 [P] Form validation hooks in frontend/src/hooks/use-validation.ts
-- [ ] T415 [P] Local storage hooks in frontend/src/hooks/use-local-storage.ts
+- [x] T401 [P] Authentication store in frontend/src/stores/auth.store.ts
+- [x] T402 [P] Family store in frontend/src/stores/family.store.ts
+- [x] T403 [P] Income store in frontend/src/stores/income.store.ts
+- [x] T404 [P] Payments store in frontend/src/stores/payments.store.ts
+- [x] T405 [P] Budget store in frontend/src/stores/budget.store.ts
+- [x] T406 [P] Bank accounts store in frontend/src/stores/bank.store.ts
+- [x] T407 [P] Transactions store in frontend/src/stores/transactions.store.ts
+- [x] T408 [P] Reports store in frontend/src/stores/reports.store.ts
+- [x] T409 [P] Notifications store in frontend/src/stores/notifications.store.ts
+- [x] T410 [P] API client configuration in frontend/src/lib/api-client.ts
+- [x] T411 [P] API client hooks in frontend/src/hooks/use-api.ts
+- [x] T412 [P] Authentication hooks in frontend/src/hooks/use-auth.ts
+- [x] T413 [P] Custom React Query hooks in frontend/src/hooks/use-queries.ts
+- [x] T414 [P] Form validation hooks in frontend/src/hooks/use-validation.ts
+- [x] T415 [P] Local storage hooks in frontend/src/hooks/use-local-storage.ts
 
 ## Phase 7: Integration and Polish
 
