@@ -1,0 +1,480 @@
+openapi: 3.0.3
+info:
+  title: Family Finance Web Application API
+  version: 1.0.0
+  description: |
+    Comprehensive API for the KGiQ Family Finance Web Application.
+
+    This API provides endpoints for family financial management including:
+    - User authentication and session management
+    - Family member and invitation management
+    - Income event tracking and scheduling
+    - Payment management and attribution
+    - Bank account integration via Plaid
+    - Transaction categorization and analysis
+    - Budget creation and allocation
+    - Financial reports and analytics
+
+    ## Authentication
+    Most endpoints require Bearer token authentication. Use the /auth/login endpoint to obtain tokens.
+
+    ## Rate Limiting
+    API requests are rate limited to prevent abuse. See response headers for current limits.
+
+    ## Pagination
+    List endpoints support pagination with 'page' and 'pageSize' query parameters.
+  contact:
+    name: KGiQ Development Team
+    email: dev@kgiq.com
+    url: https://kgiq.com
+  license:
+    name: Private License
+    url: https://kgiq.com/license
+
+servers:
+  - url: https://family-finance.kgiq.com
+    description: Production server
+  - url: https://staging-family-finance.kgiq.com
+    description: Staging server
+  - url: http://localhost:3000
+    description: Development server
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Family Management
+    description: Family and member management operations
+  - name: Income Management
+    description: Income event tracking and scheduling
+  - name: Payment Management
+    description: Payment management and attribution
+  - name: Bank Integration
+    description: Bank account and transaction integration via Plaid
+  - name: Transactions
+    description: Transaction categorization and analysis
+  - name: Budget Management
+    description: Budget categories and allocations
+  - name: Reports & Analytics
+    description: Financial reports and analytics
+
+paths:
+  /api/auth/register:
+    post:
+      operationId: postAuthRegister
+      summary: User registration
+      description: Register a new user and create a family
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+                  family:
+                    $ref: '#/components/schemas/Family'
+                  tokens:
+                    $ref: '#/components/schemas/AuthTokens'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/auth/login:
+    post:
+      operationId: postAuthLogin
+      summary: User authentication
+      description: Authenticate user and return access tokens
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+                  tokens:
+                    $ref: '#/components/schemas/AuthTokens'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/auth/logout:
+    post:
+      operationId: postAuthLogout
+      summary: User logout
+      description: Logout user and invalidate tokens
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/auth/me:
+    get:
+      operationId: getAuthProfile
+      summary: Get user profile
+      description: Get current authenticated user profile
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Bearer token authentication
+
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number for pagination
+    PageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: Number of items per page
+
+  responses:
+    Success:
+      description: Operation successful
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - familyId
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User unique identifier
+        email:
+          type: string
+          format: email
+          description: User email address
+        firstName:
+          type: string
+          description: User first name
+        lastName:
+          type: string
+          description: User last name
+        familyId:
+          type: string
+          format: uuid
+          description: Family identifier
+        role:
+          type: string
+          enum: [admin, member]
+          description: User role in family
+        phone:
+          type: string
+          description: Phone number (optional)
+        dateOfBirth:
+          type: string
+          format: date
+          description: Date of birth (optional)
+        timezone:
+          type: string
+          description: User timezone
+        createdAt:
+          type: string
+          format: date-time
+          description: Account creation date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update date
+
+    Family:
+      type: object
+      required:
+        - id
+        - name
+        - currency
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Family unique identifier
+        name:
+          type: string
+          description: Family name
+        currency:
+          type: string
+          description: Default currency (USD, EUR, etc.)
+        timezone:
+          type: string
+          description: Family timezone
+        settings:
+          type: object
+          description: Family-specific settings
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation date
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update date
+
+    BankAccount:
+      type: object
+      required:
+        - id
+        - familyId
+        - institutionName
+        - accountType
+        - isActive
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Bank account identifier
+        familyId:
+          type: string
+          format: uuid
+          description: Family identifier
+        plaidAccountId:
+          type: string
+          description: Plaid account identifier
+        institutionName:
+          type: string
+          description: Bank institution name
+        accountName:
+          type: string
+          description: Account display name
+        accountType:
+          type: string
+          enum: [checking, savings, credit]
+          description: Account type
+        accountNumber:
+          type: string
+          description: Masked account number
+        routingNumber:
+          type: string
+          description: Bank routing number
+        balance:
+          type: number
+          format: decimal
+          description: Current balance
+        availableBalance:
+          type: number
+          format: decimal
+          description: Available balance
+        isActive:
+          type: boolean
+          description: Account active status
+        lastSyncAt:
+          type: string
+          format: date-time
+          description: Last synchronization date
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation date
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+        - familyName
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email address
+        password:
+          type: string
+          minLength: 8
+          description: User password (min 8 characters)
+        firstName:
+          type: string
+          description: User first name
+        lastName:
+          type: string
+          description: User last name
+        familyName:
+          type: string
+          description: Family name
+        phone:
+          type: string
+          description: Phone number (optional)
+        timezone:
+          type: string
+          description: User timezone
+        currency:
+          type: string
+          description: Preferred currency
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email address
+        password:
+          type: string
+          description: User password
+
+    AuthTokens:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - expiresIn
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+        refreshToken:
+          type: string
+          description: JWT refresh token
+        expiresIn:
+          type: number
+          description: Token expiration time in seconds
+        tokenType:
+          type: string
+          example: Bearer
+          description: Token type
+
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Error message
+        error:
+          type: string
+          description: Error type
+        statusCode:
+          type: number
+          description: HTTP status code
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        path:
+          type: string
+          description: API endpoint path
+
+    SuccessResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Success message
+        data:
+          type: object
+          description: Response data
+
+    PaginationInfo:
+      type: object
+      required:
+        - page
+        - pageSize
+        - totalCount
+        - totalPages
+      properties:
+        page:
+          type: number
+          description: Current page number
+        pageSize:
+          type: number
+          description: Items per page
+        totalCount:
+          type: number
+          description: Total number of items
+        totalPages:
+          type: number
+          description: Total number of pages

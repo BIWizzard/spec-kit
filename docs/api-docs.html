@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Finance Web Application API - API Documentation</title>
+    <script src="https://unpkg.com/swagger-ui-bundle@4.19.1/swagger-ui-bundle.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-bundle@4.19.1/swagger-ui.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FFD166, #8FAD77);
+            padding: 2rem;
+            color: white;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            margin: 0.5rem 0 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .swagger-container {
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .swagger-ui .topbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏦 Family Finance API</h1>
+        <p>Comprehensive financial management for families</p>
+    </div>
+
+    <div id="swagger-ui" class="swagger-container"></div>
+
+    <script>
+        SwaggerUIBundle({
+            url: './openapi.json',
+            dom_id: '#swagger-ui',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIBundle.presets.standalone
+            ],
+            layout: "StandaloneLayout",
+            deepLinking: true,
+            showExtensions: true,
+            showCommonExtensions: true,
+            tryItOutEnabled: true,
+            displayOperationId: true,
+            displayRequestDuration: true,
+            docExpansion: 'list',
+            filter: true,
+            showRequestHeaders: true,
+            supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+            validatorUrl: null,
+            onComplete: function() {
+                console.log('Swagger UI loaded successfully');
+            }
+        });
+    </script>
+</body>
+</html>
