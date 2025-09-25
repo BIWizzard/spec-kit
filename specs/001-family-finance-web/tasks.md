@@ -478,12 +478,12 @@ tests/
 - [x] T360 Budget performance page in frontend/src/app/budget/performance/page.tsx
 - [x] T361 Budget projections page in frontend/src/app/budget/projections/page.tsx
 - [x] T362 Budget templates page in frontend/src/app/budget/templates/page.tsx
-- [ ] T363 [P] Budget categories list in frontend/src/components/budget/categories-list.tsx
-- [ ] T364 [P] Budget category form in frontend/src/components/budget/category-form.tsx
-- [ ] T365 [P] Budget allocation component in frontend/src/components/budget/allocation.tsx
-- [ ] T366 [P] Budget performance chart in frontend/src/components/budget/performance-chart.tsx
-- [ ] T367 [P] Budget projections chart in frontend/src/components/budget/projections-chart.tsx
-- [ ] T368 [P] Budget template selector in frontend/src/components/budget/template-selector.tsx
+- [x] T363 [P] Budget categories list in frontend/src/components/budget/categories-list.tsx
+- [x] T364 [P] Budget category form in frontend/src/components/budget/category-form.tsx
+- [x] T365 [P] Budget allocation component in frontend/src/components/budget/allocation.tsx
+- [x] T366 [P] Budget performance chart in frontend/src/components/budget/performance-chart.tsx
+- [x] T367 [P] Budget projections chart in frontend/src/components/budget/projections-chart.tsx
+- [x] T368 [P] Budget template selector in frontend/src/components/budget/template-selector.tsx
 - [x] T369 [P] Percentage validation component in frontend/src/components/budget/percentage-validator.tsx
 
 ### Phase 6.8: Calendar and Reports
