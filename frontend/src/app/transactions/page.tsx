@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Search, Filter, Download, RefreshCw, Calendar, Tag, DollarSign } from 'lucide-react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -48,7 +48,7 @@ interface TransactionFilters {
   uncategorized: boolean
 }
 
-export default function TransactionsPage() {
+function TransactionsPageContent() {
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
 
@@ -597,5 +597,19 @@ export default function TransactionsPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function TransactionsPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6 max-w-7xl mx-auto">
+        <div className="flex justify-center items-center min-h-96">
+          <RefreshCw className="w-8 h-8 text-blue-gray-400 animate-spin" />
+        </div>
+      </div>
+    }>
+      <TransactionsPageContent />
+    </Suspense>
   )
 }

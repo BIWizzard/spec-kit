@@ -35,10 +35,9 @@ export default function DashboardPage() {
 
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <main className="flex-1 p-6 ml-[280px]">
+        <Sidebar>
+          {/* Main Content */}
+          <main className="flex-1 p-6 ml-[280px]">
           <div className="max-w-7xl mx-auto space-y-6">
 
             {/* Welcome Section */}
@@ -123,7 +122,8 @@ export default function DashboardPage() {
             </div>
 
           </div>
-        </main>
+          </main>
+        </Sidebar>
       </div>
     </div>
   )
