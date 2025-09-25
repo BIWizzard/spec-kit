@@ -490,7 +490,7 @@ tests/
 - [x] T370 Calendar page in frontend/src/app/calendar/page.tsx
 - [x] T371 Reports page in frontend/src/app/reports/page.tsx
 - [x] T372 Cash flow report page in frontend/src/app/reports/cash-flow/page.tsx
-- [ ] T373 Spending analysis page in frontend/src/app/reports/spending/page.tsx
+- [x] T373 Spending analysis page in frontend/src/app/reports/spending/page.tsx
 - [ ] T374 Budget performance report page in frontend/src/app/reports/budget-performance/page.tsx
 - [ ] T375 Income analysis page in frontend/src/app/reports/income-analysis/page.tsx
 - [ ] T376 Net worth report page in frontend/src/app/reports/net-worth/page.tsx
