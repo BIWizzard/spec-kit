@@ -554,7 +554,7 @@ tests/
 - [x] T426 [P] E2E test for budget setup in tests/e2e/budget-setup.spec.ts
 - [x] T427 [P] E2E test for budget allocation in tests/e2e/budget-allocation.spec.ts
 - [x] T428 [P] E2E test for cash flow calendar in tests/e2e/calendar.spec.ts
-- [ ] T429 [P] E2E test for reports generation in tests/e2e/reports.spec.ts
+- [x] T429 [P] E2E test for reports generation in tests/e2e/reports.spec.ts
 - [ ] T430 [P] E2E test for data export in tests/e2e/data-export.spec.ts
 - [ ] T431 [P] E2E test for family member invitation in tests/e2e/family-invitation.spec.ts
 - [ ] T432 [P] E2E test for scheduled reports in tests/e2e/scheduled-reports.spec.ts
