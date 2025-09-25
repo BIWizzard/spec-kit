@@ -605,7 +605,7 @@ tests/
 - [x] T471 Run full quickstart validation per quickstart.md
 
 ### Phase 7.3.5: Real Service Connections (Required for UAT with real data)
-- [ ] T471a Set up Neon PostgreSQL database and connection string
+- [x] T471a Set up Neon PostgreSQL database and connection string
 - [ ] T471b Configure authentication provider (Supabase Auth or NextAuth)
 - [ ] T471c Set up Plaid API development account and obtain keys
 - [ ] T471d Configure Resend email service for notifications
