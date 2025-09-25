@@ -570,7 +570,7 @@ tests/
 - [x] T440 [P] Unit tests for cache service in tests/unit/test_cache_service.ts
 - [x] T441 [P] Unit tests for budget calculations in tests/unit/test_budget_calculations.ts
 - [x] T442 [P] Unit tests for report generators in tests/unit/test_report_generators.ts
-- [ ] T443 [P] Unit tests for authentication helpers in tests/unit/test_auth_helpers.ts
+- [x] T443 [P] Unit tests for authentication helpers in tests/unit/test_auth_helpers.ts
 - [ ] T444 [P] Unit tests for API middleware in tests/unit/test_middleware.ts
 
 ### Phase 7.3: Performance and Security
