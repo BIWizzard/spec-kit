@@ -543,9 +543,9 @@ tests/
 ### Phase 7.1: End-to-End Tests
 - [x] T416 [P] E2E test for user registration in tests/e2e/user-registration.spec.ts
 - [x] T417 [P] E2E test for authentication flows in tests/e2e/authentication.spec.ts
-- [ ] T418 [P] E2E test for password reset in tests/e2e/password-reset.spec.ts
-- [ ] T419 [P] E2E test for MFA setup in tests/e2e/mfa-setup.spec.ts
-- [ ] T420 [P] E2E test for bank connection in tests/e2e/bank-connection.spec.ts
+- [x] T418 [P] E2E test for password reset in tests/e2e/password-reset.spec.ts
+- [x] T419 [P] E2E test for MFA setup in tests/e2e/mfa-setup.spec.ts
+- [x] T420 [P] E2E test for bank connection in tests/e2e/bank-connection.spec.ts
 - [ ] T421 [P] E2E test for bank reconnection in tests/e2e/bank-reconnection.spec.ts
 - [ ] T422 [P] E2E test for transaction categorization in tests/e2e/transaction-categorization.spec.ts
 - [ ] T423 [P] E2E test for income management in tests/e2e/income-management.spec.ts
