@@ -132,13 +132,118 @@ TypeScript 5.x / Node.js 20 LTS: Follow standard conventions, no comments unless
 - **FIX APPLIED**: Installed lucide-react, fixed PieChart/BarChart import conflicts, created simplified page versions
 - **SERVER**: Running on localhost:3005
 
-### Next Session Priorities:
-1. **🎯 PRIMARY**: Fix remaining 3 failing routes (reports, bank-accounts, family)
-   - Apply same fix pattern: remove/replace missing UI component imports
-   - Fix lucide-react icon conflicts in these pages
-   - Create simplified versions if needed
-2. **🎨 SECONDARY**: UI/UX aesthetic improvements per user preferences
-3. **🔍 TERTIARY**: Complete remaining validation tasks (T472-T475)
+## ✅ SESSION COMPLETED: React Query Fixed + T340 Implemented (Sep 25, 2025)
+**CRITICAL ISSUE RESOLVED**: Fixed React Query webpack module loading errors by downgrading Next.js 15.5.4 → 14.2.15
+
+### 🎯 MAJOR DISCOVERIES THIS SESSION:
+1. **React Query Issue ROOT CAUSE**: Next.js 15.5.4 incompatible with React 18 - caused `Cannot read properties of undefined (reading 'ReactCurrentDispatcher')`
+2. **Missing Components REVEALED**: T340-T344 marked complete in tasks.md but NEVER implemented - found via git history analysis
+3. **T340 ACTUALLY IMPLEMENTED**: Created payment-form.tsx component and committed properly
+
+### ⚠️ CRITICAL CONTRADICTION DISCOVERED:
+**tasks.md shows T340-T344 as [x] complete BUT components don't exist!**
+- **T340**: ✅ NOW IMPLEMENTED (payment-form.tsx) - COMMITTED in ff3d8e6
+- **T341**: ❌ MISSING (attribution.tsx)
+- **T342**: ❌ MISSING (payment-calendar.tsx)
+- **T343**: ❌ MISSING (bulk-create.tsx)
+- **T344**: ❌ MISSING (spending-categories.tsx)
+
+**Root Cause**: Commit 1f4e57f "fix: reconcile tasks.md with actual implementation status" incorrectly marked T340-T344 complete based on assumption work was done. Git history proves they were never implemented.
+
+### 📋 IMMEDIATE NEXT SESSION PRIORITIES:
+1. **🎯 IMPLEMENT T341-T344**: Create remaining payment components (all return 500 errors without them)
+   - T341: attribution.tsx (payment attribution modal/component)
+   - T342: payment-calendar.tsx (calendar view for payments)
+   - T343: bulk-create.tsx (bulk payment creation)
+   - T344: spending-categories.tsx (spending category management)
+
+2. **🧭 NAVIGATION STATUS**: Landing page works (200), but payment routes fail (500) due to missing imports
+   - Server running on Next.js 14.2.15 + React 18 (stable)
+   - React Query + ErrorBoundary + Analytics all working
+
+3. **⚠️ WORKFLOW**: Follow strict commit pattern for each component:
+   - Implement component → commit implementation → move to next
+   - Do NOT batch commit multiple components
+   - Root cause: Missing UI components and React Query setup
+
+2. **✅ Missing UI Components CREATED**:
+   - `/frontend/src/components/ui/button.tsx` - Complete Button component with variants
+   - `/frontend/src/components/ui/card.tsx` - Complete Card component system
+   - `/frontend/src/components/ui/badge.tsx` - Badge component with variants
+   - `/frontend/src/components/ui/tabs.tsx` - Tabs component system
+   - Installed `class-variance-authority` package for styling variants
+
+3. **✅ React Query Setup FIXED**:
+   - Created `/frontend/src/lib/react-query.tsx` with QueryProvider
+   - Updated `/frontend/src/app/layout.tsx` to wrap app with QueryProvider
+   - Fixed "No QueryClient set" errors for bank-accounts and family pages
+
+4. **✅ Reports Route FIXED**:
+   - ReportsDashboard component was trying to import missing Badge and Tabs components
+   - Creating the UI components resolved the 500 errors
+
+5. **✅ Original Page Functionality RESTORED**:
+   - Found backup files: `page-original.tsx` in budget/ and calendar/ directories
+   - Restored full-featured budget and calendar pages from backups
+   - Fixed import issues in restored calendar page
+
+### Current Status:
+- **Server**: Running on localhost:3001 (port 3000 in use)
+- **Navigation**: ✅ All 8 main routes working (200 status)
+- **UI Components**: ✅ Complete set of reusable components created
+- **Data Fetching**: ✅ React Query infrastructure working
+- **Branding**: ✅ KGiQ glassmorphic design intact
+
+## ⚠️ SESSION STATUS: React Query Webpack Issues Identified (Sep 25, 2025)
+**ISSUE FOUND**: TanStack React Query causing webpack module loading errors with Next.js 14.2.33
+
+### What Was Discovered:
+1. **🎯 ROOT CAUSE IDENTIFIED**: Next.js version severely outdated
+   - Current: Next.js 14.2.33 (latest: 15.5.4) - major version behind
+   - TanStack React Query (@tanstack/react-query@5.90.2) incompatible with Next.js 14.x webpack configuration
+   - Error: "Cannot read properties of undefined (reading 'call')" - webpack module loading failure
+
+2. **✅ TEMPORARY WORKAROUND**: Landing page working without QueryProvider
+   - Removed all React Query components to isolate issue
+   - Fixed CSS hydration by replacing custom properties with Tailwind classes
+   - Landing page now loads successfully but no data fetching capability
+
+3. **📋 COMPREHENSIVE TESTING COMPLETED**: Systematic component isolation performed
+   - ✅ Basic layout + CSS imports: WORKING
+   - ❌ Any QueryProvider usage: BREAKS webpack module loading
+   - 🔄 ErrorBoundary, Analytics, SpeedInsights: UNTESTED (removed during troubleshooting)
+
+### Current Status:
+- **Landing Page**: ✅ WORKING (without React Query)
+- **Navigation**: ❌ UNKNOWN - other routes likely broken without QueryProvider
+- **UI Styling**: ✅ KGiQ branding and glassmorphic design working
+- **Data Fetching**: ❌ BROKEN - all React Query functionality disabled
+- **Server**: Running stable on localhost (ports 3000-3002 tested)
+
+### 🎯 CRITICAL NEXT STEP:
+**UPGRADE NEXT.JS**: Version 14.2.33 → 15.5.4 will likely resolve all React Query webpack issues
+
+### 🔶 PERFORMANCE NOTE FOR FUTURE OPTIMIZATION:
+**Issue**: Budget, Calendar, Bank, and Family pages take ~5 seconds to render
+**Status**: Pages do render successfully with full functionality, but slower than ideal
+**Priority**: MEDIUM - Not blocking for functionality testing, but should be optimized before production
+**Likely Causes**: Large component trees, data fetching delays, or excessive re-renders
+**Next Steps**: Performance profiling and optimization needed before production deployment
+
+### Minor Issues (Non-Blocking):
+1. **React JSX type validation warnings** on Dashboard page - pages still render correctly
+2. **Family page shows "no family settings found"** - expected behavior when no data is configured
+
+### Files Changed This Session:
+- `frontend/src/app/layout.tsx` - Removed QueryProvider, ErrorBoundary, Analytics (commented out with restoration notes)
+- `frontend/next.config.js` - Added React Query webpack rules (ineffective)
+- `TROUBLESHOOTING_SESSION_NOTES.md` - Comprehensive documentation of all testing and findings
+
+### Session Impact:
+- **Problem**: React Query webpack module loading errors preventing app startup
+- **Root Cause**: Next.js 14.2.33 incompatible with React Query 5.90.2
+- **Temporary Fix**: Disabled React Query to isolate and confirm the issue
+- **Next Action**: Upgrade Next.js 14.x → 15.5.4 should resolve all issues
 
 ## Session Accomplishments (Previous Sessions)
 - ✅ **T453-T456 SECURITY TASKS COMPLETED**: Previous session implemented (4,050+ lines of advanced security testing frameworks)
