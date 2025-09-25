@@ -546,7 +546,7 @@ tests/
 - [x] T418 [P] E2E test for password reset in tests/e2e/password-reset.spec.ts
 - [x] T419 [P] E2E test for MFA setup in tests/e2e/mfa-setup.spec.ts
 - [x] T420 [P] E2E test for bank connection in tests/e2e/bank-connection.spec.ts
-- [ ] T421 [P] E2E test for bank reconnection in tests/e2e/bank-reconnection.spec.ts
+- [x] T421 [P] E2E test for bank reconnection in tests/e2e/bank-reconnection.spec.ts
 - [ ] T422 [P] E2E test for transaction categorization in tests/e2e/transaction-categorization.spec.ts
 - [ ] T423 [P] E2E test for income management in tests/e2e/income-management.spec.ts
 - [ ] T424 [P] E2E test for payment management in tests/e2e/payment-management.spec.ts
