@@ -593,7 +593,7 @@ tests/
 - [x] T459 [P] Generate OpenAPI documentation from contracts
 - [x] T460 [P] Update API documentation in docs/api.md
 - [x] T461 [P] Update user documentation in docs/user-guide.md
-- [ ] T462 [P] Create deployment guide in docs/deployment.md
+- [x] T462 [P] Create deployment guide in docs/deployment.md
 - [ ] T463 [P] Create developer setup guide in docs/development.md
 - [ ] T464 [P] Create troubleshooting guide in docs/troubleshooting.md
 - [ ] T465 [P] Create backup and recovery guide in docs/backup-recovery.md
