@@ -595,7 +595,7 @@ tests/
 - [x] T461 [P] Update user documentation in docs/user-guide.md
 - [x] T462 [P] Create deployment guide in docs/deployment.md
 - [x] T463 [P] Create developer setup guide in docs/development.md
-- [ ] T464 [P] Create troubleshooting guide in docs/troubleshooting.md
+- [x] T464 [P] Create troubleshooting guide in docs/troubleshooting.md
 - [ ] T465 [P] Create backup and recovery guide in docs/backup-recovery.md
 - [ ] T466 [P] Create monitoring and logging guide in docs/monitoring.md
 - [ ] T467 Code quality review and refactoring
