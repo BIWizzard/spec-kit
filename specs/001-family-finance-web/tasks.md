@@ -548,7 +548,7 @@ tests/
 - [x] T420 [P] E2E test for bank connection in tests/e2e/bank-connection.spec.ts
 - [x] T421 [P] E2E test for bank reconnection in tests/e2e/bank-reconnection.spec.ts
 - [x] T422 [P] E2E test for transaction categorization in tests/e2e/transaction-categorization.spec.ts
-- [ ] T423 [P] E2E test for income management in tests/e2e/income-management.spec.ts
+- [x] T423 [P] E2E test for income management in tests/e2e/income-management.spec.ts
 - [ ] T424 [P] E2E test for payment management in tests/e2e/payment-management.spec.ts
 - [ ] T425 [P] E2E test for payment attribution in tests/e2e/payment-attribution.spec.ts
 - [ ] T426 [P] E2E test for budget setup in tests/e2e/budget-setup.spec.ts
