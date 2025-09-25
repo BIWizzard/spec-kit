@@ -255,5 +255,4 @@ export const SelectItem: React.FC<SelectItemProps> = ({
   );
 };
 
-// Export all components
-export { SelectContent, SelectItem, SelectTrigger, SelectValue };
+// Components are already exported above
