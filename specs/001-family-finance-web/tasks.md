@@ -497,17 +497,17 @@ tests/
 - [ ] T377 Savings rate report page in frontend/src/app/reports/savings-rate/page.tsx
 - [ ] T378 Custom reports page in frontend/src/app/reports/custom/page.tsx
 - [ ] T379 Scheduled reports page in frontend/src/app/reports/scheduled/page.tsx
-- [ ] T380 [P] Cash flow calendar component in frontend/src/components/calendar/cash-flow-calendar.tsx
-- [ ] T381 [P] Reports dashboard component in frontend/src/components/reports/reports-dashboard.tsx
-- [ ] T382 [P] Cash flow chart component in frontend/src/components/reports/cash-flow-chart.tsx
-- [ ] T383 [P] Spending analysis chart in frontend/src/components/reports/spending-chart.tsx
-- [ ] T384 [P] Budget performance chart in frontend/src/components/reports/budget-performance-chart.tsx
-- [ ] T385 [P] Income analysis chart in frontend/src/components/reports/income-chart.tsx
-- [ ] T386 [P] Net worth chart component in frontend/src/components/reports/net-worth-chart.tsx
-- [ ] T387 [P] Savings rate chart component in frontend/src/components/reports/savings-chart.tsx
-- [ ] T388 [P] Custom report builder component in frontend/src/components/reports/custom-report-builder.tsx
-- [ ] T389 [P] Report export component in frontend/src/components/reports/export.tsx
-- [ ] T390 [P] Scheduled report manager in frontend/src/components/reports/scheduled-reports.tsx
+- [x] T380 [P] Cash flow calendar component in frontend/src/components/calendar/cash-flow-calendar.tsx
+- [x] T381 [P] Reports dashboard component in frontend/src/components/reports/reports-dashboard.tsx
+- [x] T382 [P] Cash flow chart component in frontend/src/components/reports/cash-flow-chart.tsx
+- [x] T383 [P] Spending analysis chart in frontend/src/components/reports/spending-chart.tsx
+- [x] T384 [P] Budget performance chart in frontend/src/components/reports/budget-performance-chart.tsx
+- [x] T385 [P] Income analysis chart in frontend/src/components/reports/income-chart.tsx
+- [x] T386 [P] Net worth chart component in frontend/src/components/reports/net-worth-chart.tsx
+- [x] T387 [P] Savings rate chart component in frontend/src/components/reports/savings-chart.tsx
+- [x] T388 [P] Custom report builder component in frontend/src/components/reports/custom-report-builder.tsx
+- [x] T389 [P] Report export component in frontend/src/components/reports/export.tsx
+- [x] T390 [P] Scheduled report manager in frontend/src/components/reports/scheduled-reports.tsx
 
 ### Phase 6.9: Family Management
 - [ ] T391 Family settings page in frontend/src/app/family/page.tsx
