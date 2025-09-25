@@ -474,7 +474,7 @@ tests/
 ### Phase 6.7: Budget Management Pages
 - [x] T357 Budget overview page in frontend/src/app/budget/page.tsx
 - [x] T358 Budget categories page in frontend/src/app/budget/categories/page.tsx
-- [ ] T359 Budget allocations page in frontend/src/app/budget/allocations/page.tsx
+- [x] T359 Budget allocations page in frontend/src/app/budget/allocations/page.tsx
 - [ ] T360 Budget performance page in frontend/src/app/budget/performance/page.tsx
 - [ ] T361 Budget projections page in frontend/src/app/budget/projections/page.tsx
 - [ ] T362 Budget templates page in frontend/src/app/budget/templates/page.tsx
