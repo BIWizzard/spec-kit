@@ -604,9 +604,9 @@ tests/
 - [x] T470 Mobile responsiveness testing
 - [x] T471 Run full quickstart validation per quickstart.md
 - [x] T472 Final security and performance validation
-- [ ] T473 Production deployment readiness check
-- [ ] T474 User acceptance testing preparation
-- [ ] T475 Go-live checklist completion
+- [x] T473 Production deployment readiness check
+- [x] T474 User acceptance testing preparation
+- [x] T475 Go-live checklist completion
 
 ## Dependencies
 
