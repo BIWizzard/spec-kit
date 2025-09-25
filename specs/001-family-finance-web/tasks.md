@@ -591,7 +591,7 @@ tests/
 
 ### Phase 7.4: Documentation and Final Steps
 - [x] T459 [P] Generate OpenAPI documentation from contracts
-- [ ] T460 [P] Update API documentation in docs/api.md
+- [x] T460 [P] Update API documentation in docs/api.md
 - [ ] T461 [P] Update user documentation in docs/user-guide.md
 - [ ] T462 [P] Create deployment guide in docs/deployment.md
 - [ ] T463 [P] Create developer setup guide in docs/development.md
