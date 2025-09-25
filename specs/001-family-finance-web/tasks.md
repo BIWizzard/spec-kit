@@ -512,7 +512,7 @@ tests/
 ### Phase 6.9: Family Management
 - [x] T391 Family settings page in frontend/src/app/family/page.tsx
 - [x] T392 Family members page in frontend/src/app/family/members/page.tsx
-- [ ] T393 Family invitations page in frontend/src/app/family/invitations/page.tsx
+- [x] T393 Family invitations page in frontend/src/app/family/invitations/page.tsx
 - [ ] T394 Family activity page in frontend/src/app/family/activity/page.tsx
 - [ ] T395 [P] Family members component in frontend/src/components/family/members.tsx
 - [ ] T396 [P] Family member profile component in frontend/src/components/family/member-profile.tsx
