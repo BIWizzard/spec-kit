@@ -555,9 +555,9 @@ tests/
 - [x] T427 [P] E2E test for budget allocation in tests/e2e/budget-allocation.spec.ts
 - [x] T428 [P] E2E test for cash flow calendar in tests/e2e/calendar.spec.ts
 - [x] T429 [P] E2E test for reports generation in tests/e2e/reports.spec.ts
-- [ ] T430 [P] E2E test for data export in tests/e2e/data-export.spec.ts
-- [ ] T431 [P] E2E test for family member invitation in tests/e2e/family-invitation.spec.ts
-- [ ] T432 [P] E2E test for scheduled reports in tests/e2e/scheduled-reports.spec.ts
+- [x] T430 [P] E2E test for data export in tests/e2e/data-export.spec.ts
+- [x] T431 [P] E2E test for family member invitation in tests/e2e/family-invitation.spec.ts
+- [x] T432 [P] E2E test for scheduled reports in tests/e2e/scheduled-reports.spec.ts
 
 ### Phase 7.2: Unit Tests
 - [ ] T433 [P] Unit tests for validation utils in tests/unit/test_validation_utils.ts
