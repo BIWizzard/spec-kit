@@ -510,7 +510,7 @@ tests/
 - [x] T390 [P] Scheduled report manager in frontend/src/components/reports/scheduled-reports.tsx
 
 ### Phase 6.9: Family Management
-- [ ] T391 Family settings page in frontend/src/app/family/page.tsx
+- [x] T391 Family settings page in frontend/src/app/family/page.tsx
 - [ ] T392 Family members page in frontend/src/app/family/members/page.tsx
 - [ ] T393 Family invitations page in frontend/src/app/family/invitations/page.tsx
 - [ ] T394 Family activity page in frontend/src/app/family/activity/page.tsx
