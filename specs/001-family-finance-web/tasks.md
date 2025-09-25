@@ -603,10 +603,21 @@ tests/
 - [x] T469 Browser compatibility testing
 - [x] T470 Mobile responsiveness testing
 - [x] T471 Run full quickstart validation per quickstart.md
-- [x] T472 Final security and performance validation
-- [x] T473 Production deployment readiness check
-- [x] T474 User acceptance testing preparation
-- [x] T475 Go-live checklist completion
+
+### Phase 7.3.5: Real Service Connections (Required for UAT with real data)
+- [ ] T471a Set up Neon PostgreSQL database and connection string
+- [ ] T471b Configure authentication provider (Supabase Auth or NextAuth)
+- [ ] T471c Set up Plaid API development account and obtain keys
+- [ ] T471d Configure Resend email service for notifications
+- [ ] T471e Deploy to Vercel staging environment
+- [ ] T471f Run Prisma migrations on real database
+- [ ] T471g Verify all service connections and create .env files
+
+### Phase 7.4: Documentation and Final Steps (continued)
+- [ ] T472 Final security and performance validation with real services
+- [ ] T473 Production deployment readiness check with real infrastructure
+- [ ] T474 User acceptance testing preparation with real bank data
+- [ ] T475 Go-live checklist completion with all services verified
 
 ## Dependencies
 
