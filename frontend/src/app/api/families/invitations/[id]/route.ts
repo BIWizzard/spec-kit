@@ -195,3 +195,131 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const invitationId = params.id;
+
+    // Extract user from JWT token
+    let familyId: string;
+    let userId: string;
+    try {
+      const tokenData = await extractUserFromToken(request);
+      familyId = tokenData.familyId;
+      userId = tokenData.userId;
+    } catch (tokenError) {
+      return NextResponse.json(
+        {
+          error: 'Authentication error',
+          message: tokenError.message === 'No token provided'
+            ? 'Authentication token is required.'
+            : 'The provided token is invalid or expired.',
+        },
+        { status: 401 }
+      );
+    }
+
+    if (!invitationId) {
+      return NextResponse.json(
+        {
+          error: 'Missing invitation ID',
+          message: 'Invitation ID is required.',
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Check user permissions before attempting cancellation
+      const user = await FamilyService.getFamilyMemberById(familyId, userId);
+      const permissions = user?.permissions as any;
+      if (!user || !permissions?.canManageFamily) {
+        return NextResponse.json(
+          {
+            error: 'Insufficient permissions',
+            message: 'You do not have permission to cancel invitations.',
+          },
+          { status: 403 }
+        );
+      }
+
+      // Get the invitation to verify it exists and is pending
+      const invitation = await FamilyService.getFamilyMemberById(familyId, invitationId);
+
+      if (!invitation) {
+        return NextResponse.json(
+          {
+            error: 'Invitation not found',
+            message: 'The invitation was not found.',
+          },
+          { status: 404 }
+        );
+      }
+
+      // Check if this is actually a pending invitation (empty password/name)
+      if (invitation.passwordHash !== '' || invitation.firstName !== '' || invitation.lastName !== '') {
+        return NextResponse.json(
+          {
+            error: 'Invalid operation',
+            message: 'This invitation has already been accepted and cannot be cancelled.',
+          },
+          { status: 400 }
+        );
+      }
+
+      // Cancel invitation by deleting the placeholder member record
+      await FamilyService.deleteFamilyMember(familyId, invitationId);
+
+      const response: CancelInvitationResponse = {
+        message: 'Family invitation cancelled successfully.',
+      };
+
+      return NextResponse.json(response, { status: 200 });
+    } catch (serviceError) {
+      console.error('Cancel family invitation error:', serviceError);
+
+      if (serviceError instanceof Error) {
+        if (serviceError.message === 'Member not found or already deleted') {
+          return NextResponse.json(
+            {
+              error: 'Invitation not found',
+              message: 'The invitation was not found or has already been cancelled.',
+            },
+            { status: 404 }
+          );
+        }
+
+        if (serviceError.message === 'Insufficient permissions') {
+          return NextResponse.json(
+            {
+              error: 'Insufficient permissions',
+              message: 'You do not have permission to cancel invitations.',
+            },
+            { status: 403 }
+          );
+        }
+      }
+
+      return NextResponse.json(
+        {
+          error: 'Failed to cancel invitation',
+          message: 'Failed to cancel family invitation. Please try again.',
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error('Cancel family invitation endpoint error:', error);
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: 'Failed to cancel family invitation. Please try again.',
+      },
+      { status: 500 }
+    );
+  }
+}
