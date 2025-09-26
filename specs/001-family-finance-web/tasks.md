@@ -676,11 +676,12 @@ tests/
 - [x] T524 Migrate GET /api/income-events/upcoming endpoint to frontend/src/app/api/income-events/upcoming/route.ts
 - [x] T525 Migrate GET /api/income-events/summary endpoint to frontend/src/app/api/income-events/summary/route.ts
 
-**Priority 7 - Budget Categories APIs (T530-T533)**:
+**Priority 7 - Budget Categories APIs (T530-T534)**:
 - [x] T530 Migrate GET /api/budget-categories endpoint to frontend/src/app/api/budget-categories/route.ts
 - [x] T531 Migrate POST /api/budget-categories endpoint to frontend/src/app/api/budget-categories/route.ts
 - [x] T532 Migrate GET /api/budget/overview endpoint to frontend/src/app/api/budget/overview/route.ts
 - [x] T533 Migrate GET /api/budget/performance endpoint to frontend/src/app/api/budget/performance/route.ts
+- [x] T534 Migrate GET /api/budget-allocations endpoint to frontend/src/app/api/budget-allocations/route.ts
 
 **Priority 6 - Spending Categories APIs (T526-T529)**:
 - [x] T526 Migrate GET /api/spending-categories endpoint to frontend/src/app/api/spending-categories/route.ts
