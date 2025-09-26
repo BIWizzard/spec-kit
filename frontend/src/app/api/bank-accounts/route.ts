@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { BankService, BankAccountFilter } from '@/lib/services/bank.service';
+import { BankService, BankAccountFilter, ConnectBankAccountData } from '@/lib/services/bank.service';
+import { ValidationService } from '@/lib/services/validation.service';
 import jwt from 'jsonwebtoken';
 
 interface BankAccountInfo {
@@ -23,6 +24,38 @@ interface BankAccountInfo {
 
 interface BankAccountsResponse {
   accounts: BankAccountInfo[];
+}
+
+interface ConnectBankAccountRequest {
+  publicToken: string;
+  metadata: {
+    institution: {
+      name: string;
+      institution_id: string;
+    };
+    accounts: Array<{
+      id: string;
+      name: string;
+      mask: string;
+      type: string;
+      subtype: string;
+    }>;
+  };
+}
+
+interface ConnectBankAccountResponse {
+  message: string;
+  bankAccounts: Array<{
+    id: string;
+    institutionName: string;
+    accountName: string;
+    accountType: string;
+    accountNumber: string;
+    currentBalance: string;
+    availableBalance: string;
+    syncStatus: string;
+    lastSyncAt: string;
+  }>;
 }
 
 async function extractUserFromToken(request: NextRequest) {
@@ -127,6 +160,127 @@ export async function GET(request: NextRequest) {
       {
         error: 'Internal server error',
         message: 'Failed to retrieve bank accounts. Please try again.',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { publicToken, metadata }: ConnectBankAccountRequest = body;
+
+    // Extract user from JWT token
+    let familyId: string;
+    let userId: string;
+    try {
+      const tokenData = await extractUserFromToken(request);
+      familyId = tokenData.familyId;
+      userId = tokenData.userId;
+    } catch (tokenError) {
+      return NextResponse.json(
+        {
+          error: 'Authentication error',
+          message: tokenError.message === 'No token provided'
+            ? 'Authentication token is required.'
+            : 'The provided token is invalid or expired.',
+        },
+        { status: 401 }
+      );
+    }
+
+    // Validate input
+    const validationErrors = ValidationService.validateConnectBankAccount({
+      publicToken,
+      metadata,
+    });
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: validationErrors,
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      const connectData: ConnectBankAccountData = {
+        publicToken,
+        metadata,
+      };
+
+      // Connect bank account through service
+      const bankAccounts = await BankService.connectBankAccount(familyId, userId, connectData);
+
+      const response: ConnectBankAccountResponse = {
+        message: 'Bank accounts connected successfully.',
+        bankAccounts: bankAccounts.map(account => ({
+          id: account.id,
+          institutionName: account.institutionName,
+          accountName: account.accountName,
+          accountType: account.accountType,
+          accountNumber: account.accountNumber,
+          currentBalance: account.currentBalance.toString(),
+          availableBalance: account.availableBalance.toString(),
+          syncStatus: account.syncStatus,
+          lastSyncAt: account.lastSyncAt.toISOString(),
+        })),
+      };
+
+      return NextResponse.json(response, { status: 201 });
+    } catch (serviceError) {
+      console.error('Connect bank account error:', serviceError);
+
+      if (serviceError instanceof Error) {
+        if (serviceError.message.includes('not authorized') || serviceError.message.includes('not found')) {
+          return NextResponse.json(
+            {
+              error: 'Authorization error',
+              message: 'User not found or not authorized to connect bank accounts.',
+            },
+            { status: 403 }
+          );
+        }
+
+        if (serviceError.message.includes('Insufficient permissions')) {
+          return NextResponse.json(
+            {
+              error: 'Insufficient permissions',
+              message: 'You do not have permission to connect bank accounts.',
+            },
+            { status: 403 }
+          );
+        }
+
+        if (serviceError.message.includes('Plaid') || serviceError.message.includes('link token')) {
+          return NextResponse.json(
+            {
+              error: 'Bank connection error',
+              message: 'Failed to connect to banking provider. Please try again.',
+            },
+            { status: 400 }
+          );
+        }
+      }
+
+      return NextResponse.json(
+        {
+          error: 'Failed to connect bank account',
+          message: 'Failed to connect bank account. Please try again.',
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error('Connect bank account endpoint error:', error);
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: 'Failed to connect bank account. Please try again.',
       },
       { status: 500 }
     );
