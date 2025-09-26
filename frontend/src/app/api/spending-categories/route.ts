@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SpendingCategoryService, SpendingCategoryFilter } from '@/lib/services/spending-category.service';
+import { SpendingCategoryService, SpendingCategoryFilter, CreateSpendingCategoryData } from '@/lib/services/spending-category.service';
+import { ValidationService } from '@/lib/services/validation.service';
 import jwt from 'jsonwebtoken';
 
 interface SpendingCategoryInfo {
@@ -44,6 +45,42 @@ interface SpendingCategoriesResponse {
     budgetCategoryId?: string;
     hasMonthlyTarget?: boolean;
     searchTerm?: string;
+  };
+}
+
+interface CreateSpendingCategoryRequest {
+  name: string;
+  parentCategoryId?: string;
+  budgetCategoryId: string;
+  icon?: string;
+  color?: string;
+  monthlyTarget?: number;
+  description?: string;
+}
+
+interface CreateSpendingCategoryResponse {
+  message: string;
+  category: {
+    id: string;
+    name: string;
+    parentCategoryId?: string;
+    budgetCategoryId: string;
+    icon?: string;
+    color?: string;
+    monthlyTarget?: number;
+    isActive: boolean;
+    description?: string;
+    budgetCategory: {
+      id: string;
+      name: string;
+      color: string;
+    };
+    parentCategory?: {
+      id: string;
+      name: string;
+    };
+    createdAt: string;
+    updatedAt: string;
   };
 }
 
@@ -182,6 +219,181 @@ export async function GET(request: NextRequest) {
       {
         error: 'Internal server error',
         message: 'Failed to retrieve spending categories. Please try again.',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body: CreateSpendingCategoryRequest = await request.json();
+
+    const {
+      name,
+      parentCategoryId,
+      budgetCategoryId,
+      icon,
+      color,
+      monthlyTarget,
+      description,
+    } = body;
+
+    // Extract user from JWT token
+    let familyId: string;
+    let userId: string;
+    try {
+      const tokenData = await extractUserFromToken(request);
+      familyId = tokenData.familyId;
+      userId = tokenData.userId;
+    } catch (tokenError) {
+      return NextResponse.json(
+        {
+          error: 'Authentication error',
+          message: tokenError.message === 'No token provided'
+            ? 'Authentication token is required.'
+            : 'The provided token is invalid or expired.',
+        },
+        { status: 401 }
+      );
+    }
+
+    // Validate input
+    const validationErrors = ValidationService.validateSpendingCategory({
+      name,
+      parentCategoryId,
+      budgetCategoryId,
+      icon,
+      color,
+      monthlyTarget,
+      description,
+    });
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: validationErrors,
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Create spending category
+      const categoryData: CreateSpendingCategoryData = {
+        name,
+        parentCategoryId,
+        budgetCategoryId,
+        icon,
+        color,
+        monthlyTarget,
+        description,
+      };
+
+      const newCategory = await SpendingCategoryService.createSpendingCategory(
+        familyId,
+        userId,
+        categoryData
+      );
+
+      const response: CreateSpendingCategoryResponse = {
+        message: 'Spending category created successfully.',
+        category: {
+          id: newCategory.id,
+          name: newCategory.name,
+          parentCategoryId: newCategory.parentCategoryId || undefined,
+          budgetCategoryId: newCategory.budgetCategoryId,
+          icon: newCategory.icon || undefined,
+          color: newCategory.color || undefined,
+          monthlyTarget: newCategory.monthlyTarget ? Number(newCategory.monthlyTarget) : undefined,
+          isActive: newCategory.isActive,
+          description: newCategory.description || undefined,
+          budgetCategory: {
+            id: newCategory.budgetCategory.id,
+            name: newCategory.budgetCategory.name,
+            color: newCategory.budgetCategory.color,
+          },
+          parentCategory: newCategory.parentCategory ? {
+            id: newCategory.parentCategory.id,
+            name: newCategory.parentCategory.name,
+          } : undefined,
+          createdAt: newCategory.createdAt.toISOString(),
+          updatedAt: newCategory.updatedAt.toISOString(),
+        },
+      };
+
+      return NextResponse.json(response, { status: 201 });
+    } catch (serviceError) {
+      console.error('Create spending category error:', serviceError);
+
+      if (serviceError instanceof Error) {
+        if (serviceError.message === 'User not found or not authorized') {
+          return NextResponse.json(
+            {
+              error: 'Authorization error',
+              message: 'User not found or not authorized.',
+            },
+            { status: 403 }
+          );
+        }
+
+        if (serviceError.message === 'Insufficient permissions to create spending categories') {
+          return NextResponse.json(
+            {
+              error: 'Insufficient permissions',
+              message: 'You do not have permission to create spending categories.',
+            },
+            { status: 403 }
+          );
+        }
+
+        if (serviceError.message === 'Budget category not found or not authorized') {
+          return NextResponse.json(
+            {
+              error: 'Budget category not found',
+              message: 'The specified budget category was not found.',
+            },
+            { status: 404 }
+          );
+        }
+
+        if (serviceError.message === 'Parent category not found or invalid') {
+          return NextResponse.json(
+            {
+              error: 'Parent category not found',
+              message: 'The specified parent category was not found or is invalid.',
+            },
+            { status: 404 }
+          );
+        }
+
+        if (serviceError.message === 'A category with this name already exists at this level') {
+          return NextResponse.json(
+            {
+              error: 'Duplicate category name',
+              message: 'A category with this name already exists at this level.',
+            },
+            { status: 409 }
+          );
+        }
+      }
+
+      return NextResponse.json(
+        {
+          error: 'Failed to create spending category',
+          message: 'Failed to create spending category. Please try again.',
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error('Create spending category endpoint error:', error);
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: 'Failed to create spending category. Please try again.',
       },
       { status: 500 }
     );

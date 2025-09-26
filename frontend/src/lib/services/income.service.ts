@@ -369,6 +369,103 @@ export class IncomeService {
     return createdEvents;
   }
 
+  static async getIncomeEventsSummary(
+    familyId: string,
+    options: {
+      fromDate: Date;
+      toDate: Date;
+      groupBy?: 'day' | 'week' | 'month' | 'quarter' | 'year';
+    }
+  ): Promise<{
+    summaryPeriods: Array<{
+      period: string;
+      periodStart: string;
+      periodEnd: string;
+      scheduledIncome: number;
+      actualIncome: number;
+      incomeCount: number;
+      variance: number;
+    }>;
+    totals: {
+      totalScheduled: number;
+      totalActual: number;
+      totalVariance: number;
+      totalAllocated: number;
+      totalRemaining: number;
+    };
+    dateRange: {
+      fromDate: string;
+      toDate: string;
+    };
+  }> {
+    const { fromDate, toDate, groupBy = 'month' } = options;
+
+    // Get all income events in the date range
+    const events = await prisma.incomeEvent.findMany({
+      where: {
+        familyId,
+        scheduledDate: {
+          gte: fromDate,
+          lte: toDate,
+        },
+      },
+      include: {
+        paymentAttributions: true,
+      },
+    });
+
+    // Generate period groups
+    const periods = this.generatePeriods(fromDate, toDate, groupBy);
+
+    // Group events by period
+    const summaryPeriods = periods.map(period => {
+      const periodEvents = events.filter(event => {
+        const eventDate = event.scheduledDate;
+        return eventDate >= period.start && eventDate <= period.end;
+      });
+
+      const scheduledIncome = periodEvents.reduce((sum, event) => sum + Number(event.amount), 0);
+      const receivedEvents = periodEvents.filter(e => e.status === 'received');
+      const actualIncome = receivedEvents.reduce((sum, event) => sum + Number(event.actualAmount || 0), 0);
+      const variance = actualIncome - scheduledIncome;
+
+      return {
+        period: period.label,
+        periodStart: period.start.toISOString().split('T')[0],
+        periodEnd: period.end.toISOString().split('T')[0],
+        scheduledIncome,
+        actualIncome,
+        incomeCount: periodEvents.length,
+        variance,
+      };
+    }).filter(period => period.incomeCount > 0); // Only include periods with income events
+
+    // Calculate totals
+    const totalScheduled = events.reduce((sum, event) => sum + Number(event.amount), 0);
+    const receivedEvents = events.filter(e => e.status === 'received');
+    const totalActual = receivedEvents.reduce((sum, event) => sum + Number(event.actualAmount || 0), 0);
+    const totalVariance = totalActual - totalScheduled;
+
+    // Calculate allocations
+    const totalAllocated = events.reduce((sum, event) => sum + Number(event.allocatedAmount), 0);
+    const totalRemaining = totalActual - totalAllocated;
+
+    return {
+      summaryPeriods,
+      totals: {
+        totalScheduled,
+        totalActual,
+        totalVariance,
+        totalAllocated,
+        totalRemaining,
+      },
+      dateRange: {
+        fromDate: fromDate.toISOString().split('T')[0],
+        toDate: toDate.toISOString().split('T')[0],
+      },
+    };
+  }
+
   static async getIncomeEventAttributions(familyId: string, incomeEventId: string) {
     const event = await prisma.incomeEvent.findFirst({
       where: { id: incomeEventId, familyId },
@@ -442,6 +539,98 @@ export class IncomeService {
         notes: currentEvent.notes,
       },
     });
+  }
+
+  private static generatePeriods(
+    fromDate: Date,
+    toDate: Date,
+    groupBy: 'day' | 'week' | 'month' | 'quarter' | 'year'
+  ): Array<{ label: string; start: Date; end: Date }> {
+    const periods: Array<{ label: string; start: Date; end: Date }> = [];
+    let current = new Date(fromDate);
+
+    while (current <= toDate) {
+      let periodStart = new Date(current);
+      let periodEnd: Date;
+      let label: string;
+
+      switch (groupBy) {
+        case 'day':
+          periodEnd = new Date(current);
+          periodEnd.setHours(23, 59, 59, 999);
+          label = current.toISOString().split('T')[0];
+          current.setDate(current.getDate() + 1);
+          break;
+
+        case 'week':
+          // Find start of week (Sunday)
+          const startOfWeek = new Date(current);
+          startOfWeek.setDate(current.getDate() - current.getDay());
+          periodStart = startOfWeek;
+
+          // Find end of week (Saturday)
+          periodEnd = new Date(startOfWeek);
+          periodEnd.setDate(startOfWeek.getDate() + 6);
+          periodEnd.setHours(23, 59, 59, 999);
+
+          // Ensure we don't go beyond toDate
+          if (periodEnd > toDate) {
+            periodEnd = new Date(toDate);
+            periodEnd.setHours(23, 59, 59, 999);
+          }
+
+          label = `${periodStart.toISOString().split('T')[0]} to ${periodEnd.toISOString().split('T')[0]}`;
+          current.setDate(current.getDate() + 7);
+          break;
+
+        case 'month':
+          periodStart = new Date(current.getFullYear(), current.getMonth(), 1);
+          periodEnd = new Date(current.getFullYear(), current.getMonth() + 1, 0);
+          periodEnd.setHours(23, 59, 59, 999);
+          label = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+          current.setMonth(current.getMonth() + 1);
+          break;
+
+        case 'quarter':
+          const quarter = Math.floor(current.getMonth() / 3);
+          periodStart = new Date(current.getFullYear(), quarter * 3, 1);
+          periodEnd = new Date(current.getFullYear(), quarter * 3 + 3, 0);
+          periodEnd.setHours(23, 59, 59, 999);
+          label = `${current.getFullYear()}-Q${quarter + 1}`;
+          current.setMonth((quarter + 1) * 3);
+          break;
+
+        case 'year':
+          periodStart = new Date(current.getFullYear(), 0, 1);
+          periodEnd = new Date(current.getFullYear(), 11, 31);
+          periodEnd.setHours(23, 59, 59, 999);
+          label = current.getFullYear().toString();
+          current.setFullYear(current.getFullYear() + 1);
+          break;
+
+        default:
+          throw new Error(`Invalid groupBy value: ${groupBy}`);
+      }
+
+      // Only add periods that overlap with our date range
+      if (periodEnd >= fromDate && periodStart <= toDate) {
+        // Trim period boundaries to fit within the requested range
+        if (periodStart < fromDate) periodStart = new Date(fromDate);
+        if (periodEnd > toDate) {
+          periodEnd = new Date(toDate);
+          periodEnd.setHours(23, 59, 59, 999);
+        }
+
+        periods.push({ label, start: periodStart, end: periodEnd });
+      }
+
+      // Prevent infinite loops
+      if (current.getTime() === periodStart.getTime()) {
+        break;
+      }
+    }
+
+    return periods;
   }
 
   private static async logAuditEvent(
