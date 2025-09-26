@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BudgetService } from '@/lib/services/budget.service';
-import { authenticateRequest, AuthenticationError } from '@/lib/middleware/auth';
+import { verifyJWT } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {

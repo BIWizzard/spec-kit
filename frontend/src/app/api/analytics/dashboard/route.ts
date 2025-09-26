@@ -1,27 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ReportsService } from '@/lib/services/reports.service';
-import { verifyJWT } from '@/lib/auth';
+import { authenticateRequest, AuthenticationError } from '@/lib/middleware/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify JWT token
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Authorization token required' },
-        { status: 401 }
-      );
-    }
+    // Authenticate request
+    const user = authenticateRequest(request);
 
-    const payload = await verifyJWT(token);
-    if (!payload?.familyId) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-
-    const { familyId } = payload;
+    const { familyId } = user;
 
     // Generate dashboard analytics using existing report services
     const currentDate = new Date();
@@ -93,6 +79,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(dashboardAnalytics);
 
   } catch (error) {
+    if (error instanceof AuthenticationError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.statusCode }
+      );
+    }
+
     console.error('Error generating dashboard analytics:', error);
     return NextResponse.json(
       { error: 'Failed to generate dashboard analytics' },
