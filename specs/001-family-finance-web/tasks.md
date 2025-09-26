@@ -653,7 +653,7 @@ tests/
 - [x] T499 Migrate GET /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
 - [ ] T500 Migrate PUT /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
 - [ ] T501 Migrate DELETE /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
-- [ ] T502 Migrate POST /api/bank-accounts/[id]/sync endpoint to frontend/src/app/api/bank-accounts/[id]/sync/route.ts
+- [x] T502 Migrate POST /api/bank-accounts/[id]/sync endpoint to frontend/src/app/api/bank-accounts/[id]/sync/route.ts
 - [ ] T503 Migrate POST /api/bank-accounts/[id]/reconnect endpoint to frontend/src/app/api/bank-accounts/[id]/reconnect/route.ts
 - [x] T504 Migrate POST /api/bank-accounts/sync-all endpoint to frontend/src/app/api/bank-accounts/sync-all/route.ts
 - [ ] T505 Migrate POST /api/bank-accounts/connect endpoint to frontend/src/app/api/bank-accounts/connect/route.ts
