@@ -683,6 +683,20 @@ tests/
 - [x] T533 Migrate GET /api/budget/performance endpoint to frontend/src/app/api/budget/performance/route.ts
 - [x] T534 Migrate GET /api/budget-allocations endpoint to frontend/src/app/api/budget-allocations/route.ts
 
+**Priority 7.1 - Budget Management APIs Part 1 (T550-T554)**:
+- [x] T550 Migrate GET /api/budget-categories/[id] endpoint to frontend/src/app/api/budget-categories/[id]/route.ts
+- [x] T551 Migrate PUT /api/budget-categories/[id] endpoint to frontend/src/app/api/budget-categories/[id]/route.ts
+- [x] T552 Migrate DELETE /api/budget-categories/[id] endpoint to frontend/src/app/api/budget-categories/[id]/route.ts
+- [x] T553 Migrate POST /api/budget-categories/validate-percentages endpoint to frontend/src/app/api/budget-categories/validate-percentages/route.ts
+- [x] T554 Migrate GET /api/budget-allocations/[id] endpoint to frontend/src/app/api/budget-allocations/[id]/route.ts
+
+**Priority 8 - Reports APIs Part 1 (T560-T564)**:
+- [x] T560 Migrate GET /api/reports/cash-flow endpoint to frontend/src/app/api/reports/cash-flow/route.ts
+- [x] T561 Migrate GET /api/reports/spending-analysis endpoint to frontend/src/app/api/reports/spending-analysis/route.ts
+- [x] T562 Migrate GET /api/reports/budget-performance endpoint to frontend/src/app/api/reports/budget-performance/route.ts
+- [x] T563 Migrate GET /api/reports/income-analysis endpoint to frontend/src/app/api/reports/income-analysis/route.ts
+- [x] T564 Migrate GET /api/reports/net-worth endpoint to frontend/src/app/api/reports/net-worth/route.ts
+
 **Priority 6 - Spending Categories APIs (T526-T529)**:
 - [x] T526 Migrate GET /api/spending-categories endpoint to frontend/src/app/api/spending-categories/route.ts
 - [x] T527 Migrate POST /api/spending-categories endpoint to frontend/src/app/api/spending-categories/route.ts
