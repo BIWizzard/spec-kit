@@ -847,4 +847,10 @@ Task: T311 - Register form component
 - **Commit Strategy**: Commit after each completed task for rollback capability
 - **MVP Strategy**: Can implement in phases - Core features first (T001-T296), Advanced features later
 - **Team Scaling**: [P] tasks enable multiple developers to work concurrently
-- **Quality Gates**: Each phase has validation checkpoints before proceeding
+- **Quality Gates**: Each phase has validation checkpoints before proceeding**Priority 8.2 - Reports APIs Part 3 (T570-T574):**
+- [x] T570 Migrate POST /api/reports/export endpoint to frontend/src/app/api/reports/export/route.ts
+- [x] T571 Migrate GET /api/reports/scheduled endpoint to frontend/src/app/api/reports/scheduled/route.ts
+- [x] T572 Migrate POST /api/reports/scheduled endpoint to frontend/src/app/api/reports/scheduled/route.ts
+- [x] T573 Migrate GET /api/reports/scheduled/[id] endpoint to frontend/src/app/api/reports/scheduled/[id]/route.ts
+- [x] T574 Migrate PUT /api/reports/scheduled/[id] endpoint to frontend/src/app/api/reports/scheduled/[id]/route.ts
+
