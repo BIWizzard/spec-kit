@@ -335,3 +335,97 @@ export async function GET(
     }, { status: 500 });
   }
 }
+
+// T545: DELETE /api/income-events/[id] - Delete income event endpoint migration
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id: incomeEventId } = params;
+
+    // Validate income event ID
+    if (!incomeEventId || typeof incomeEventId !== 'string') {
+      return NextResponse.json({
+        error: 'Invalid income event ID',
+        message: 'Income event ID is required and must be a valid string.',
+      }, { status: 400 });
+    }
+
+    // Extract token from Authorization header
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({
+        error: 'No token provided',
+        message: 'Authentication token is required.',
+      }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7);
+
+    let familyId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+
+      if (!decoded || !decoded.familyId) {
+        return NextResponse.json({
+          error: 'Invalid token',
+          message: 'The provided token is invalid.',
+        }, { status: 401 });
+      }
+
+      familyId = decoded.familyId;
+    } catch (jwtError) {
+      return NextResponse.json({
+        error: 'Invalid token',
+        message: 'The provided token is invalid or expired.',
+      }, { status: 401 });
+    }
+
+    try {
+      // Delete the income event
+      await IncomeService.deleteIncomeEvent(familyId, incomeEventId);
+
+      return NextResponse.json({
+        message: 'Income event deleted successfully.',
+      }, { status: 200 });
+    } catch (serviceError) {
+      console.error('Delete income event error:', serviceError);
+
+      if (serviceError instanceof Error) {
+        if (serviceError.message === 'Income event not found') {
+          return NextResponse.json({
+            error: 'Income event not found',
+            message: 'The income event was not found.',
+          }, { status: 404 });
+        }
+
+        if (serviceError.message === 'Cannot delete received income event') {
+          return NextResponse.json({
+            error: 'Cannot delete received income event',
+            message: 'Cannot delete an income event that has already been marked as received.',
+          }, { status: 400 });
+        }
+
+        if (serviceError.message === 'Cannot delete income event with attributions') {
+          return NextResponse.json({
+            error: 'Cannot delete income event with attributions',
+            message: 'Cannot delete an income event that has payments attributed to it.',
+          }, { status: 400 });
+        }
+      }
+
+      return NextResponse.json({
+        error: 'Failed to delete income event',
+        message: 'Failed to delete income event. Please try again.',
+      }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Delete income event endpoint error:', error);
+
+    return NextResponse.json({
+      error: 'Internal server error',
+      message: 'Failed to delete income event. Please try again.',
+    }, { status: 500 });
+  }
+}
