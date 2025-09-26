@@ -49,6 +49,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "critters": "^0.0.23",
+    "csv-stringify": "^6.6.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.2",
     "jsonwebtoken": "^9.0.2",

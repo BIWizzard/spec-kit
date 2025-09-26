@@ -483,7 +483,7 @@ export class ScheduledReportService {
     parameters: Record<string, any>
   ): { fromDate: Date; toDate: Date } {
     const now = new Date();
-    const toDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); // Yesterday
+    let toDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1); // Yesterday
 
     let fromDate: Date;
 
