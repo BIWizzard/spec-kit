@@ -662,6 +662,7 @@ tests/
 
 **Priority 4 - Additional Payment APIs (T508-T519)**:
 - [x] T514 Migrate GET /api/payments endpoint to frontend/src/app/api/payments/route.ts
+- [x] T515 Migrate POST /api/payments endpoint to frontend/src/app/api/payments/route.ts
 - [x] T517 Migrate PUT /api/payments/[id] endpoint to frontend/src/app/api/payments/[id]/route.ts
 - [x] T518 Migrate GET /api/payments/upcoming endpoint to frontend/src/app/api/payments/upcoming/route.ts
 - [x] T519 Migrate GET /api/payments/overdue endpoint to frontend/src/app/api/payments/overdue/route.ts
