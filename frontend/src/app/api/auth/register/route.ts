@@ -120,14 +120,14 @@ export async function POST(request: NextRequest) {
       { expiresIn: '7d' }
     );
 
-    // Send verification email - temporarily disabled due to missing EmailJob table
+    // Send verification email
     try {
-      // EmailService.initialize();
-      // await EmailService.sendVerificationEmail(user.email, verificationToken);
-      console.log(`Verification email would be sent to: ${user.email} with token: ${verificationToken}`);
+      EmailService.initialize();
+      await EmailService.sendVerificationEmail(user.email, verificationToken);
+      console.log(`Verification email sent to: ${user.email} with token: ${verificationToken}`);
     } catch (error) {
       console.error('Failed to send verification email:', error);
-      // Don't fail registration if email fails
+      // Don't fail registration if email fails - user can resend later
     }
 
     const response: RegisterResponse = {

@@ -30,6 +30,10 @@ export default function EmailVerification({ onSuccess, onResend }: EmailVerifica
 
     if (token) {
       verifyEmail(token)
+    } else if (emailParam) {
+      // User just registered but no token yet - waiting for email
+      setStatus('expired') // We'll use expired state to show resend option
+      setCountdown(30) // Shorter wait for new registrations
     } else {
       setStatus('invalid')
     }
@@ -187,12 +191,25 @@ export default function EmailVerification({ onSuccess, onResend }: EmailVerifica
     <div className="space-y-6">
       <div className="text-center">
         <div className="text-6xl mb-4">
-          {status === 'expired' ? '⏰' : status === 'invalid' ? '❌' : '⚠️'}
+          {status === 'expired' && email && !searchParams.get('token')
+            ? '📧'
+            : status === 'expired'
+            ? '⏰'
+            : status === 'invalid'
+            ? '❌'
+            : '⚠️'
+          }
         </div>
 
         <div>
-          <h3 className="text-error text-lg font-semibold mb-2">
-            {status === 'expired'
+          <h3 className={`text-lg font-semibold mb-2 ${
+            status === 'expired' && email && !searchParams.get('token')
+              ? 'text-primary'
+              : 'text-error'
+          }`}>
+            {status === 'expired' && email && !searchParams.get('token')
+              ? 'Verification Email Sent'
+              : status === 'expired'
               ? 'Verification Link Expired'
               : status === 'invalid'
               ? 'Invalid Verification Link'
@@ -200,7 +217,9 @@ export default function EmailVerification({ onSuccess, onResend }: EmailVerifica
             }
           </h3>
           <p className="text-secondary text-sm">
-            {status === 'expired'
+            {status === 'expired' && email && !searchParams.get('token')
+              ? 'Check your email for a verification link. If you don\'t see it, you can request a new one below.'
+              : status === 'expired'
               ? 'Your verification link has expired. We can send you a new one.'
               : status === 'invalid'
               ? 'This verification link is invalid or has already been used.'
@@ -240,6 +259,8 @@ export default function EmailVerification({ onSuccess, onResend }: EmailVerifica
               </div>
             ) : !canResend ? (
               `Resend in ${countdown}s`
+            ) : status === 'expired' && email && !searchParams.get('token') ? (
+              'Send verification email'
             ) : (
               'Send new verification email'
             )}
