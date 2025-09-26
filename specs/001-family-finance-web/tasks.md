@@ -628,10 +628,10 @@ tests/
 - [x] T478 Migrate GET /api/auth/me endpoint to frontend/src/app/api/auth/me/route.ts
 - [x] T479 Migrate GET /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
 - [x] T480 Migrate DELETE /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
-- [ ] T481 Migrate POST /api/auth/forgot-password endpoint to frontend/src/app/api/auth/forgot-password/route.ts
-- [ ] T482 Migrate POST /api/auth/reset-password endpoint to frontend/src/app/api/auth/reset-password/route.ts
+- [x] T481 Migrate POST /api/auth/forgot-password endpoint to frontend/src/app/api/auth/forgot-password/route.ts
+- [x] T482 Migrate POST /api/auth/reset-password endpoint to frontend/src/app/api/auth/reset-password/route.ts
 - [ ] T483 Migrate POST /api/auth/change-password endpoint to frontend/src/app/api/auth/change-password/route.ts
-- [ ] T484 Migrate POST /api/auth/refresh endpoint to frontend/src/app/api/auth/refresh/route.ts
+- [x] T484 Migrate POST /api/auth/refresh endpoint to frontend/src/app/api/auth/refresh/route.ts
 - [ ] T485 Migrate DELETE /api/auth/sessions/[id] endpoint to frontend/src/app/api/auth/sessions/[id]/route.ts
 
 **Priority 2 - Family Management APIs (T486-T496)**:
