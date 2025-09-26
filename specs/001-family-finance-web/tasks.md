@@ -690,6 +690,13 @@ tests/
 - [x] T553 Migrate POST /api/budget-categories/validate-percentages endpoint to frontend/src/app/api/budget-categories/validate-percentages/route.ts
 - [x] T554 Migrate GET /api/budget-allocations/[id] endpoint to frontend/src/app/api/budget-allocations/[id]/route.ts
 
+**Priority 7.2 - Budget Management APIs Part 2 (T555-T559)**:
+- [x] T555 Migrate PUT /api/budget-allocations/[id] endpoint to frontend/src/app/api/budget-allocations/[id]/route.ts
+- [x] T556 Migrate POST /api/budget-allocations/[incomeEventId]/generate endpoint to frontend/src/app/api/budget-allocations/[incomeEventId]/generate/route.ts
+- [x] T557 Migrate GET /api/budget-allocations/[incomeEventId]/summary endpoint to frontend/src/app/api/budget-allocations/[incomeEventId]/summary/route.ts
+- [x] T558 Migrate GET /api/budget/projections endpoint to frontend/src/app/api/budget/projections/route.ts
+- [x] T559 Migrate GET /api/budget/templates endpoint to frontend/src/app/api/budget/templates/route.ts
+
 **Priority 8 - Reports APIs Part 1 (T560-T564)**:
 - [x] T560 Migrate GET /api/reports/cash-flow endpoint to frontend/src/app/api/reports/cash-flow/route.ts
 - [x] T561 Migrate GET /api/reports/spending-analysis endpoint to frontend/src/app/api/reports/spending-analysis/route.ts
