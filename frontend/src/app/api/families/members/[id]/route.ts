@@ -31,6 +31,156 @@ export interface UpdateFamilyMemberResponse {
   };
 }
 
+export interface DeleteFamilyMemberResponse {
+  message: string;
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const memberId = params.id;
+
+    // Extract user from JWT token
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json(
+        {
+          error: 'No token provided',
+          message: 'Authentication token is required.',
+        },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+    let familyId: string;
+    let userId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+
+      if (!decoded || !decoded.familyId || !decoded.userId) {
+        return NextResponse.json(
+          {
+            error: 'Invalid token',
+            message: 'The provided token is invalid.',
+          },
+          { status: 401 }
+        );
+      }
+
+      familyId = decoded.familyId;
+      userId = decoded.userId;
+    } catch (jwtError) {
+      return NextResponse.json(
+        {
+          error: 'Invalid token',
+          message: 'The provided token is invalid or expired.',
+        },
+        { status: 401 }
+      );
+    }
+
+    if (!memberId) {
+      return NextResponse.json(
+        {
+          error: 'Missing member ID',
+          message: 'Member ID is required.',
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Check user permissions before attempting deletion
+      const user = await FamilyService.getFamilyMemberById(familyId, userId);
+      if (!user || !user.permissions.canManageFamily) {
+        return NextResponse.json(
+          {
+            error: 'Insufficient permissions',
+            message: 'You do not have permission to remove family members.',
+          },
+          { status: 403 }
+        );
+      }
+
+      // Prevent users from deleting themselves
+      if (memberId === userId) {
+        return NextResponse.json(
+          {
+            error: 'Invalid operation',
+            message: 'You cannot remove yourself from the family.',
+          },
+          { status: 400 }
+        );
+      }
+
+      // Delete family member (soft delete)
+      await FamilyService.deleteFamilyMember(familyId, memberId);
+
+      const response: DeleteFamilyMemberResponse = {
+        message: 'Family member removed successfully.',
+      };
+
+      return NextResponse.json(response, { status: 200 });
+    } catch (serviceError) {
+      console.error('Delete family member error:', serviceError);
+
+      if (serviceError instanceof Error) {
+        if (serviceError.message === 'Member not found or already deleted') {
+          return NextResponse.json(
+            {
+              error: 'Member not found',
+              message: 'The family member was not found or has already been removed.',
+            },
+            { status: 404 }
+          );
+        }
+
+        if (serviceError.message === 'Cannot delete the last admin member') {
+          return NextResponse.json(
+            {
+              error: 'Cannot remove last admin',
+              message: 'Cannot remove the last admin member from the family.',
+            },
+            { status: 400 }
+          );
+        }
+
+        if (serviceError.message === 'Insufficient permissions') {
+          return NextResponse.json(
+            {
+              error: 'Insufficient permissions',
+              message: 'You do not have permission to remove family members.',
+            },
+            { status: 403 }
+          );
+        }
+      }
+
+      return NextResponse.json(
+        {
+          error: 'Failed to remove family member',
+          message: 'Failed to remove family member. Please try again.',
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error('Delete family member endpoint error:', error);
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: 'Failed to remove family member. Please try again.',
+      },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
