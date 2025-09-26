@@ -28,6 +28,35 @@ export interface FamilyInvitationResponse {
   invitation: FamilyInvitation;
 }
 
+export interface CancelInvitationResponse {
+  message: string;
+}
+
+async function extractUserFromToken(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new Error('No token provided');
+  }
+
+  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+  try {
+    const jwtSecret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'dev-jwt-secret-change-this-in-production-make-it-really-long';
+    const decoded = jwt.verify(token, jwtSecret) as any;
+
+    if (!decoded || !decoded.familyId || !decoded.userId) {
+      throw new Error('Invalid token');
+    }
+
+    return {
+      familyId: decoded.familyId,
+      userId: decoded.userId,
+    };
+  } catch (jwtError) {
+    throw new Error('Invalid token');
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }

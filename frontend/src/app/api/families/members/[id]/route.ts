@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { FamilyService } from '../../../../../lib/services/family.service';
 import { ValidationService } from '../../../../../lib/services/validation.service';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 
 export interface UpdateFamilyMemberRequest {
   role?: 'admin' | 'editor' | 'viewer';
@@ -96,7 +96,7 @@ export async function DELETE(
     try {
       // Check user permissions before attempting deletion
       const user = await FamilyService.getFamilyMemberById(familyId, userId);
-      if (!user || !user.permissions.canManageFamily) {
+      if (!user || !(user.permissions as any)?.canManageFamily) {
         return NextResponse.json(
           {
             error: 'Insufficient permissions',
