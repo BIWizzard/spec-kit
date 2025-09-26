@@ -174,6 +174,7 @@ export async function GET(
   }
 }
 
+// T517: PUT /api/payments/[id] - Update payment endpoint migration
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
