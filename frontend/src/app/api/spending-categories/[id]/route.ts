@@ -44,6 +44,15 @@ export interface UpdateSpendingCategoryResponse {
   };
 }
 
+export interface DeleteSpendingCategoryRequest {
+  moveTransactionsTo?: string;
+  movePaymentsTo?: string;
+}
+
+export interface DeleteSpendingCategoryResponse {
+  message: string;
+}
+
 // T528: PUT /api/spending-categories/[id] - Update spending category endpoint migration
 export async function PUT(
   request: NextRequest,
@@ -287,6 +296,140 @@ export async function PUT(
     return NextResponse.json({
       error: 'Internal server error',
       message: 'Failed to update spending category. Please try again.',
+    }, { status: 500 });
+  }
+}
+
+// T529: DELETE /api/spending-categories/[id] - Delete spending category endpoint migration
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id: categoryId } = params;
+
+    // Validate category ID
+    if (!categoryId || typeof categoryId !== 'string') {
+      return NextResponse.json({
+        error: 'Invalid category ID',
+        message: 'Spending category ID is required and must be a valid string.',
+      }, { status: 400 });
+    }
+
+    // Extract token from Authorization header
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({
+        error: 'No token provided',
+        message: 'Authentication token is required.',
+      }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7);
+
+    let familyId: string;
+    let userId: string;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+
+      if (!decoded || !decoded.familyId || !decoded.userId) {
+        return NextResponse.json({
+          error: 'Invalid token',
+          message: 'The provided token is invalid.',
+        }, { status: 401 });
+      }
+
+      familyId = decoded.familyId;
+      userId = decoded.userId;
+    } catch (jwtError) {
+      if (jwtError instanceof jwt.TokenExpiredError) {
+        return NextResponse.json({
+          error: 'Token expired',
+          message: 'Your session has expired. Please log in again.',
+        }, { status: 401 });
+      }
+
+      return NextResponse.json({
+        error: 'Invalid token',
+        message: 'The provided token is invalid.',
+      }, { status: 401 });
+    }
+
+    // Parse request body for optional move operations
+    let moveOptions: { moveTransactionsTo?: string; movePaymentsTo?: string } = {};
+    try {
+      const body = await request.json() as DeleteSpendingCategoryRequest;
+      if (body.moveTransactionsTo) moveOptions.moveTransactionsTo = body.moveTransactionsTo;
+      if (body.movePaymentsTo) moveOptions.movePaymentsTo = body.movePaymentsTo;
+    } catch (parseError) {
+      // Body is optional for DELETE, so parsing errors are acceptable
+    }
+
+    try {
+      // Delete the spending category using the service
+      await SpendingCategoryService.deleteSpendingCategory(
+        familyId,
+        categoryId,
+        userId,
+        moveOptions
+      );
+
+      const response: DeleteSpendingCategoryResponse = {
+        message: 'Spending category deleted successfully.',
+      };
+
+      return NextResponse.json(response, { status: 200 });
+    } catch (serviceError) {
+      console.error('Delete spending category error:', serviceError);
+
+      if (serviceError instanceof Error) {
+        if (serviceError.message === 'Spending category not found') {
+          return NextResponse.json({
+            error: 'Category not found',
+            message: 'The spending category was not found.',
+          }, { status: 404 });
+        }
+
+        if (serviceError.message === 'User not found or not authorized') {
+          return NextResponse.json({
+            error: 'Unauthorized',
+            message: 'You are not authorized to delete this spending category.',
+          }, { status: 403 });
+        }
+
+        if (serviceError.message === 'Insufficient permissions to delete spending categories') {
+          return NextResponse.json({
+            error: 'Insufficient permissions',
+            message: 'You do not have permission to delete spending categories.',
+          }, { status: 403 });
+        }
+
+        if (serviceError.message === 'Target category for transactions not found') {
+          return NextResponse.json({
+            error: 'Invalid target category',
+            message: 'The specified target category for transactions does not exist.',
+          }, { status: 400 });
+        }
+
+        if (serviceError.message === 'Target category for payments not found') {
+          return NextResponse.json({
+            error: 'Invalid target category',
+            message: 'The specified target category for payments does not exist.',
+          }, { status: 400 });
+        }
+      }
+
+      return NextResponse.json({
+        error: 'Failed to delete spending category',
+        message: 'Failed to delete spending category. Please try again.',
+      }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Delete spending category endpoint error:', error);
+
+    return NextResponse.json({
+      error: 'Internal server error',
+      message: 'Failed to delete spending category. Please try again.',
     }, { status: 500 });
   }
 }
