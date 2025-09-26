@@ -854,3 +854,10 @@ Task: T311 - Register form component
 - [x] T573 Migrate GET /api/reports/scheduled/[id] endpoint to frontend/src/app/api/reports/scheduled/[id]/route.ts
 - [x] T574 Migrate PUT /api/reports/scheduled/[id] endpoint to frontend/src/app/api/reports/scheduled/[id]/route.ts
 
+**Priority 9 - Analytics & Final Reports (T575-T579):**
+- [x] T575 Migrate DELETE /api/reports/scheduled/[id] endpoint to frontend/src/app/api/reports/scheduled/[id]/route.ts
+- [x] T576 Migrate GET /api/analytics/dashboard endpoint to frontend/src/app/api/analytics/dashboard/route.ts
+- [x] T577 Migrate GET /api/analytics/trends endpoint to frontend/src/app/api/analytics/trends/route.ts
+- [x] T578 Migrate GET /api/analytics/insights endpoint to frontend/src/app/api/analytics/insights/route.ts
+- [x] T579 Migrate POST /api/budget/templates/apply endpoint to frontend/src/app/api/budget/templates/apply/route.ts
+
