@@ -1,511 +1,565 @@
-import { monitoring } from './monitoring'
+import { Request, Response, NextFunction } from 'express'
+import rateLimit from 'express-rate-limit'
+import helmet from 'helmet'
+import { createHash, randomBytes, scrypt, timingSafeEqual } from 'crypto'
+import { promisify } from 'util'
+import { logger } from './logger'
+import { sentry } from './sentry'
 
-export interface CSRFToken {
-  token: string
-  timestamp: number
-  expiresAt: number
-}
+const scryptAsync = promisify(scrypt)
 
 export interface SecurityConfig {
-  csrfEnabled: boolean
-  xssProtection: boolean
-  inputSanitization: boolean
-  sessionTimeout: number
-  maxIdleTime: number
+  environment: 'development' | 'staging' | 'production'
+  strictMode: boolean
+  rateLimit: {
+    enabled: boolean
+    windowMs?: number
+    maxRequests?: number
+  }
+  csrfProtection: boolean
+  contentSecurityPolicy: boolean
+  encryptionKey?: string
 }
 
-class FrontendSecurity {
+export interface SecurityEvent {
+  type: 'auth_failure' | 'rate_limit' | 'suspicious_activity' | 'csrf_violation' | 'xss_attempt' | 'sql_injection'
+  ip: string
+  userAgent?: string
+  endpoint?: string
+  userId?: string
+  details?: Record<string, any>
+  timestamp: Date
+  severity: 'low' | 'medium' | 'high' | 'critical'
+}
+
+class SecurityManager {
   private config: SecurityConfig
-  private csrfToken: CSRFToken | null = null
-  private sessionStartTime: number = Date.now()
-  private lastActivity: number = Date.now()
-  private sessionTimeoutId: NodeJS.Timeout | null = null
-  private idleTimeoutId: NodeJS.Timeout | null = null
+  private blockedIPs = new Map<string, Date>()
+  private suspiciousActivity = new Map<string, number>()
+  private failedAttempts = new Map<string, { count: number; firstAttempt: Date }>()
 
   constructor(config?: Partial<SecurityConfig>) {
     this.config = {
-      csrfEnabled: process.env.NODE_ENV === 'production',
-      xssProtection: true,
-      inputSanitization: true,
-      sessionTimeout: 24 * 60 * 60 * 1000, // 24 hours
-      maxIdleTime: 30 * 60 * 1000, // 30 minutes
+      environment: (process.env.NODE_ENV as any) || 'development',
+      strictMode: process.env.NODE_ENV === 'production',
+      rateLimit: {
+        enabled: process.env.NODE_ENV === 'production',
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        maxRequests: 100
+      },
+      csrfProtection: process.env.NODE_ENV === 'production',
+      contentSecurityPolicy: true,
+      encryptionKey: process.env.ENCRYPTION_KEY,
       ...config
     }
-
-    if (typeof window !== 'undefined') {
-      this.initializeSecurity()
-    }
   }
 
-  private initializeSecurity(): void {
-    // Track user activity
-    this.setupActivityTracking()
-
-    // Setup session management
-    this.setupSessionManagement()
-
-    // Setup security event handlers
-    this.setupSecurityEventHandlers()
-
-    // Initialize CSRF token
-    if (this.config.csrfEnabled) {
-      this.initializeCSRFToken()
-    }
-  }
-
-  private setupActivityTracking(): void {
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click']
-
-    events.forEach(event => {
-      document.addEventListener(event, () => {
-        this.updateLastActivity()
-      }, true)
+  // Security Headers Middleware
+  securityHeaders() {
+    return helmet({
+      contentSecurityPolicy: this.config.contentSecurityPolicy ? {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: [
+            "'self'",
+            this.config.environment === 'development' ? "'unsafe-inline'" : '',
+            "https://vercel.live",
+            "https://js.sentry-cdn.com",
+            "https://va.vercel-scripts.com"
+          ].filter(Boolean),
+          styleSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            "https://fonts.googleapis.com"
+          ],
+          imgSrc: ["'self'", "data:", "https:", "blob:"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          connectSrc: [
+            "'self'",
+            "https://api.plaid.com",
+            "https://production.plaid.com",
+            "https://sentry.io",
+            "https://vitals.vercel-analytics.com",
+            "wss:"
+          ],
+          frameSrc: ["'none'"],
+          objectSrc: ["'none'"],
+          baseUri: ["'self'"],
+          formAction: ["'self'"]
+        },
+        reportUri: '/api/security/csp-report'
+      } : false,
+      hsts: this.config.strictMode ? {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true
+      } : false,
+      xssFilter: true,
+      noSniff: true,
+      frameguard: { action: 'deny' },
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
     })
   }
 
-  private setupSessionManagement(): void {
-    // Session timeout
-    this.sessionTimeoutId = setTimeout(() => {
-      this.handleSessionTimeout()
-    }, this.config.sessionTimeout)
+  // Rate Limiting Middleware
+  rateLimitMiddleware(options?: { windowMs?: number; maxRequests?: number; skipSuccessfulRequests?: boolean }) {
+    if (!this.config.rateLimit.enabled) {
+      return (req: Request, res: Response, next: NextFunction) => next()
+    }
 
-    // Idle timeout
-    this.resetIdleTimeout()
+    const rateLimiter = rateLimit({
+      windowMs: options?.windowMs || this.config.rateLimit.windowMs || 15 * 60 * 1000,
+      max: options?.maxRequests || this.config.rateLimit.maxRequests || 100,
+      skipSuccessfulRequests: options?.skipSuccessfulRequests || false,
+      handler: (req: Request, res: Response) => {
+        this.logSecurityEvent({
+          type: 'rate_limit',
+          ip: this.getClientIP(req),
+          userAgent: req.get('User-Agent'),
+          endpoint: req.path,
+          timestamp: new Date(),
+          severity: 'medium',
+          details: {
+            method: req.method,
+            rateLimitExceeded: true
+          }
+        })
 
-    // Handle page visibility changes
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        // Page is hidden, user might be away
-        this.handlePageHidden()
-      } else {
-        // Page is visible again
-        this.handlePageVisible()
+        res.status(429).json({
+          error: 'Too many requests',
+          message: 'Rate limit exceeded. Please try again later.',
+          retryAfter: Math.ceil((options?.windowMs || 15 * 60 * 1000) / 1000)
+        })
+      },
+      standardHeaders: true,
+      legacyHeaders: false
+    })
+
+    return rateLimiter
+  }
+
+  // Authentication Rate Limiting (stricter)
+  authRateLimitMiddleware() {
+    return this.rateLimitMiddleware({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      maxRequests: 5, // 5 attempts per window
+      skipSuccessfulRequests: true
+    })
+  }
+
+  // IP Blocking Middleware
+  ipBlockingMiddleware() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const clientIP = this.getClientIP(req)
+      const blockedUntil = this.blockedIPs.get(clientIP)
+
+      if (blockedUntil && new Date() < blockedUntil) {
+        this.logSecurityEvent({
+          type: 'suspicious_activity',
+          ip: clientIP,
+          userAgent: req.get('User-Agent'),
+          endpoint: req.path,
+          timestamp: new Date(),
+          severity: 'high',
+          details: {
+            reason: 'blocked_ip_access_attempt',
+            blockedUntil: blockedUntil.toISOString()
+          }
+        })
+
+        return res.status(403).json({
+          error: 'Access denied',
+          message: 'Your IP address has been temporarily blocked due to suspicious activity.'
+        })
+      }
+
+      next()
+    }
+  }
+
+  // Input Sanitization Middleware
+  inputSanitizationMiddleware() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      try {
+        // Sanitize request body
+        if (req.body && typeof req.body === 'object') {
+          req.body = this.sanitizeObject(req.body)
+        }
+
+        // Sanitize query parameters
+        if (req.query && typeof req.query === 'object') {
+          req.query = this.sanitizeObject(req.query)
+        }
+
+        next()
+      } catch (error) {
+        this.logSecurityEvent({
+          type: 'suspicious_activity',
+          ip: this.getClientIP(req),
+          endpoint: req.path,
+          timestamp: new Date(),
+          severity: 'medium',
+          details: {
+            reason: 'input_sanitization_error',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        })
+
+        res.status(400).json({
+          error: 'Invalid input',
+          message: 'Request contains invalid or potentially malicious data.'
+        })
+      }
+    }
+  }
+
+  // XSS Protection Middleware
+  xssProtectionMiddleware() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const suspiciousPatterns = [
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        /javascript:/gi,
+        /on\w+\s*=/gi,
+        /<iframe/gi,
+        /<object/gi,
+        /<embed/gi,
+        /document\.cookie/gi,
+        /document\.write/gi
+      ]
+
+      const checkForXSS = (data: any): boolean => {
+        if (typeof data === 'string') {
+          return suspiciousPatterns.some(pattern => pattern.test(data))
+        }
+        if (typeof data === 'object' && data !== null) {
+          return Object.values(data).some(value => checkForXSS(value))
+        }
+        return false
+      }
+
+      if (checkForXSS(req.body) || checkForXSS(req.query)) {
+        this.logSecurityEvent({
+          type: 'xss_attempt',
+          ip: this.getClientIP(req),
+          userAgent: req.get('User-Agent'),
+          endpoint: req.path,
+          timestamp: new Date(),
+          severity: 'high',
+          details: {
+            method: req.method,
+            suspiciousData: 'XSS patterns detected'
+          }
+        })
+
+        return res.status(400).json({
+          error: 'Security violation',
+          message: 'Request contains potentially malicious content.'
+        })
+      }
+
+      next()
+    }
+  }
+
+  // SQL Injection Protection Middleware
+  sqlInjectionProtectionMiddleware() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      const sqlPatterns = [
+        /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)/gi,
+        /'(\s*(OR|AND)\s*'?\d)/gi,
+        /'(\s*OR\s*'?1'?\s*=\s*'?1)/gi,
+        /--/g,
+        /\/\*[\s\S]*?\*\//g,
+        /;\s*(DROP|DELETE|INSERT|UPDATE)/gi
+      ]
+
+      const checkForSQLInjection = (data: any): boolean => {
+        if (typeof data === 'string') {
+          return sqlPatterns.some(pattern => pattern.test(data))
+        }
+        if (typeof data === 'object' && data !== null) {
+          return Object.values(data).some(value => checkForSQLInjection(value))
+        }
+        return false
+      }
+
+      if (checkForSQLInjection(req.body) || checkForSQLInjection(req.query)) {
+        this.logSecurityEvent({
+          type: 'sql_injection',
+          ip: this.getClientIP(req),
+          userAgent: req.get('User-Agent'),
+          endpoint: req.path,
+          timestamp: new Date(),
+          severity: 'critical',
+          details: {
+            method: req.method,
+            suspiciousData: 'SQL injection patterns detected'
+          }
+        })
+
+        this.blockIP(this.getClientIP(req), 60 * 60 * 1000) // Block for 1 hour
+
+        return res.status(400).json({
+          error: 'Security violation',
+          message: 'Request contains potentially malicious SQL patterns.'
+        })
+      }
+
+      next()
+    }
+  }
+
+  // CSRF Protection Middleware
+  csrfProtectionMiddleware() {
+    return (req: Request, res: Response, next: NextFunction) => {
+      if (!this.config.csrfProtection) {
+        return next()
+      }
+
+      // Skip CSRF for GET, HEAD, OPTIONS
+      if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        return next()
+      }
+
+      const token = req.headers['x-csrf-token'] as string
+      const sessionToken = req.session?.csrfToken
+
+      if (!token || !sessionToken || !timingSafeEqual(Buffer.from(token), Buffer.from(sessionToken))) {
+        this.logSecurityEvent({
+          type: 'csrf_violation',
+          ip: this.getClientIP(req),
+          userAgent: req.get('User-Agent'),
+          endpoint: req.path,
+          timestamp: new Date(),
+          severity: 'high',
+          details: {
+            method: req.method,
+            hasToken: !!token,
+            hasSessionToken: !!sessionToken
+          }
+        })
+
+        return res.status(403).json({
+          error: 'CSRF violation',
+          message: 'Invalid or missing CSRF token.'
+        })
+      }
+
+      next()
+    }
+  }
+
+  // Password Security Utilities
+  async hashPassword(password: string): Promise<string> {
+    const salt = randomBytes(32).toString('hex')
+    const hashedPassword = await scryptAsync(password, salt, 64) as Buffer
+    return `${salt}:${hashedPassword.toString('hex')}`
+  }
+
+  async verifyPassword(password: string, hash: string): Promise<boolean> {
+    const [salt, key] = hash.split(':')
+    const hashedBuffer = await scryptAsync(password, salt, 64) as Buffer
+    const keyBuffer = Buffer.from(key, 'hex')
+    return timingSafeEqual(hashedBuffer, keyBuffer)
+  }
+
+  validatePassword(password: string): { valid: boolean; errors: string[] } {
+    const errors: string[] = []
+
+    if (password.length < 8) {
+      errors.push('Password must be at least 8 characters long')
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push('Password must contain at least one uppercase letter')
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push('Password must contain at least one lowercase letter')
+    }
+    if (!/\d/.test(password)) {
+      errors.push('Password must contain at least one number')
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      errors.push('Password must contain at least one special character')
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors
+    }
+  }
+
+  // Encryption Utilities
+  encrypt(text: string): string {
+    if (!this.config.encryptionKey) {
+      throw new Error('Encryption key not configured')
+    }
+
+    const algorithm = 'aes-256-gcm'
+    const key = createHash('sha256').update(this.config.encryptionKey).digest()
+    const iv = randomBytes(16)
+
+    const cipher = require('crypto').createCipher(algorithm, key)
+    cipher.setAutoPadding(true)
+
+    let encrypted = cipher.update(text, 'utf8', 'hex')
+    encrypted += cipher.final('hex')
+
+    const authTag = cipher.getAuthTag()
+
+    return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`
+  }
+
+  decrypt(encryptedText: string): string {
+    if (!this.config.encryptionKey) {
+      throw new Error('Encryption key not configured')
+    }
+
+    const algorithm = 'aes-256-gcm'
+    const key = createHash('sha256').update(this.config.encryptionKey).digest()
+
+    const [ivHex, authTagHex, encrypted] = encryptedText.split(':')
+    const iv = Buffer.from(ivHex, 'hex')
+    const authTag = Buffer.from(authTagHex, 'hex')
+
+    const decipher = require('crypto').createDecipher(algorithm, key)
+    decipher.setAuthTag(authTag)
+
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8')
+    decrypted += decipher.final('utf8')
+
+    return decrypted
+  }
+
+  // Utility Methods
+  private sanitizeObject(obj: any): any {
+    if (typeof obj === 'string') {
+      return obj
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/javascript:/gi, '')
+        .replace(/on\w+\s*=/gi, '')
+        .trim()
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.sanitizeObject(item))
+    }
+
+    if (obj && typeof obj === 'object') {
+      const sanitized: any = {}
+      for (const [key, value] of Object.entries(obj)) {
+        sanitized[key] = this.sanitizeObject(value)
+      }
+      return sanitized
+    }
+
+    return obj
+  }
+
+  private getClientIP(req: Request): string {
+    return (
+      req.headers['cf-connecting-ip'] ||
+      req.headers['x-real-ip'] ||
+      req.headers['x-forwarded-for'] ||
+      req.socket.remoteAddress ||
+      'unknown'
+    ) as string
+  }
+
+  private blockIP(ip: string, durationMs: number): void {
+    const blockedUntil = new Date(Date.now() + durationMs)
+    this.blockedIPs.set(ip, blockedUntil)
+
+    // Clean up expired blocks
+    setTimeout(() => {
+      this.blockedIPs.delete(ip)
+    }, durationMs)
+  }
+
+  private logSecurityEvent(event: SecurityEvent): void {
+    logger.warn('Security event detected', {
+      type: event.type,
+      ip: event.ip,
+      endpoint: event.endpoint,
+      severity: event.severity,
+      details: event.details,
+      timestamp: event.timestamp
+    })
+
+    sentry.addBreadcrumb({
+      message: `Security event: ${event.type}`,
+      category: 'security',
+      level: event.severity === 'critical' ? 'error' : 'warning',
+      data: {
+        ip: event.ip,
+        endpoint: event.endpoint,
+        ...event.details
       }
     })
-  }
 
-  private setupSecurityEventHandlers(): void {
-    // Handle context menu (right-click) in production
-    if (process.env.NODE_ENV === 'production') {
-      document.addEventListener('contextmenu', (e) => {
-        e.preventDefault()
-        this.trackSecurityEvent('context_menu_blocked', {
-          target: (e.target as Element)?.tagName || 'unknown'
-        })
+    if (event.severity === 'critical') {
+      sentry.captureMessage(`Critical security event: ${event.type}`, 'error', {
+        tags: {
+          security: 'true',
+          severity: event.severity,
+          type: event.type
+        },
+        extra: event
       })
     }
-
-    // Handle developer tools detection
-    this.setupDevToolsDetection()
-
-    // Handle copy/paste security
-    this.setupClipboardSecurity()
-
-    // Handle screenshot/screen recording detection
-    this.setupScreenCaptureDetection()
   }
 
-  private setupDevToolsDetection(): void {
-    if (process.env.NODE_ENV === 'production') {
-      let devtools = false
+  // Public Methods
+  trackFailedAttempt(identifier: string): boolean {
+    const now = new Date()
+    const attempt = this.failedAttempts.get(identifier)
 
-      const detectDevTools = () => {
-        const start = new Date().getTime()
-        debugger // This will pause execution if dev tools are open
-        const end = new Date().getTime()
-
-        if (end - start > 100 && !devtools) {
-          devtools = true
-          this.trackSecurityEvent('devtools_detected', {
-            detectionMethod: 'debugger_timing',
-            timeDelay: end - start
-          })
+    if (attempt) {
+      if (now.getTime() - attempt.firstAttempt.getTime() > 15 * 60 * 1000) {
+        // Reset after 15 minutes
+        this.failedAttempts.set(identifier, { count: 1, firstAttempt: now })
+      } else {
+        attempt.count++
+        if (attempt.count >= 5) {
+          this.blockIP(identifier, 60 * 60 * 1000) // Block for 1 hour
+          this.failedAttempts.delete(identifier)
+          return true // Blocked
         }
-      }
-
-      // Check periodically
-      setInterval(detectDevTools, 5000)
-
-      // Also check console size changes
-      let consoleHeight = window.outerHeight - window.innerHeight
-      let consoleWidth = window.outerWidth - window.innerWidth
-
-      setInterval(() => {
-        const heightDiff = window.outerHeight - window.innerHeight
-        const widthDiff = window.outerWidth - window.innerWidth
-
-        if (Math.abs(heightDiff - consoleHeight) > 200 || Math.abs(widthDiff - consoleWidth) > 200) {
-          if (!devtools) {
-            devtools = true
-            this.trackSecurityEvent('devtools_detected', {
-              detectionMethod: 'window_size_change',
-              heightDiff: heightDiff - consoleHeight,
-              widthDiff: widthDiff - consoleWidth
-            })
-          }
-        }
-
-        consoleHeight = heightDiff
-        consoleWidth = widthDiff
-      }, 1000)
-    }
-  }
-
-  private setupClipboardSecurity(): void {
-    // Monitor clipboard operations for sensitive data
-    document.addEventListener('copy', (e) => {
-      const selection = window.getSelection()?.toString() || ''
-
-      if (this.containsSensitiveData(selection)) {
-        this.trackSecurityEvent('sensitive_data_copied', {
-          dataType: 'selection',
-          length: selection.length
-        })
-
-        // Optionally prevent copying sensitive data
-        if (this.shouldPreventCopy(selection)) {
-          e.preventDefault()
-          this.showSecurityWarning('Copying sensitive financial data is not allowed.')
-        }
-      }
-    })
-
-    document.addEventListener('cut', (e) => {
-      const selection = window.getSelection()?.toString() || ''
-
-      if (this.containsSensitiveData(selection)) {
-        this.trackSecurityEvent('sensitive_data_cut', {
-          dataType: 'selection',
-          length: selection.length
-        })
-
-        e.preventDefault()
-        this.showSecurityWarning('Cutting sensitive financial data is not allowed.')
-      }
-    })
-  }
-
-  private setupScreenCaptureDetection(): void {
-    // Detect screen sharing/recording
-    if ('mediaDevices' in navigator && 'getDisplayMedia' in navigator.mediaDevices) {
-      const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia
-
-      navigator.mediaDevices.getDisplayMedia = function(...args) {
-        this.trackSecurityEvent('screen_capture_detected', {
-          method: 'getDisplayMedia',
-          userAgent: navigator.userAgent
-        })
-
-        return originalGetDisplayMedia.apply(this, args)
-      }.bind(this)
-    }
-  }
-
-  private initializeCSRFToken(): void {
-    // Get CSRF token from meta tag or API
-    const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
-
-    if (metaToken) {
-      this.csrfToken = {
-        token: metaToken,
-        timestamp: Date.now(),
-        expiresAt: Date.now() + (60 * 60 * 1000) // 1 hour
       }
     } else {
-      this.fetchCSRFToken()
-    }
-  }
-
-  private async fetchCSRFToken(): Promise<void> {
-    try {
-      const response = await fetch('/api/auth/csrf-token', {
-        method: 'GET',
-        credentials: 'same-origin'
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        this.csrfToken = {
-          token: data.token,
-          timestamp: Date.now(),
-          expiresAt: Date.now() + (60 * 60 * 1000)
-        }
-      }
-    } catch (error) {
-      this.trackSecurityEvent('csrf_token_fetch_failed', {
-        error: error instanceof Error ? error.message : 'Unknown error'
-      })
-    }
-  }
-
-  private updateLastActivity(): void {
-    this.lastActivity = Date.now()
-    this.resetIdleTimeout()
-  }
-
-  private resetIdleTimeout(): void {
-    if (this.idleTimeoutId) {
-      clearTimeout(this.idleTimeoutId)
+      this.failedAttempts.set(identifier, { count: 1, firstAttempt: now })
     }
 
-    this.idleTimeoutId = setTimeout(() => {
-      this.handleIdleTimeout()
-    }, this.config.maxIdleTime)
+    return false // Not blocked
   }
 
-  private handleSessionTimeout(): void {
-    this.trackSecurityEvent('session_timeout', {
-      sessionDuration: Date.now() - this.sessionStartTime,
-      lastActivity: this.lastActivity
-    })
-
-    this.showSecurityWarning('Your session has expired for security reasons. Please log in again.')
-    this.logout()
+  clearFailedAttempts(identifier: string): void {
+    this.failedAttempts.delete(identifier)
   }
 
-  private handleIdleTimeout(): void {
-    const idleTime = Date.now() - this.lastActivity
-
-    this.trackSecurityEvent('idle_timeout', {
-      idleTime,
-      sessionDuration: Date.now() - this.sessionStartTime
-    })
-
-    this.showSecurityWarning('You have been logged out due to inactivity.')
-    this.logout()
+  generateCSRFToken(): string {
+    return randomBytes(32).toString('hex')
   }
 
-  private handlePageHidden(): void {
-    // Start a shorter timeout when page is hidden
-    if (this.idleTimeoutId) {
-      clearTimeout(this.idleTimeoutId)
-    }
-
-    this.idleTimeoutId = setTimeout(() => {
-      this.handleIdleTimeout()
-    }, 5 * 60 * 1000) // 5 minutes when hidden
-  }
-
-  private handlePageVisible(): void {
-    // Reset to normal timeout when page becomes visible
-    this.resetIdleTimeout()
-  }
-
-  private containsSensitiveData(text: string): boolean {
-    const sensitivePatterns = [
-      /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/, // Credit card numbers
-      /\b\d{3}-\d{2}-\d{4}\b/, // SSN
-      /\$[\d,]+\.?\d{0,2}/, // Currency amounts
-      /password/i,
-      /secret/i,
-      /token/i,
-      /key/i
+  // Main Security Middleware Stack
+  getSecurityMiddleware() {
+    return [
+      this.securityHeaders(),
+      this.ipBlockingMiddleware(),
+      this.rateLimitMiddleware(),
+      this.inputSanitizationMiddleware(),
+      this.xssProtectionMiddleware(),
+      this.sqlInjectionProtectionMiddleware(),
+      this.csrfProtectionMiddleware()
     ]
-
-    return sensitivePatterns.some(pattern => pattern.test(text))
-  }
-
-  private shouldPreventCopy(text: string): boolean {
-    // Only prevent copying of financial data patterns
-    const financialPatterns = [
-      /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/, // Credit card
-      /\b\d{3}-\d{2}-\d{4}\b/, // SSN
-      /\b\d{9,12}\b/ // Account numbers
-    ]
-
-    return financialPatterns.some(pattern => pattern.test(text))
-  }
-
-  private showSecurityWarning(message: string): void {
-    // You can customize this to use your app's notification system
-    if (typeof window !== 'undefined') {
-      alert(message) // Replace with proper notification
-    }
-  }
-
-  private trackSecurityEvent(event: string, details?: Record<string, any>): void {
-    monitoring.trackEvent({
-      name: 'security_event',
-      properties: {
-        event_type: event,
-        timestamp: Date.now(),
-        url: window.location.href,
-        userAgent: navigator.userAgent,
-        ...details
-      }
-    })
-  }
-
-  private logout(): void {
-    // Clear session data
-    this.csrfToken = null
-
-    // Clear local storage (be careful with this)
-    if (typeof window !== 'undefined') {
-      // Only clear app-specific items, not all localStorage
-      const keysToRemove = ['authToken', 'refreshToken', 'userSession']
-      keysToRemove.forEach(key => localStorage.removeItem(key))
-    }
-
-    // Redirect to login
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login'
-    }
-  }
-
-  // Public API
-
-  sanitizeInput(input: string): string {
-    if (!this.config.inputSanitization) {
-      return input
-    }
-
-    return input
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/javascript:/gi, '')
-      .replace(/on\w+\s*=/gi, '')
-      .replace(/[<>]/g, (match) => match === '<' ? '&lt;' : '&gt;')
-      .trim()
-  }
-
-  sanitizeObject<T extends Record<string, any>>(obj: T): T {
-    const sanitized = {} as T
-
-    for (const [key, value] of Object.entries(obj)) {
-      if (typeof value === 'string') {
-        sanitized[key as keyof T] = this.sanitizeInput(value) as T[keyof T]
-      } else if (typeof value === 'object' && value !== null) {
-        sanitized[key as keyof T] = this.sanitizeObject(value)
-      } else {
-        sanitized[key as keyof T] = value
-      }
-    }
-
-    return sanitized
-  }
-
-  getCSRFToken(): string | null {
-    if (!this.config.csrfEnabled || !this.csrfToken) {
-      return null
-    }
-
-    // Check if token is expired
-    if (Date.now() > this.csrfToken.expiresAt) {
-      this.fetchCSRFToken()
-      return null
-    }
-
-    return this.csrfToken.token
-  }
-
-  addCSRFHeader(headers: HeadersInit = {}): HeadersInit {
-    const token = this.getCSRFToken()
-
-    if (token) {
-      return {
-        ...headers,
-        'X-CSRF-Token': token
-      }
-    }
-
-    return headers
-  }
-
-  secureRequest(url: string, options: RequestInit = {}): Promise<Response> {
-    const secureOptions: RequestInit = {
-      ...options,
-      credentials: 'same-origin',
-      headers: this.addCSRFHeader(options.headers)
-    }
-
-    return fetch(url, secureOptions)
-      .then(response => {
-        if (!response.ok) {
-          this.trackSecurityEvent('api_request_failed', {
-            url,
-            status: response.status,
-            statusText: response.statusText
-          })
-        }
-        return response
-      })
-      .catch(error => {
-        this.trackSecurityEvent('api_request_error', {
-          url,
-          error: error.message
-        })
-        throw error
-      })
-  }
-
-  validateSession(): boolean {
-    const sessionDuration = Date.now() - this.sessionStartTime
-    const idleTime = Date.now() - this.lastActivity
-
-    if (sessionDuration > this.config.sessionTimeout) {
-      this.handleSessionTimeout()
-      return false
-    }
-
-    if (idleTime > this.config.maxIdleTime) {
-      this.handleIdleTimeout()
-      return false
-    }
-
-    return true
-  }
-
-  extendSession(): void {
-    this.sessionStartTime = Date.now()
-    this.updateLastActivity()
-
-    if (this.sessionTimeoutId) {
-      clearTimeout(this.sessionTimeoutId)
-    }
-
-    this.sessionTimeoutId = setTimeout(() => {
-      this.handleSessionTimeout()
-    }, this.config.sessionTimeout)
-  }
-
-  destroy(): void {
-    if (this.sessionTimeoutId) {
-      clearTimeout(this.sessionTimeoutId)
-    }
-    if (this.idleTimeoutId) {
-      clearTimeout(this.idleTimeoutId)
-    }
   }
 }
 
-export const frontendSecurity = new FrontendSecurity()
+export const security = new SecurityManager()
 
-// React hooks
-export function useSecurity() {
-  return {
-    sanitizeInput: frontendSecurity.sanitizeInput.bind(frontendSecurity),
-    sanitizeObject: frontendSecurity.sanitizeObject.bind(frontendSecurity),
-    getCSRFToken: frontendSecurity.getCSRFToken.bind(frontendSecurity),
-    secureRequest: frontendSecurity.secureRequest.bind(frontendSecurity),
-    validateSession: frontendSecurity.validateSession.bind(frontendSecurity),
-    extendSession: frontendSecurity.extendSession.bind(frontendSecurity)
-  }
-}
+// Export commonly used middleware
+export const securityHeaders = () => security.securityHeaders()
+export const rateLimit = (options?: any) => security.rateLimitMiddleware(options)
+export const authRateLimit = () => security.authRateLimitMiddleware()
+export const securityMiddleware = () => security.getSecurityMiddleware()
 
-// Higher-order component for secure forms
-export function withSecureForm<P extends object>(WrappedComponent: React.ComponentType<P>) {
-  const SecureFormComponent = (props: P) => {
-    React.useEffect(() => {
-      // Validate session when component mounts
-      frontendSecurity.validateSession()
-    }, [])
-
-    return <WrappedComponent {...props} />
-  }
-
-  SecureFormComponent.displayName = `withSecureForm(${WrappedComponent.displayName || WrappedComponent.name})`
-
-  return SecureFormComponent
-}
-
-export default frontendSecurity
+export default security
