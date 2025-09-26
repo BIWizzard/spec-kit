@@ -624,7 +624,7 @@ tests/
 
 **Priority 1 - Authentication APIs (T476-T485)**:
 - [ ] T476 Migrate POST /api/auth/login endpoint to frontend/src/app/api/auth/login/route.ts
-- [ ] T477 Migrate POST /api/auth/logout endpoint to frontend/src/app/api/auth/logout/route.ts
+- [x] T477 Migrate POST /api/auth/logout endpoint to frontend/src/app/api/auth/logout/route.ts
 - [ ] T478 Migrate GET /api/auth/me endpoint to frontend/src/app/api/auth/me/route.ts
 - [ ] T479 Migrate GET /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
 - [ ] T480 Migrate DELETE /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
