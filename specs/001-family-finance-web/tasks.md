@@ -674,6 +674,7 @@ tests/
 - [x] T522 Migrate GET /api/income-events/[id] endpoint to frontend/src/app/api/income-events/[id]/route.ts
 - [x] T523 Migrate PUT /api/income-events/[id] endpoint to frontend/src/app/api/income-events/[id]/route.ts
 - [x] T524 Migrate GET /api/income-events/upcoming endpoint to frontend/src/app/api/income-events/upcoming/route.ts
+- [x] T525 Migrate GET /api/income-events/summary endpoint to frontend/src/app/api/income-events/summary/route.ts
 
 **Priority 6 - Spending Categories APIs (T526-T529)**:
 - [x] T526 Migrate GET /api/spending-categories endpoint to frontend/src/app/api/spending-categories/route.ts
