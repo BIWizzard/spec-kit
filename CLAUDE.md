@@ -88,18 +88,29 @@ tests/
   - **Phase 7.3: Performance & Security** ✅ COMPLETE (T445-T458, 14 audit/optimization tasks) - 100% complete
   - **Phase 7.4: Documentation & Final** ⏳ IN PROGRESS (T459-T475, 17 documentation/validation tasks) - 71% complete
 
-## ✅ SESSION COMPLETED: Email Verification System Fix (Sep 25, 2025)
-**STATUS**: User registration and email verification flow - **FULLY FUNCTIONAL** ✅
+## ⏳ SESSION IN PROGRESS: Email Verification Troubleshooting (Sep 25, 2025)
+**STATUS**: Email verification system fixes implemented but deployment issues persist ⚠️
 
-### 🎯 **MAJOR ACCOMPLISHMENTS THIS SESSION**:
+### 🎯 **SESSION ACCOMPLISHMENTS**:
 **🚀 LIVE PRODUCTION APPLICATION**: https://budget.kmghub.com
 
-✅ **Email Verification System** - FIXED AND DEPLOYED
-- Added EmailJob table to database schema for email tracking
-- Fixed user redirect flow - now shows "Verification Email Sent" instead of "Invalid Link"
-- Re-enabled email service functionality in registration API
-- Created /api/auth/verify-email and /api/auth/resend-verification endpoints
-- Improved UX with appropriate messaging and shorter countdown for new users
+✅ **Database & Backend Fixes** - COMPLETED
+- Added EmailJob table to database schema with status tracking (queued, sending, sent, failed, bounced, complained)
+- Re-enabled EmailService functionality in registration API route
+- Created /api/auth/verify-email and /api/auth/resend-verification API endpoints
+- Database user cleanup: Successfully deleted k.kmg@icloud.com and kgraham21@gmail.com accounts
+
+✅ **Frontend Component Updates** - COMPLETED
+- Modified EmailVerification component to detect "new registration" state
+- Added "📧 Verification Email Sent" messaging instead of "❌ Invalid Link"
+- Implemented 30-second countdown for new user registrations
+- Added appropriate success styling for email sent state
+
+⚠️ **Deployment Path Issues** - TROUBLESHOOTING
+- Identified file path conflict: components in frontend/src/ vs root src/
+- Copied updated email-verification component to correct deployment path
+- Multiple deployment attempts triggered but frontend fix not yet live
+- User still experiencing "Invalid Verification Link" immediately after registration
 
 ### 🔧 **PREVIOUS SESSION**: Express.js → Next.js API Migration
 ✅ **Backend Migration** - COMPLETED SUCCESSFULLY
@@ -122,13 +133,58 @@ tests/
 - [ ] T474: User acceptance testing with real bank data
 - [ ] T475: Go-live checklist completion
 
+### 🔍 **DETAILED TROUBLESHOOTING LOG**:
+
+**Problem Identified**: User registration creates account successfully but immediately redirects to "Invalid Verification Link" page
+
+**Root Cause Analysis**:
+1. Registration API works correctly (returns 201 success)
+2. EmailJob table added to database schema successfully
+3. EmailService re-enabled but may still have initialization issues
+4. Frontend redirect flows correctly to `/verify-email?email=user@email.com`
+5. EmailVerification component updated but deployment path issue detected
+
+**Technical Changes Made**:
+```bash
+# Database Schema Update
+- Added EmailJob model to prisma/schema.prisma
+- Added EmailStatus enum (queued, sending, sent, failed, bounced, complained)
+- Deployed schema with prisma db push
+
+# API Endpoints Created
+- /api/auth/verify-email (POST) - token verification
+- /api/auth/resend-verification (POST) - resend email functionality
+
+# Component Updates
+- src/components/auth/email-verification.tsx
+- Modified useEffect to detect email-only state (no token)
+- Added conditional messaging for new registrations
+- Updated styling and countdown logic
+
+# File Path Resolution
+- Copied components from frontend/src/ to root src/ for deployment
+- Multiple git commits and pushes to trigger deployments
+```
+
+**Database Management Scripts Created**:
+- `scripts/list-users.ts` - Lists all users in database
+- `scripts/delete-user.ts` - Safely deletes users and associated data
+- Successfully cleaned up test accounts: k.kmg@icloud.com, kgraham21@gmail.com
+
+**Deployment Status**:
+- Backend API changes: ✅ Confirmed working in production
+- Frontend component changes: ❌ Still showing old behavior
+- Multiple deployment attempts: 3 commits pushed, awaiting frontend propagation
+
 ## Next Session Priorities
-1. **🎯 IMPLEMENT LOGIN FUNCTIONALITY**: Create login API endpoint and login page UI
-2. **📧 TEST EMAIL DELIVERY**: Verify Resend emails are actually being sent and received
-3. **🔐 IMPLEMENT PASSWORD RESET**: Complete forgot/reset password flow
-4. **👥 FAMILY MEMBER INVITATIONS**: Implement invitation system
-5. **🏦 PLAID BANK CONNECTION**: Test bank account connection flow
-6. **📊 DASHBOARD FUNCTIONALITY**: Make dashboard load real user data
+🚨 **CRITICAL ISSUE**: Email verification page still showing "Invalid Link" - deployment issue
+
+1. **🔧 RESOLVE DEPLOYMENT PATH ISSUE**: Debug why frontend component changes aren't deploying
+2. **📧 VERIFY EMAIL DELIVERY**: Test if actual emails are being sent via Resend API
+3. **🎯 COMPLETE EMAIL VERIFICATION FLOW**: End-to-end testing once UI is fixed
+4. **🔐 IMPLEMENT LOGIN FUNCTIONALITY**: Create login API endpoint and login page UI
+5. **👥 FAMILY MEMBER INVITATIONS**: Implement invitation system
+6. **🏦 PLAID BANK CONNECTION**: Test bank account connection flow
 
 ## Code Style
 TypeScript 5.x / Node.js 20 LTS: Follow standard conventions, no comments unless requested
