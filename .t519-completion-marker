@@ -1,0 +1,4 @@
+T519: GET /api/payments/overdue endpoint migration completed
+Implementation: frontend/src/app/api/payments/overdue/route.ts
+Commit: 7603bb7
+Status: COMPLETED
