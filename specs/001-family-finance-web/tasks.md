@@ -672,6 +672,7 @@ tests/
 **Priority 5 - Income Events APIs (T521-T530)**:
 - [x] T521 Migrate POST /api/income-events endpoint to frontend/src/app/api/income-events/route.ts
 - [x] T522 Migrate GET /api/income-events/[id] endpoint to frontend/src/app/api/income-events/[id]/route.ts
+- [x] T523 Migrate PUT /api/income-events/[id] endpoint to frontend/src/app/api/income-events/[id]/route.ts
 - [x] T524 Migrate GET /api/income-events/upcoming endpoint to frontend/src/app/api/income-events/upcoming/route.ts
 
 **Priority 6 - Spending Categories APIs (T526-T529)**:
