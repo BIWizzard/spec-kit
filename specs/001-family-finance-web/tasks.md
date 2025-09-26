@@ -623,11 +623,11 @@ tests/
 **DISCOVERED ISSUE**: Only 3/114 API endpoints migrated. Need to complete migration for zero-cost deployment.
 
 **Priority 1 - Authentication APIs (T476-T485)**:
-- [ ] T476 Migrate POST /api/auth/login endpoint to frontend/src/app/api/auth/login/route.ts
+- [x] T476 Migrate POST /api/auth/login endpoint to frontend/src/app/api/auth/login/route.ts
 - [x] T477 Migrate POST /api/auth/logout endpoint to frontend/src/app/api/auth/logout/route.ts
-- [ ] T478 Migrate GET /api/auth/me endpoint to frontend/src/app/api/auth/me/route.ts
+- [x] T478 Migrate GET /api/auth/me endpoint to frontend/src/app/api/auth/me/route.ts
 - [ ] T479 Migrate GET /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
-- [ ] T480 Migrate DELETE /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
+- [x] T480 Migrate DELETE /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
 - [ ] T481 Migrate POST /api/auth/forgot-password endpoint to frontend/src/app/api/auth/forgot-password/route.ts
 - [ ] T482 Migrate POST /api/auth/reset-password endpoint to frontend/src/app/api/auth/reset-password/route.ts
 - [ ] T483 Migrate POST /api/auth/change-password endpoint to frontend/src/app/api/auth/change-password/route.ts
