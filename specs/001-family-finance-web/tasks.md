@@ -644,7 +644,7 @@ tests/
 - [x] T492 Migrate GET /api/families/invitations endpoint to frontend/src/app/api/families/invitations/route.ts
 - [x] T493 Migrate GET /api/families/invitations/[id] endpoint to frontend/src/app/api/families/invitations/[id]/route.ts
 - [x] T494 Migrate DELETE /api/families/invitations/[id] endpoint to frontend/src/app/api/families/invitations/[id]/route.ts
-- [ ] T495 Migrate POST /api/families/invitations/[id]/accept endpoint to frontend/src/app/api/families/invitations/[id]/accept/route.ts
+- [x] T495 Migrate POST /api/families/invitations/[id]/accept endpoint to frontend/src/app/api/families/invitations/[id]/accept/route.ts
 - [x] T496 Migrate POST /api/families/invitations/[id]/resend endpoint to frontend/src/app/api/families/invitations/[id]/resend/route.ts
 
 **Priority 3 - Bank Accounts APIs (T497-T507)**:
