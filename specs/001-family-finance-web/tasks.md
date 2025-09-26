@@ -619,6 +619,49 @@ tests/
 - [x] T474 User acceptance testing preparation with real bank data
 - [x] T475 Go-live checklist completion with all services verified
 
+### Phase 8: Critical API Migration (Express.js → Next.js Routes)
+**DISCOVERED ISSUE**: Only 3/114 API endpoints migrated. Need to complete migration for zero-cost deployment.
+
+**Priority 1 - Authentication APIs (T476-T485)**:
+- [ ] T476 Migrate POST /api/auth/login endpoint to frontend/src/app/api/auth/login/route.ts
+- [ ] T477 Migrate POST /api/auth/logout endpoint to frontend/src/app/api/auth/logout/route.ts
+- [ ] T478 Migrate GET /api/auth/me endpoint to frontend/src/app/api/auth/me/route.ts
+- [ ] T479 Migrate GET /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
+- [ ] T480 Migrate DELETE /api/auth/sessions endpoint to frontend/src/app/api/auth/sessions/route.ts
+- [ ] T481 Migrate POST /api/auth/forgot-password endpoint to frontend/src/app/api/auth/forgot-password/route.ts
+- [ ] T482 Migrate POST /api/auth/reset-password endpoint to frontend/src/app/api/auth/reset-password/route.ts
+- [ ] T483 Migrate POST /api/auth/change-password endpoint to frontend/src/app/api/auth/change-password/route.ts
+- [ ] T484 Migrate POST /api/auth/refresh endpoint to frontend/src/app/api/auth/refresh/route.ts
+- [ ] T485 Migrate DELETE /api/auth/sessions/[id] endpoint to frontend/src/app/api/auth/sessions/[id]/route.ts
+
+**Priority 2 - Family Management APIs (T486-T496)**:
+- [ ] T486 Migrate GET /api/families endpoint to frontend/src/app/api/families/route.ts
+- [ ] T487 Migrate PUT /api/families endpoint to frontend/src/app/api/families/route.ts
+- [ ] T488 Migrate GET /api/families/members endpoint to frontend/src/app/api/families/members/route.ts
+- [ ] T489 Migrate POST /api/families/members endpoint to frontend/src/app/api/families/members/route.ts
+- [ ] T490 Migrate PUT /api/families/members/[id] endpoint to frontend/src/app/api/families/members/[id]/route.ts
+- [ ] T491 Migrate DELETE /api/families/members/[id] endpoint to frontend/src/app/api/families/members/[id]/route.ts
+- [ ] T492 Migrate GET /api/families/invitations endpoint to frontend/src/app/api/families/invitations/route.ts
+- [ ] T493 Migrate GET /api/families/invitations/[id] endpoint to frontend/src/app/api/families/invitations/[id]/route.ts
+- [ ] T494 Migrate DELETE /api/families/invitations/[id] endpoint to frontend/src/app/api/families/invitations/[id]/route.ts
+- [ ] T495 Migrate POST /api/families/invitations/[id]/accept endpoint to frontend/src/app/api/families/invitations/[id]/accept/route.ts
+- [ ] T496 Migrate POST /api/families/invitations/[id]/resend endpoint to frontend/src/app/api/families/invitations/[id]/resend/route.ts
+
+**Priority 3 - Bank Accounts APIs (T497-T507)**:
+- [ ] T497 Migrate GET /api/bank-accounts endpoint to frontend/src/app/api/bank-accounts/route.ts
+- [ ] T498 Migrate POST /api/bank-accounts endpoint to frontend/src/app/api/bank-accounts/route.ts
+- [ ] T499 Migrate GET /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
+- [ ] T500 Migrate PUT /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
+- [ ] T501 Migrate DELETE /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
+- [ ] T502 Migrate POST /api/bank-accounts/[id]/sync endpoint to frontend/src/app/api/bank-accounts/[id]/sync/route.ts
+- [ ] T503 Migrate POST /api/bank-accounts/[id]/reconnect endpoint to frontend/src/app/api/bank-accounts/[id]/reconnect/route.ts
+- [ ] T504 Migrate POST /api/bank-accounts/sync-all endpoint to frontend/src/app/api/bank-accounts/sync-all/route.ts
+- [ ] T505 Migrate POST /api/bank-accounts/connect endpoint to frontend/src/app/api/bank-accounts/connect/route.ts
+- [ ] T506 Migrate POST /api/plaid/link-token endpoint to frontend/src/app/api/plaid/link-token/route.ts
+- [ ] T507 Migrate POST /api/plaid/webhook endpoint to frontend/src/app/api/plaid/webhook/route.ts
+
+**NOTE**: Additional 80+ endpoints for transactions, payments, budgets, reports need tasks T508-T588+. Start with Priority 1-3 to restore core functionality.
+
 ## Dependencies
 
 ### Critical Dependencies
