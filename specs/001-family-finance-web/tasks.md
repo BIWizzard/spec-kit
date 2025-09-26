@@ -649,7 +649,7 @@ tests/
 
 **Priority 3 - Bank Accounts APIs (T497-T507)**:
 - [x] T497 Migrate GET /api/bank-accounts endpoint to frontend/src/app/api/bank-accounts/route.ts
-- [ ] T498 Migrate POST /api/bank-accounts endpoint to frontend/src/app/api/bank-accounts/route.ts
+- [x] T498 Migrate POST /api/bank-accounts endpoint to frontend/src/app/api/bank-accounts/route.ts
 - [x] T499 Migrate GET /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
 - [ ] T500 Migrate PUT /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
 - [ ] T501 Migrate DELETE /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
