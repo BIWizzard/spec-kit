@@ -704,6 +704,13 @@ tests/
 - [x] T563 Migrate GET /api/reports/income-analysis endpoint to frontend/src/app/api/reports/income-analysis/route.ts
 - [x] T564 Migrate GET /api/reports/net-worth endpoint to frontend/src/app/api/reports/net-worth/route.ts
 
+**Priority 8.1 - Reports APIs Part 2 (T565-T569)**:
+- [x] T565 Migrate GET /api/reports/savings-rate endpoint to frontend/src/app/api/reports/savings-rate/route.ts
+- [x] T566 Migrate GET /api/reports/debt-analysis endpoint to frontend/src/app/api/reports/debt-analysis/route.ts
+- [x] T567 Migrate GET /api/reports/monthly-summary endpoint to frontend/src/app/api/reports/monthly-summary/route.ts
+- [x] T568 Migrate GET /api/reports/annual-summary endpoint to frontend/src/app/api/reports/annual-summary/route.ts
+- [x] T569 Migrate POST /api/reports/custom endpoint to frontend/src/app/api/reports/custom/route.ts
+
 **Priority 6 - Spending Categories APIs (T526-T529)**:
 - [x] T526 Migrate GET /api/spending-categories endpoint to frontend/src/app/api/spending-categories/route.ts
 - [x] T527 Migrate POST /api/spending-categories endpoint to frontend/src/app/api/spending-categories/route.ts
