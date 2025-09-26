@@ -637,7 +637,7 @@ tests/
 **Priority 2 - Family Management APIs (T486-T496)**:
 - [x] T486 Migrate GET /api/families endpoint to frontend/src/app/api/families/route.ts
 - [x] T487 Migrate PUT /api/families endpoint to frontend/src/app/api/families/route.ts
-- [ ] T488 Migrate GET /api/families/members endpoint to frontend/src/app/api/families/members/route.ts
+- [x] T488 Migrate GET /api/families/members endpoint to frontend/src/app/api/families/members/route.ts
 - [ ] T489 Migrate POST /api/families/members endpoint to frontend/src/app/api/families/members/route.ts
 - [ ] T490 Migrate PUT /api/families/members/[id] endpoint to frontend/src/app/api/families/members/[id]/route.ts
 - [ ] T491 Migrate DELETE /api/families/members/[id] endpoint to frontend/src/app/api/families/members/[id]/route.ts
