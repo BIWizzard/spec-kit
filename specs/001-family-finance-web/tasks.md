@@ -660,7 +660,11 @@ tests/
 - [x] T506 Migrate POST /api/plaid/link-token endpoint to frontend/src/app/api/plaid/link-token/route.ts
 - [x] T507 Migrate POST /api/plaid/webhook endpoint to frontend/src/app/api/plaid/webhook/route.ts
 
-**NOTE**: Additional 80+ endpoints for transactions, payments, budgets, reports need tasks T508-T588+. Start with Priority 1-3 to restore core functionality.
+**Priority 4 - Additional Payment APIs (T508-T519)**:
+- [x] T518 Migrate GET /api/payments/upcoming endpoint to frontend/src/app/api/payments/upcoming/route.ts
+- [x] T519 Migrate GET /api/payments/overdue endpoint to frontend/src/app/api/payments/overdue/route.ts
+
+**NOTE**: Additional 70+ endpoints for transactions, payments, budgets, reports need tasks T508-T588+. Start with Priority 1-3 to restore core functionality.
 
 ## Dependencies
 
