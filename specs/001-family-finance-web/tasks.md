@@ -667,6 +667,11 @@ tests/
 - [x] T517 Migrate PUT /api/payments/[id] endpoint to frontend/src/app/api/payments/[id]/route.ts
 - [x] T518 Migrate GET /api/payments/upcoming endpoint to frontend/src/app/api/payments/upcoming/route.ts
 - [x] T519 Migrate GET /api/payments/overdue endpoint to frontend/src/app/api/payments/overdue/route.ts
+- [x] T520 Migrate GET /api/income-events endpoint to frontend/src/app/api/income-events/route.ts
+
+**Priority 5 - Income Events APIs (T521-T530)**:
+- [x] T524 Migrate GET /api/income-events/upcoming endpoint to frontend/src/app/api/income-events/upcoming/route.ts
+- [x] T528 Migrate PUT /api/spending-categories/[id] endpoint to frontend/src/app/api/spending-categories/[id]/route.ts
 
 **NOTE**: Additional 70+ endpoints for transactions, payments, budgets, reports need tasks T508-T588+. Start with Priority 1-3 to restore core functionality.
 
