@@ -678,6 +678,7 @@ tests/
 **Priority 6 - Spending Categories APIs (T526-T529)**:
 - [x] T526 Migrate GET /api/spending-categories endpoint to frontend/src/app/api/spending-categories/route.ts
 - [x] T528 Migrate PUT /api/spending-categories/[id] endpoint to frontend/src/app/api/spending-categories/[id]/route.ts
+- [x] T529 Migrate DELETE /api/spending-categories/[id] endpoint to frontend/src/app/api/spending-categories/[id]/route.ts
 
 **NOTE**: Additional 70+ endpoints for transactions, payments, budgets, reports need tasks T508-T588+. Start with Priority 1-3 to restore core functionality.
 
