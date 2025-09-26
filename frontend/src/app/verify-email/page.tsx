@@ -8,6 +8,8 @@ export const metadata = {
   description: 'Verify your email address for your KGiQ Family Finance account',
 }
 
+// Updated: Fixed email verification component path and deployment issue
+
 // Wrapper component to handle search params
 function EmailVerificationContent() {
   return (
