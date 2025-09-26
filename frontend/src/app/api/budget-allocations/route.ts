@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { BudgetService } from '@/lib/services/budget.service';
 import { authenticateRequest, AuthenticationError } from '@/lib/middleware/auth';
 
+// T534: GET /api/budget-allocations endpoint implementation
 export interface GetBudgetAllocationsResponse {
   allocations: Array<{
     id: string;
