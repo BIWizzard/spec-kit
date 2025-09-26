@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { FamilyService } from '../../../lib/services/family.service';
-import { ValidationService } from '../../../lib/services/validation.service';
-import * as jwt from 'jsonwebtoken';
+import { FamilyService } from '@/lib/services/family.service';
+import { ValidationService } from '@/lib/services/validation.service';
+import jwt from 'jsonwebtoken';
 
 interface FamilyInfo {
   id: string;
@@ -54,7 +54,8 @@ async function extractUserFromToken(request: NextRequest) {
   const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
+    const jwtSecret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'dev-jwt-secret-change-this-in-production-make-it-really-long';
+    const decoded = jwt.verify(token, jwtSecret) as any;
 
     if (!decoded || !decoded.familyId) {
       throw new Error('Invalid token');
