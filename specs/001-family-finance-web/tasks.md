@@ -703,6 +703,13 @@ tests/
 - [x] T528 Migrate PUT /api/spending-categories/[id] endpoint to frontend/src/app/api/spending-categories/[id]/route.ts
 - [x] T529 Migrate DELETE /api/spending-categories/[id] endpoint to frontend/src/app/api/spending-categories/[id]/route.ts
 
+**Priority 9 - Infrastructure APIs (T580-T584)**:
+- [x] T580 Migrate GET /api/health endpoint to frontend/src/app/api/health/route.ts
+- [x] T581 Migrate GET /api/docs endpoint to frontend/src/app/api/docs/route.ts
+- [x] T582 Migrate GET /api/schema/validate endpoint to frontend/src/app/api/schema/validate/route.ts
+- [x] T583 Migrate GET /api/env endpoint to frontend/src/app/api/env/route.ts
+- [x] T584 Migrate POST /api/transactions/match-payments endpoint to frontend/src/app/api/transactions/match-payments/route.ts
+
 **NOTE**: Additional 70+ endpoints for transactions, payments, budgets, reports need tasks T508-T588+. Start with Priority 1-3 to restore core functionality.
 
 ## Dependencies
