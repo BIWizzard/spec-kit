@@ -297,3 +297,76 @@ export async function PUT(
     );
   }
 }
+
+// DELETE /api/reports/scheduled/[id]
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Authenticate user
+    const user = authenticateRequest(request);
+
+    const reportId = params.id;
+
+    if (!reportId) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          message: 'Report ID is required',
+        },
+        { status: 400 }
+      );
+    }
+
+    // Delete the scheduled report
+    await ScheduledReportService.deleteScheduledReport(user.familyId, reportId, user.userId);
+
+    return NextResponse.json({
+      message: 'Scheduled report deleted successfully',
+    });
+
+  } catch (error) {
+    console.error('Delete scheduled report error:', error);
+
+    if (error instanceof AuthenticationError) {
+      return NextResponse.json(
+        {
+          error: 'Authentication failed',
+          message: error.message,
+        },
+        { status: error.statusCode }
+      );
+    }
+
+    if (error instanceof Error) {
+      if (error.message.includes('not found')) {
+        return NextResponse.json(
+          {
+            error: 'Not found',
+            message: 'Scheduled report not found',
+          },
+          { status: 404 }
+        );
+      }
+
+      if (error.message.includes('permissions')) {
+        return NextResponse.json(
+          {
+            error: 'Permission denied',
+            message: 'Insufficient permissions to delete scheduled reports',
+          },
+          { status: 403 }
+        );
+      }
+    }
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: 'Failed to delete scheduled report. Please try again.',
+      },
+      { status: 500 }
+    );
+  }
+}
