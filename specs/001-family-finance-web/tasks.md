@@ -651,10 +651,10 @@ tests/
 - [x] T497 Migrate GET /api/bank-accounts endpoint to frontend/src/app/api/bank-accounts/route.ts
 - [x] T498 Migrate POST /api/bank-accounts endpoint to frontend/src/app/api/bank-accounts/route.ts
 - [x] T499 Migrate GET /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
-- [ ] T500 Migrate PUT /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
+- [x] T500 Migrate PUT /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
 - [ ] T501 Migrate DELETE /api/bank-accounts/[id] endpoint to frontend/src/app/api/bank-accounts/[id]/route.ts
 - [x] T502 Migrate POST /api/bank-accounts/[id]/sync endpoint to frontend/src/app/api/bank-accounts/[id]/sync/route.ts
-- [ ] T503 Migrate POST /api/bank-accounts/[id]/reconnect endpoint to frontend/src/app/api/bank-accounts/[id]/reconnect/route.ts
+- [x] T503 Migrate POST /api/bank-accounts/[id]/reconnect endpoint to frontend/src/app/api/bank-accounts/[id]/reconnect/route.ts
 - [x] T504 Migrate POST /api/bank-accounts/sync-all endpoint to frontend/src/app/api/bank-accounts/sync-all/route.ts
 - [ ] T505 Migrate POST /api/bank-accounts/connect endpoint to frontend/src/app/api/bank-accounts/connect/route.ts
 - [ ] T506 Migrate POST /api/plaid/link-token endpoint to frontend/src/app/api/plaid/link-token/route.ts
